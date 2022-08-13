@@ -1,341 +1,301 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-/// <summary>
-/// Hey developer!
-/// If you have any questions, come chat with me on my Discord: https://discord.gg/GqeHHnhHpz
-/// If you enjoy the controller, make sure you give the video a thumbs up: https://youtu.be/rJECT58CQHs
-/// Have fun!
-///
-/// Love,
-/// Tarodev
-/// </summary>
-public class PlayerController : MonoBehaviour {
-    [SerializeField] private Rigidbody _rb;
-    [SerializeField] private Animator _anim;
-    private FrameInputs _inputs;
+namespace TarodevController {
+    /// <summary>
+    /// Hey!
+    /// Tarodev here. I built this controller as there was a severe lack of quality & free 2D controllers out there.
+    /// Right now it only contains movement and jumping, but it should be pretty easy to expand... I may even do it myself
+    /// if there's enough interest. You can play and compete for best times here: https://tarodev.itch.io/
+    /// If you hve any questions or would like to brag about your score, come to discord: https://discord.gg/GqeHHnhHpz
+    /// </summary>
+    public class PlayerController : MonoBehaviour, IPlayerController {
+        // Public for external hooks
+        public Vector3 Velocity { get; private set; }
+        public FrameInput Input { get; private set; }
+        public bool JumpingThisFrame { get; private set; }
+        public bool LandingThisFrame { get; private set; }
+        public Vector3 RawMovement { get; private set; }
+        public bool Grounded => _colDown;
 
-    private void Update() {
-        GatherInputs();
+        private Vector3 _lastPosition;
+        private float _currentHorizontalSpeed, _currentVerticalSpeed;
 
-        HandleGrounding();
+        // This is horrible, but for some reason colliders are not fully established when update starts...
+        private bool _active;
+        void Awake() => Invoke(nameof(Activate), 0.5f);
+        void Activate() =>  _active = true;
+        
+        private void Update() {
+            if(!_active) return;
+            // Calculate velocity
+            Velocity = (transform.position - _lastPosition) / Time.deltaTime;
+            _lastPosition = transform.position;
 
-        HandleWalking();
+            GatherInput();
+            RunCollisionChecks();
 
-        HandleJumping();
+            CalculateWalk(); // Horizontal movement
+            CalculateJumpApex(); // Affects fall speed, so calculate before gravity
+            CalculateGravity(); // Vertical movement
+            CalculateJump(); // Possibly overrides vertical
 
-        HandleWallSlide();
-
-        HandleWallGrab();
-
-        HandleDashing();
-    }
-
-    #region Inputs
-
-    private bool _facingLeft;
-
-    private void GatherInputs() {
-        _inputs.RawX = (int) Input.GetAxisRaw("Horizontal");
-        _inputs.RawY = (int) Input.GetAxisRaw("Vertical");
-        _inputs.X = Input.GetAxis("Horizontal");
-        _inputs.Y = Input.GetAxis("Vertical");
-
-        _anim.SetInteger("RawY", _inputs.RawY);
-
-        _facingLeft = _inputs.RawX != 1 && (_inputs.RawX == -1 || _facingLeft);
-        if (!_grabbing) SetFacingDirection(_facingLeft); // Don't turn while grabbing the wall
-    }
-
-    private void SetFacingDirection(bool left) {
-        _anim.transform.rotation = left ? Quaternion.Euler(0, -90, 0) : Quaternion.Euler(0, 90, 0);
-    }
-
-    #endregion
-
-    #region Detection
-
-    [Header("Detection")] [SerializeField] private LayerMask _groundMask;
-    [SerializeField] private float _grounderOffset = -1, _grounderRadius = 0.2f;
-    [SerializeField] private float _wallCheckOffset = 0.5f, _wallCheckRadius = 0.05f;
-    private bool _isAgainstLeftWall, _isAgainstRightWall, _pushingLeftWall, _pushingRightWall;
-    public bool IsGrounded;
-    public static event Action OnTouchedGround;
-
-    private readonly Collider[] _ground = new Collider[1];
-    private readonly Collider[] _leftWall = new Collider[1];
-    private readonly Collider[] _rightWall = new Collider[1];
-
-    private void HandleGrounding() {
-        // Grounder
-        var grounded = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(0, _grounderOffset), _grounderRadius, _ground, _groundMask) > 0;
-
-        if (!IsGrounded && grounded) {
-            IsGrounded = true;
-            _hasDashed = false;
-            _hasJumped = false;
-            _currentMovementLerpSpeed = 100;
-            PlayRandomClip(_landClips);
-            _anim.SetBool("Grounded", true);
-            OnTouchedGround?.Invoke();
-            transform.SetParent(_ground[0].transform);
-        }
-        else if (IsGrounded && !grounded) {
-            IsGrounded = false;
-            _timeLeftGrounded = Time.time;
-            _anim.SetBool("Grounded", false);
-            transform.SetParent(null);
+            MoveCharacter(); // Actually perform the axis movement
         }
 
-        // Wall detection
-        _isAgainstLeftWall = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(-_wallCheckOffset, 0), _wallCheckRadius, _leftWall, _groundMask) > 0;
-        _isAgainstRightWall = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(_wallCheckOffset, 0), _wallCheckRadius, _rightWall, _groundMask) > 0;
-        _pushingLeftWall = _isAgainstLeftWall && _inputs.X < 0;
-        _pushingRightWall = _isAgainstRightWall && _inputs.X > 0;
-    }
 
-    private void DrawGrounderGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + new Vector3(0, _grounderOffset), _grounderRadius);
-    }
+        #region Gather Input
 
-    private void OnDrawGizmos() {
-        DrawGrounderGizmos();
-        DrawWallSlideGizmos();
-    }
-
-    #endregion
-
-    #region Walking
-
-    [Header("Walking")] [SerializeField] private float _walkSpeed = 4;
-    [SerializeField] private float _acceleration = 2;
-    [SerializeField] private float _currentMovementLerpSpeed = 100;
-
-    private void HandleWalking() {
-        // Slowly release control after wall jump
-        _currentMovementLerpSpeed = Mathf.MoveTowards(_currentMovementLerpSpeed, 100, _wallJumpMovementLerp * Time.deltaTime);
-
-        if (_dashing) return;
-        // This can be done using just X & Y input as they lerp to max values, but this gives greater control over velocity acceleration
-        var acceleration = IsGrounded ? _acceleration : _acceleration * 0.5f;
-
-        if (Input.GetKey(KeyCode.LeftArrow)) {
-            if (_rb.velocity.x > 0) _inputs.X = 0; // Immediate stop and turn. Just feels better
-            _inputs.X = Mathf.MoveTowards(_inputs.X, -1, acceleration * Time.deltaTime);
-        }
-        else if (Input.GetKey(KeyCode.RightArrow)) {
-            if (_rb.velocity.x < 0) _inputs.X = 0;
-            _inputs.X = Mathf.MoveTowards(_inputs.X, 1, acceleration * Time.deltaTime);
-        }
-        else {
-            _inputs.X = Mathf.MoveTowards(_inputs.X, 0, acceleration * 2 * Time.deltaTime);
-        }
-
-        var idealVel = new Vector3(_inputs.X * _walkSpeed, _rb.velocity.y);
-        // _currentMovementLerpSpeed should be set to something crazy high to be effectively instant. But slowed down after a wall jump and slowly released
-        _rb.velocity = Vector3.MoveTowards(_rb.velocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
-
-        _anim.SetBool("Walking", _inputs.RawX != 0 && IsGrounded);
-    }
-
-    #endregion
-
-    #region Jumping
-
-    [Header("Jumping")] [SerializeField] private float _jumpForce = 15;
-    [SerializeField] private float _fallMultiplier = 7;
-    [SerializeField] private float _jumpVelocityFalloff = 8;
-    [SerializeField] private ParticleSystem _jumpParticles;
-    [SerializeField] private Transform _jumpLaunchPoof;
-    [SerializeField] private float _wallJumpLock = 0.25f;
-    [SerializeField] private float _wallJumpMovementLerp = 5;
-    [SerializeField] private float _coyoteTime = 0.2f;
-    [SerializeField] private bool _enableDoubleJump = true;
-    private float _timeLeftGrounded = -10;
-    private float _timeLastWallJumped;
-    private bool _hasJumped;
-    private bool _hasDoubleJumped;
-
-    private void HandleJumping() {
-        if (_dashing) return;
-        if (Input.GetKeyDown(KeyCode.C)) {
-            if (_grabbing || !IsGrounded && (_isAgainstLeftWall || _isAgainstRightWall)) {
-                _timeLastWallJumped = Time.time;
-                _currentMovementLerpSpeed = _wallJumpMovementLerp;
-                ExecuteJump(new Vector2(_isAgainstLeftWall ? _jumpForce : -_jumpForce, _jumpForce)); // Wall jump
-            }
-            else if (IsGrounded || Time.time < _timeLeftGrounded + _coyoteTime || _enableDoubleJump && !_hasDoubleJumped) {
-                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_rb.velocity.x, _jumpForce), _hasJumped); // Ground jump
+        private void GatherInput() {
+            Input = new FrameInput {
+                JumpDown = UnityEngine.Input.GetButtonDown("Jump"),
+                JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
+                X = UnityEngine.Input.GetAxisRaw("Horizontal")
+            };
+            if (Input.JumpDown) {
+                _lastJumpPressed = Time.time;
             }
         }
 
-        void ExecuteJump(Vector3 dir, bool doubleJump = false) {
-            _rb.velocity = dir;
-            _jumpLaunchPoof.up = _rb.velocity;
-            _jumpParticles.Play();
-            _anim.SetTrigger(doubleJump ? "DoubleJump" : "Jump");
-            _hasDoubleJumped = doubleJump;
-            _hasJumped = true;
-        }
+        #endregion
 
-        // Fall faster and allow small jumps. _jumpVelocityFalloff is the point at which we start adding extra gravity. Using 0 causes floating
-        if (_rb.velocity.y < _jumpVelocityFalloff || _rb.velocity.y > 0 && !Input.GetKey(KeyCode.C))
-            _rb.velocity += _fallMultiplier * Physics.gravity.y * Vector3.up * Time.deltaTime;
-    }
+        #region Collisions
 
-    #endregion
+        [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
+        [SerializeField] private LayerMask _groundLayer;
+        [SerializeField] private int _detectorCount = 3;
+        [SerializeField] private float _detectionRayLength = 0.1f;
+        [SerializeField] [Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
 
-    #region Wall Slide
+        private RayRange _raysUp, _raysRight, _raysDown, _raysLeft;
+        private bool _colUp, _colRight, _colDown, _colLeft;
 
-    [Header("Wall Slide")] [SerializeField]
-    private ParticleSystem _wallSlideParticles;
+        private float _timeLeftGrounded;
 
-    [SerializeField] private float _slideSpeed = 1;
-    private bool _wallSliding;
+        // We use these raycast checks for pre-collision information
+        private void RunCollisionChecks() {
+            // Generate ray ranges. 
+            CalculateRayRanged();
 
-    private void HandleWallSlide() {
-        var sliding = _pushingLeftWall || _pushingRightWall;
+            // Ground
+            LandingThisFrame = false;
+            var groundedCheck = RunDetection(_raysDown);
+            if (_colDown && !groundedCheck) _timeLeftGrounded = Time.time; // Only trigger when first leaving
+            else if (!_colDown && groundedCheck) {
+                _coyoteUsable = true; // Only trigger when first touching
+                LandingThisFrame = true;
+            }
 
-        if (sliding && !_wallSliding) {
-            transform.SetParent(_pushingLeftWall ? _leftWall[0].transform : _rightWall[0].transform);
-            _wallSliding = true;
-            _wallSlideParticles.transform.position = transform.position + new Vector3(_pushingLeftWall ? -_wallCheckOffset : _wallCheckOffset, 0);
-            _wallSlideParticles.Play();
+            _colDown = groundedCheck;
 
-            // Don't add sliding until actually falling or it'll prevent jumping against a wall
-            if (_rb.velocity.y < 0) _rb.velocity = new Vector3(0, -_slideSpeed);
-        }
-        else if (!sliding && _wallSliding && !_grabbing) {
-            transform.SetParent(null);
-            _wallSliding = false;
-            _wallSlideParticles.Stop();
-        }
-    }
+            // The rest
+            _colUp = RunDetection(_raysUp);
+            _colLeft = RunDetection(_raysLeft);
+            _colRight = RunDetection(_raysRight);
 
-    private void DrawWallSlideGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + new Vector3(-_wallCheckOffset, 0), _wallCheckRadius);
-        Gizmos.DrawWireSphere(transform.position + new Vector3(_wallCheckOffset, 0), _wallCheckRadius);
-    }
-
-    #endregion
-
-    #region Wall Grab
-
-    [Header("Wall Grab")] [SerializeField] private ParticleSystem _wallGrabParticles;
-    private bool _grabbing;
-
-    private void HandleWallGrab() {
-        // I added wallJumpLock but I honestly can't remember why and I'm too scared to remove it...
-        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Input.GetKey(KeyCode.Z) && Time.time > _timeLastWallJumped + _wallJumpLock;
-
-        _rb.useGravity = !_grabbing;
-        if (grabbing && !_grabbing) {
-            _grabbing = true;
-            _wallGrabParticles.transform.position = transform.position + new Vector3(_pushingLeftWall ? -_wallCheckOffset : _wallCheckOffset, 0);
-            _wallGrabParticles.Play();
-            SetFacingDirection(_isAgainstLeftWall);
-        }
-        else if (!grabbing && _grabbing) {
-            _grabbing = false;
-            _wallGrabParticles.Stop();
-            Debug.Log("stopped");
-        }
-
-        if (_grabbing) _rb.velocity = new Vector3(0, _inputs.RawY * _slideSpeed * (_inputs.RawY < 0 ? 1 : 0.8f));
-
-        _anim.SetBool("Climbing", _wallSliding || _grabbing);
-    }
-
-    #endregion
-
-    #region Dash
-
-    [Header("Dash")] [SerializeField] private float _dashSpeed = 15;
-    [SerializeField] private float _dashLength = 1;
-    [SerializeField] private ParticleSystem _dashParticles;
-    [SerializeField] private Transform _dashRing;
-    [SerializeField] private ParticleSystem _dashVisual;
-
-    public static event Action OnStartDashing, OnStopDashing;
-
-    private bool _hasDashed;
-    private bool _dashing;
-    private float _timeStartedDash;
-    private Vector3 _dashDir;
-
-    private void HandleDashing() {
-        if (Input.GetKeyDown(KeyCode.X) && !_hasDashed) {
-            _dashDir = new Vector3(_inputs.RawX, _inputs.RawY).normalized;
-            if (_dashDir == Vector3.zero) _dashDir = _facingLeft ? Vector3.left : Vector3.right;
-            _dashRing.up = _dashDir;
-            _dashParticles.Play();
-            _dashing = true;
-            _hasDashed = true;
-            _timeStartedDash = Time.time;
-            _rb.useGravity = false;
-            _dashVisual.Play();
-            PlayRandomClip(_dashClips);
-            OnStartDashing?.Invoke();
-        }
-
-        if (_dashing) {
-            _rb.velocity = _dashDir * _dashSpeed;
-
-            if (Time.time >= _timeStartedDash + _dashLength) {
-                _dashParticles.Stop();
-                _dashing = false;
-                // Clamp the velocity so they don't keep shooting off
-                _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y > 3 ? 3 : _rb.velocity.y);
-                _rb.useGravity = true;
-                if (IsGrounded) _hasDashed = false;
-                _dashVisual.Stop();
-                OnStopDashing?.Invoke();
+            bool RunDetection(RayRange range) {
+                return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
         }
-    }
 
-    #endregion
+        private void CalculateRayRanged() {
+            // This is crying out for some kind of refactor. 
+            var b = new Bounds(transform.position, _characterBounds.size);
 
-    #region Impacts
-
-    [Header("Collisions")] [SerializeField]
-    private ParticleSystem _impactParticles;
-
-    [SerializeField] private GameObject _deathExplosion;
-    [SerializeField] private float _minImpactForce = 2;
-
-    private void OnCollisionEnter(Collision collision) {
-        if (collision.relativeVelocity.magnitude > _minImpactForce && IsGrounded) _impactParticles.Play();
-    }
-
-    private void OnTriggerEnter(Collider other) {
-        if (other.CompareTag("Death")) {
-            Instantiate(_deathExplosion, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            _raysDown = new RayRange(b.min.x + _rayBuffer, b.min.y, b.max.x - _rayBuffer, b.min.y, Vector2.down);
+            _raysUp = new RayRange(b.min.x + _rayBuffer, b.max.y, b.max.x - _rayBuffer, b.max.y, Vector2.up);
+            _raysLeft = new RayRange(b.min.x, b.min.y + _rayBuffer, b.min.x, b.max.y - _rayBuffer, Vector2.left);
+            _raysRight = new RayRange(b.max.x, b.min.y + _rayBuffer, b.max.x, b.max.y - _rayBuffer, Vector2.right);
         }
 
-        _hasDashed = false;
-    }
 
-    #endregion
+        private IEnumerable<Vector2> EvaluateRayPositions(RayRange range) {
+            for (var i = 0; i < _detectorCount; i++) {
+                var t = (float)i / (_detectorCount - 1);
+                yield return Vector2.Lerp(range.Start, range.End, t);
+            }
+        }
 
-    #region Audio
+        private void OnDrawGizmos() {
+            // Bounds
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(transform.position + _characterBounds.center, _characterBounds.size);
 
-    [Header("Audio")] [SerializeField] private AudioSource _source;
-    [SerializeField] private AudioClip[] _landClips;
-    [SerializeField] private AudioClip[] _dashClips;
+            // Rays
+            if (!Application.isPlaying) {
+                CalculateRayRanged();
+                Gizmos.color = Color.blue;
+                foreach (var range in new List<RayRange> { _raysUp, _raysRight, _raysDown, _raysLeft }) {
+                    foreach (var point in EvaluateRayPositions(range)) {
+                        Gizmos.DrawRay(point, range.Dir * _detectionRayLength);
+                    }
+                }
+            }
 
-    private void PlayRandomClip(AudioClip[] clips) {
-        _source.PlayOneShot(clips[Random.Range(0, clips.Length)], 0.2f);
-    }
+            if (!Application.isPlaying) return;
 
-    #endregion
+            // Draw the future position. Handy for visualizing gravity
+            Gizmos.color = Color.red;
+            var move = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed) * Time.deltaTime;
+            Gizmos.DrawWireCube(transform.position + move, _characterBounds.size);
+        }
 
-    private struct FrameInputs {
-        public float X, Y;
-        public int RawX, RawY;
+        #endregion
+
+
+        #region Walk
+
+        [Header("WALKING")] [SerializeField] private float _acceleration = 90;
+        [SerializeField] private float _moveClamp = 13;
+        [SerializeField] private float _deAcceleration = 60f;
+        [SerializeField] private float _apexBonus = 2;
+
+        private void CalculateWalk() {
+            if (Input.X != 0) {
+                // Set horizontal move speed
+                _currentHorizontalSpeed += Input.X * _acceleration * Time.deltaTime;
+
+                // clamped by max frame movement
+                _currentHorizontalSpeed = Mathf.Clamp(_currentHorizontalSpeed, -_moveClamp, _moveClamp);
+
+                // Apply bonus at the apex of a jump
+                var apexBonus = Mathf.Sign(Input.X) * _apexBonus * _apexPoint;
+                _currentHorizontalSpeed += apexBonus * Time.deltaTime;
+            }
+            else {
+                // No input. Let's slow the character down
+                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0, _deAcceleration * Time.deltaTime);
+            }
+
+            if (_currentHorizontalSpeed > 0 && _colRight || _currentHorizontalSpeed < 0 && _colLeft) {
+                // Don't walk through walls
+                _currentHorizontalSpeed = 0;
+            }
+        }
+
+        #endregion
+
+        #region Gravity
+
+        [Header("GRAVITY")] [SerializeField] private float _fallClamp = -40f;
+        [SerializeField] private float _minFallSpeed = 80f;
+        [SerializeField] private float _maxFallSpeed = 120f;
+        private float _fallSpeed;
+
+        private void CalculateGravity() {
+            if (_colDown) {
+                // Move out of the ground
+                if (_currentVerticalSpeed < 0) _currentVerticalSpeed = 0;
+            }
+            else {
+                // Add downward force while ascending if we ended the jump early
+                var fallSpeed = _endedJumpEarly && _currentVerticalSpeed > 0 ? _fallSpeed * _jumpEndEarlyGravityModifier : _fallSpeed;
+
+                // Fall
+                _currentVerticalSpeed -= fallSpeed * Time.deltaTime;
+
+                // Clamp
+                if (_currentVerticalSpeed < _fallClamp) _currentVerticalSpeed = _fallClamp;
+            }
+        }
+
+        #endregion
+
+        #region Jump
+
+        [Header("JUMPING")] [SerializeField] private float _jumpHeight = 30;
+        [SerializeField] private float _jumpApexThreshold = 10f;
+        [SerializeField] private float _coyoteTimeThreshold = 0.1f;
+        [SerializeField] private float _jumpBuffer = 0.1f;
+        [SerializeField] private float _jumpEndEarlyGravityModifier = 3;
+        private bool _coyoteUsable;
+        private bool _endedJumpEarly = true;
+        private float _apexPoint; // Becomes 1 at the apex of a jump
+        private float _lastJumpPressed;
+        private bool CanUseCoyote => _coyoteUsable && !_colDown && _timeLeftGrounded + _coyoteTimeThreshold > Time.time;
+        private bool HasBufferedJump => _colDown && _lastJumpPressed + _jumpBuffer > Time.time;
+
+        private void CalculateJumpApex() {
+            if (!_colDown) {
+                // Gets stronger the closer to the top of the jump
+                _apexPoint = Mathf.InverseLerp(_jumpApexThreshold, 0, Mathf.Abs(Velocity.y));
+                _fallSpeed = Mathf.Lerp(_minFallSpeed, _maxFallSpeed, _apexPoint);
+            }
+            else {
+                _apexPoint = 0;
+            }
+        }
+
+        private void CalculateJump() {
+            // Jump if: grounded or within coyote threshold || sufficient jump buffer
+            if (Input.JumpDown && CanUseCoyote || HasBufferedJump) {
+                _currentVerticalSpeed = _jumpHeight;
+                _endedJumpEarly = false;
+                _coyoteUsable = false;
+                _timeLeftGrounded = float.MinValue;
+                JumpingThisFrame = true;
+            }
+            else {
+                JumpingThisFrame = false;
+            }
+
+            // End the jump early if button released
+            if (!_colDown && Input.JumpUp && !_endedJumpEarly && Velocity.y > 0) {
+                // _currentVerticalSpeed = 0;
+                _endedJumpEarly = true;
+            }
+
+            if (_colUp) {
+                if (_currentVerticalSpeed > 0) _currentVerticalSpeed = 0;
+            }
+        }
+
+        #endregion
+
+        #region Move
+
+        [Header("MOVE")] [SerializeField, Tooltip("Raising this value increases collision accuracy at the cost of performance.")]
+        private int _freeColliderIterations = 10;
+
+        // We cast our bounds before moving to avoid future collisions
+        private void MoveCharacter() {
+            var pos = transform.position;
+            RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
+            var move = RawMovement * Time.deltaTime;
+            var furthestPoint = pos + move;
+
+            // check furthest movement. If nothing hit, move and don't do extra checks
+            var hit = Physics2D.OverlapBox(furthestPoint, _characterBounds.size, 0, _groundLayer);
+            if (!hit) {
+                transform.position += move;
+                return;
+            }
+
+            // otherwise increment away from current pos; see what closest position we can move to
+            var positionToMoveTo = transform.position;
+            for (int i = 1; i < _freeColliderIterations; i++) {
+                // increment to check all but furthestPoint - we did that already
+                var t = (float)i / _freeColliderIterations;
+                var posToTry = Vector2.Lerp(pos, furthestPoint, t);
+
+                if (Physics2D.OverlapBox(posToTry, _characterBounds.size, 0, _groundLayer)) {
+                    transform.position = positionToMoveTo;
+
+                    // We've landed on a corner or hit our head on a ledge. Nudge the player gently
+                    if (i == 1) {
+                        if (_currentVerticalSpeed < 0) _currentVerticalSpeed = 0;
+                        var dir = transform.position - hit.transform.position;
+                        transform.position += dir.normalized * move.magnitude;
+                    }
+
+                    return;
+                }
+
+                positionToMoveTo = posToTry;
+            }
+        }
+
+        #endregion
     }
 }
