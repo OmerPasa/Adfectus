@@ -38,7 +38,9 @@ public class PlayerController : MonoBehaviour {
 
     private void GatherInputs() {
         _inputs.RawX = (int) Input.GetAxisRaw("Horizontal");
+        Debug.Log(_inputs.RawX + "horizontal" );
         _inputs.RawY = (int) Input.GetAxisRaw("Vertical");
+        Debug.Log(_inputs.RawY + "Vertical" );
         _inputs.X = Input.GetAxis("Horizontal");
         _inputs.Y = Input.GetAxis("Vertical");
 
