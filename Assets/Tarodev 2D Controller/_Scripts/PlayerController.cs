@@ -18,6 +18,10 @@ namespace TarodevController {
         public bool LandingThisFrame { get; private set; }
         public Vector3 RawMovement { get; private set; }
         public bool Grounded => _colDown;
+        public bool _hasDashed;
+        public bool isFacingLeft;
+        private Vector3 absoluteZero;
+        public float Dash_Length;
 
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
@@ -32,7 +36,7 @@ namespace TarodevController {
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
             _lastPosition = transform.position;
-
+            Debug.Log(Velocity + "Velocity");
             GatherInput();
             RunCollisionChecks();
 
@@ -41,6 +45,7 @@ namespace TarodevController {
             CalculateGravity(); // Vertical movement
             CalculateJump(); // Possibly overrides vertical
 
+            HandleDashing();//Checks dash movement codes.
             MoveCharacter(); // Actually perform the axis movement
         }
 
@@ -48,16 +53,34 @@ namespace TarodevController {
         #region Gather Input
 
         private void GatherInput() {
+            
             Input = new FrameInput {
                 JumpDown = UnityEngine.Input.GetButtonDown("Jump"),
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
+            if (Input.X < 0 && isFacingLeft)
+            {
+                Flip();  
+            }else if (Input.X > 0 && !isFacingLeft)
+            {
+                Flip();
+            }
+
             if (Input.JumpDown) {
                 _lastJumpPressed = Time.time;
             }
         }
+        #endregion
 
+        #region Flip
+        private void Flip()
+        {
+            Vector3 currentScale = gameObject.transform.localScale;
+            currentScale.x *= -1;
+            gameObject.transform.localScale = currentScale;
+            isFacingLeft = !isFacingLeft;
+        }
         #endregion
 
         #region Collisions
@@ -249,6 +272,26 @@ namespace TarodevController {
             if (_colUp) {
                 if (_currentVerticalSpeed > 0) _currentVerticalSpeed = 0;
             }
+        }
+
+        #endregion
+        
+        #region Dash
+        private void HandleDashing() {
+        if (UnityEngine.Input.GetButtonUp("Fire1") && !_hasDashed){
+                _hasDashed = true;
+                float dash = transform.position.x;
+                transform.position = new Vector3(dash + -Dash_Length ,transform.position.y,transform.position.z);
+                Debug.Log("DASHED_Player");
+                _hasDashed = false;
+        }else if (UnityEngine.Input.GetButtonUp("Fire2") && !_hasDashed)
+        {
+                _hasDashed = true;
+                float dash = transform.position.x;
+                transform.position = new Vector3(dash + +Dash_Length,transform.position.y,transform.position.z);
+                Debug.Log("DASHED_Player");
+                _hasDashed = false;
+        }
         }
 
         #endregion
