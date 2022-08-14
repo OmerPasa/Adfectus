@@ -18,7 +18,8 @@ namespace TarodevController {
         public bool LandingThisFrame { get; private set; }
         public Vector3 RawMovement { get; private set; }
         public bool Grounded => _colDown;
-
+        public bool _hasDashed;
+        public float Dash_Length;
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
 
@@ -41,6 +42,7 @@ namespace TarodevController {
             CalculateGravity(); // Vertical movement
             CalculateJump(); // Possibly overrides vertical
 
+            HandleDashing();//Checks dash movement codes.
             MoveCharacter(); // Actually perform the axis movement
         }
 
@@ -249,6 +251,26 @@ namespace TarodevController {
             if (_colUp) {
                 if (_currentVerticalSpeed > 0) _currentVerticalSpeed = 0;
             }
+        }
+
+        #endregion
+        
+        #region Dash
+        private void HandleDashing() {
+        if (UnityEngine.Input.GetButtonUp("Fire1") && !_hasDashed){
+                _hasDashed = true;
+                float dash = transform.position.x;
+                transform.position = new Vector3(dash + -Dash_Length ,transform.position.y,transform.position.z);
+                Debug.Log("DASHED_Player");
+                _hasDashed = false;
+        }else if (UnityEngine.Input.GetButtonUp("Fire2") && !_hasDashed)
+        {
+                _hasDashed = true;
+                float dash = transform.position.x;
+                transform.position = new Vector3(dash + +Dash_Length,transform.position.y,transform.position.z);
+                Debug.Log("DASHED_Player");
+                _hasDashed = false;
+        }
         }
 
         #endregion
