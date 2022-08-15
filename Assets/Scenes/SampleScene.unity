@@ -6047,7 +6047,6 @@ GameObject:
   - component: {fileID: 1982680929}
   - component: {fileID: 1982680931}
   - component: {fileID: 1982680932}
-  - component: {fileID: 1982680933}
   m_Layer: 0
   m_Name: player
   m_TagString: Player
@@ -6223,7 +6222,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1982680925}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 6e5b5f4662f713845b0c28185c4ea62c, type: 2}
   m_CullingMode: 0
@@ -6235,35 +6234,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1982680933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1982680925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18297356b7fd95143bd7f1dcad5705e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _anim: {fileID: 1982680932}
-  _source: {fileID: 52396690}
-  _groundMask:
-    serializedVersion: 2
-    m_Bits: 64
-  _jumpParticles: {fileID: 1610167678}
-  _launchParticles: {fileID: 1610167678}
-  _moveParticles: {fileID: 1610167678}
-  _landParticles: {fileID: 1610167678}
-  _footsteps:
-  - {fileID: 8300000, guid: 5d94063f45167b04ab62585e436da58c, type: 3}
-  - {fileID: 8300000, guid: b5803c17557c59c40bf3a6d69cb46cb3, type: 3}
-  - {fileID: 8300000, guid: 1876767bf7cbf284394dc3817af9593c, type: 3}
-  _maxTilt: 3.12
-  _tiltSpeed: 9.3
-  _maxIdleSpeed: 2.3
-  _maxParticleFallSpeed: -16.69
 --- !u!1 &2016317928
 GameObject:
   m_ObjectHideFlags: 0
@@ -6333,7 +6303,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
