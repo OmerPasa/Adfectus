@@ -23,14 +23,49 @@ namespace TarodevController {
         private Vector3 absoluteZero;
         public float Dash_Length;
 
+        //Animation States
+    const string PLAYER_IDLE = "Player_Idle_Gun";
+    const string PLAYER_RUN = "Player_Movement_Gun";
+    const string PLAYER_JUMP = "Player_Jump_Gun";
+    const string PLAYER_ATTACK = "Player_Movement_Firing";
+    const string PLAYER_AIR_ATTACK = "Player_Jump_Firing";
+    const string PLAYER_DEATH = "Player_Death";
+    const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
+        private Animator animator;
+        private Rigidbody2D rb2d;
+        AudioSource AfterFiringMusic;
+        public AudioSource BackGroundM;
+
+        private string currentAnimaton;
+        private bool TakingDamage;
+        private bool isntDead;
+
+       [SerializeField]
+        private float attackDelay;
+        private float damageDelay;
+        public int maxHealth = 10;
+        public int Playerhealth;
+        public healthbar_control healthbar;
+        public MainMenu mainMenu;
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
 
+        void Start()
+    {
+        isntDead = true;
+        rb2d = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        AfterFiringMusic = GetComponent<AudioSource>();
+        BackGroundM = GetComponent<AudioSource>();
+        Playerhealth = maxHealth;
+        healthbar.SetMaxHealth(maxHealth);
+        
+    }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
         void Awake() => Invoke(nameof(Activate), 0.5f);
         void Activate() =>  _active = true;
-        
+
         private void Update() {
             if(!_active) return;
             // Calculate velocity
@@ -340,5 +375,45 @@ namespace TarodevController {
         }
 
         #endregion
+
+        #region Health
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
+    public void PlayerTakeDamage(int damage)
+    {
+        TakingDamage = true;
+        Playerhealth -= damage;
+        healthbar.SetHealth(Playerhealth);
+        Debug.Log("damageTaken");
+        ChangeAnimationState(PLAYER_TAKEDAMAGE);
+        Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
+        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+        Invoke("DamageDelayComplete", damageDelay);
+    }
+    void DamageDelayComplete()
+    {
+        TakingDamage = false;
+    }
+    void OnCollisionEnter2D(Collision2D water) 
+    {
+        if (water.gameObject.tag == "Water")
+        {
+           // mainMenu.GameIsOver();
+        }
+    }
+        #endregion
+
+    //=====================================================
+    // mini animation manager
+    //=====================================================
+    void ChangeAnimationState(string newAnimation)
+    {
+        if (currentAnimaton == newAnimation) return;
+
+        animator.Play(newAnimation);
+        currentAnimaton = newAnimation;
+    }
     }
 }
