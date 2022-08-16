@@ -35,6 +35,7 @@ namespace TarodevController {
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
+        public SpriteRenderer sprite;
 
         private string currentAnimaton;
         private bool TakingDamage;
@@ -43,8 +44,8 @@ namespace TarodevController {
        [SerializeField]
         private float attackDelay;
         private float damageDelay;
-        public int maxHealth = 10;
-        public int Playerhealth;
+        private int maxHealth = 255;
+        public static int Playerhealth;
         public healthbar_control healthbar;
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
@@ -57,7 +58,9 @@ namespace TarodevController {
         animator = GetComponent<Animator>();
         AfterFiringMusic = GetComponent<AudioSource>();
         BackGroundM = GetComponent<AudioSource>();
+        sprite = GetComponent<SpriteRenderer>();
         Playerhealth = maxHealth;
+
         healthbar.SetMaxHealth(maxHealth);
         
     }
@@ -377,6 +380,9 @@ namespace TarodevController {
         #endregion
 
         #region Health
+
+        //on trigger () Will trigger the player take damage and it will done most of the other work
+        //then Set_Health will give the color of current health.
     public void Die()
     {
         Destroy(gameObject);
@@ -385,12 +391,18 @@ namespace TarodevController {
     {
         TakingDamage = true;
         Playerhealth -= damage;
-        healthbar.SetHealth(Playerhealth);
+        Set_Health(Playerhealth);
         Debug.Log("damageTaken");
         ChangeAnimationState(PLAYER_TAKEDAMAGE);
         Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-        Invoke("DamageDelayComplete", damageDelay);
+        Invoke("DamageDelayComplete", damageDelay);////DLELETE 
+    }
+
+    // set new health to the sprite filter as a new color.
+    void Set_Health(int Playerhealth)
+    {
+        sprite.color = new Color (Playerhealth, Playerhealth, Playerhealth, 1);
     }
     void DamageDelayComplete()
     {
