@@ -24,13 +24,20 @@ namespace TarodevController {
         public float Dash_Length;
 
         //Animation States
-    const string PLAYER_IDLE = "Player_Idle_Gun";
-    const string PLAYER_RUN = "Player_Movement_Gun";
-    const string PLAYER_JUMP = "Player_Jump_Gun";
-    const string PLAYER_ATTACK = "Player_Movement_Firing";
-    const string PLAYER_AIR_ATTACK = "Player_Jump_Firing";
+    const string PLAYER_IDLE = "Player_Idle";
+    const string PLAYER_RUN = "Player_Movement";
+    const string PLAYER_JUMP = "Player_Jump";
+    const string PLAYER_ATTACK = "Player_Movement";
+    const string PLAYER_AIR_ATTACK = "Player_Jump";
     const string PLAYER_DEATH = "Player_Death";
     const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
+
+    bool playerRunning;
+    bool playerJumping;
+    bool playerAttaking;
+    bool playerTakingDamage;
+    bool playerDying;
+    private bool isntDead;
         private Animator animator;
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
@@ -38,14 +45,14 @@ namespace TarodevController {
         public SpriteRenderer sprite;
 
         private string currentAnimaton;
-        private bool TakingDamage;
-        private bool isntDead;
+        
 
        [SerializeField]
         private float attackDelay;
         private float damageDelay;
         private float maxHealth = 1;
         public static float Playerhealth;
+        private Vector3 IdleVelocity = new Vector3(0,0,0);
         public healthbar_control healthbar;
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
@@ -60,6 +67,7 @@ namespace TarodevController {
         BackGroundM = GetComponent<AudioSource>();
         sprite = GetComponent<SpriteRenderer>();
         Playerhealth = maxHealth;
+        ChangeAnimationState(PLAYER_IDLE);
         
     }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -95,12 +103,24 @@ namespace TarodevController {
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
+            Debug.Log(Input.X + "Input X");
             if (Input.X < 0 && isFacingLeft)
             {
                 Flip();  
             }else if (Input.X > 0 && !isFacingLeft)
             {
                 Flip();
+            }
+            
+            if (Input.X == 0)
+            {
+                if (!playerAttaking && !playerDying && !playerJumping && !playerRunning)
+                {
+                    ChangeAnimationState(PLAYER_IDLE);   
+                }
+            }else
+            {
+                    ChangeAnimationState(PLAYER_RUN);
             }
 
             if (Input.JumpDown) {
@@ -347,8 +367,10 @@ namespace TarodevController {
 
         // We cast our bounds before moving to avoid future collisions
         private void MoveCharacter() {
+            playerRunning = true;
             var pos = transform.position;
             RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
+            ChangeAnimationState(PLAYER_RUN);
             var move = RawMovement * Time.deltaTime;
             var furthestPoint = pos + move;
 
@@ -395,7 +417,7 @@ namespace TarodevController {
     }
     public void PlayerTakeDamage(float damage)
     {
-        TakingDamage = true;
+        playerTakingDamage = true;
         Playerhealth -= damage;
         Set_Health(Playerhealth);
         Debug.Log("damageTaken");
@@ -412,7 +434,7 @@ namespace TarodevController {
     }
     void DamageDelayComplete()
     {
-        TakingDamage = false;
+        playerTakingDamage = false;
     }
     void OnCollisionEnter2D(Collision2D water) 
     {
