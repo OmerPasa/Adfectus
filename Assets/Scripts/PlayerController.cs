@@ -44,8 +44,8 @@ namespace TarodevController {
        [SerializeField]
         private float attackDelay;
         private float damageDelay;
-        private int maxHealth = 255;
-        public static int Playerhealth;
+        private float maxHealth = 1;
+        public static float Playerhealth;
         public healthbar_control healthbar;
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
@@ -60,8 +60,6 @@ namespace TarodevController {
         BackGroundM = GetComponent<AudioSource>();
         sprite = GetComponent<SpriteRenderer>();
         Playerhealth = maxHealth;
-
-        healthbar.SetMaxHealth(maxHealth);
         
     }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -124,6 +122,14 @@ namespace TarodevController {
         #region Collisions
 
         [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
+
+        private void OnTriggerEnter2D(Collider2D laser) {
+        if (laser.gameObject.tag == "laser")
+        {
+            PlayerTakeDamage(0.1f);
+            Debug.Log("DamageTaken by Player");
+        }
+        }
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;
@@ -387,7 +393,7 @@ namespace TarodevController {
     {
         Destroy(gameObject);
     }
-    public void PlayerTakeDamage(int damage)
+    public void PlayerTakeDamage(float damage)
     {
         TakingDamage = true;
         Playerhealth -= damage;
@@ -400,7 +406,7 @@ namespace TarodevController {
     }
 
     // set new health to the sprite filter as a new color.
-    void Set_Health(int Playerhealth)
+    void Set_Health(float Playerhealth)
     {
         sprite.color = new Color (Playerhealth, Playerhealth, Playerhealth, 1);
     }
