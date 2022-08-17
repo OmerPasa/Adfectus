@@ -152,12 +152,13 @@ namespace TarodevController
 
         [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
 
-        private void OnTriggerEnter2D(Collider2D laser) {
-        if (laser.gameObject.tag == "laser")
+        private void OnCollisionEnter(Collision laser)   
         {
-            PlayerTakeDamage(0.1f);
-            Debug.Log("DamageTaken by Player");
-        }
+            if (laser.gameObject.tag == "laser")
+            {
+                PlayerTakeDamage(0.1f);
+                Debug.Log("DamageTaken by Player");
+            }
         }
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
