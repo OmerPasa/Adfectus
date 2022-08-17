@@ -26,43 +26,53 @@ namespace TarodevController
         public float Dash_Length;
 
         //Animation States
-        const string PLAYER_IDLE = "Player_Idle_Gun";
-        const string PLAYER_RUN = "Player_Movement_Gun";
-        const string PLAYER_JUMP = "Player_Jump_Gun";
-        const string PLAYER_ATTACK = "Player_Movement_Firing";
-        const string PLAYER_AIR_ATTACK = "Player_Jump_Firing";
-        const string PLAYER_DEATH = "Player_Death";
-        const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
+    const string PLAYER_IDLE = "Player_Idle";
+    const string PLAYER_RUN = "Player_Movement";
+    const string PLAYER_JUMP = "Player_Jump";
+    const string PLAYER_ATTACK = "Player_Movement";
+    const string PLAYER_AIR_ATTACK = "Player_Jump";
+    const string PLAYER_DEATH = "Player_Death";
+    const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
+
+    bool playerRunning;
+    bool playerJumping;
+    bool playerAttaking;
+    bool playerTakingDamage;
+    bool playerDying;
+    private bool isntDead;
+    
         private Animator animator;
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
+        public SpriteRenderer sprite;
 
         private string currentAnimaton;
-        private bool TakingDamage;
-        private bool isntDead;
+        
 
         [SerializeField]
         private float attackDelay;
         private float damageDelay;
-        public int maxHealth = 10;
-        public int Playerhealth;
+        private float maxHealth = 1;
+        public static float Playerhealth;
+        private Vector3 IdleVelocity = new Vector3(0,0,0);
         public healthbar_control healthbar;
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
 
         void Start()
-        {
-            isntDead = true;
-            rb2d = GetComponent<Rigidbody2D>();
-            animator = GetComponent<Animator>();
-            AfterFiringMusic = GetComponent<AudioSource>();
-            BackGroundM = GetComponent<AudioSource>();
-            Playerhealth = maxHealth;
-            healthbar.SetMaxHealth(maxHealth);
-
-        }
+    {
+        isntDead = true;
+        rb2d = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        AfterFiringMusic = GetComponent<AudioSource>();
+        BackGroundM = GetComponent<AudioSource>();
+        sprite = GetComponent<SpriteRenderer>();
+        Playerhealth = maxHealth;
+        ChangeAnimationState(PLAYER_IDLE);
+        
+    }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
         void Awake() => Invoke(nameof(Activate), 0.5f);
@@ -99,6 +109,7 @@ namespace TarodevController
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
+            Debug.Log(Input.X + "Input X");
             if (Input.X < 0 && isFacingLeft)
             {
                 Flip();
@@ -106,6 +117,17 @@ namespace TarodevController
             else if (Input.X > 0 && !isFacingLeft)
             {
                 Flip();
+            }
+            
+            if (Input.X == 0)
+            {
+                if (!playerAttaking && !playerDying && !playerJumping && !playerRunning)
+                {
+                    ChangeAnimationState(PLAYER_IDLE);   
+                }
+            }else
+            {
+                    ChangeAnimationState(PLAYER_RUN);
             }
 
             if (Input.JumpDown)
@@ -127,7 +149,16 @@ namespace TarodevController
 
         #region Collisions
 
-        [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
+
+        [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
+
+        private void OnTriggerEnter2D(Collider2D laser) {
+        if (laser.gameObject.tag == "laser")
+        {
+            PlayerTakeDamage(0.1f);
+            Debug.Log("DamageTaken by Player");
+        }
+        }
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;
@@ -373,10 +404,12 @@ namespace TarodevController
         private int _freeColliderIterations = 10;
 
         // We cast our bounds before moving to avoid future collisions
-        private void MoveCharacter()
-        {
+
+        private void MoveCharacter() {
+            playerRunning = true;
             var pos = transform.position;
             RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
+            ChangeAnimationState(PLAYER_RUN);
             var move = RawMovement * Time.deltaTime;
             var furthestPoint = pos + move;
 
@@ -418,7 +451,37 @@ namespace TarodevController
         #endregion
 
         #region Health
-        public void Die()
+
+        //on trigger () Will trigger the player take damage and it will done most of the other work
+        //then Set_Health will give the color of current health.
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
+    public void PlayerTakeDamage(float damage)
+    {
+        playerTakingDamage = true;
+        Playerhealth -= damage;
+        Set_Health(Playerhealth);
+        Debug.Log("damageTaken");
+        ChangeAnimationState(PLAYER_TAKEDAMAGE);
+        Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
+        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+        Invoke("DamageDelayComplete", damageDelay);////DLELETE 
+    }
+
+    // set new health to the sprite filter as a new color.
+    void Set_Health(float Playerhealth)
+    {
+        sprite.color = new Color (Playerhealth, Playerhealth, Playerhealth, 1);
+    }
+    void DamageDelayComplete()
+    {
+        playerTakingDamage = false;
+    }
+    void OnCollisionEnter2D(Collision2D water) 
+    {
+        if (water.gameObject.tag == "Water")
         {
             Destroy(gameObject);
         }

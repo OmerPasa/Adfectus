@@ -65,7 +65,6 @@ public class PlayerScript : MonoBehaviour
         BackGroundM = GetComponent<AudioSource>();
         Playerhealth = maxHealth;
         healthbar.SetMaxHealth(maxHealth);
-        
     }
     void Update()
     {
