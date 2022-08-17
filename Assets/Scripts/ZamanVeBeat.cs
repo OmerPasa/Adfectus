@@ -55,9 +55,9 @@ public class ZamanVeBeat : MonoBehaviour
         int dur = currentLoop[currentLoopPos, 1] + durStart;
 
         AttackData currentAttackData = Patterns.patterns[patInd][currentAttackPos];
-        Debug.Log("c: " + currentAttackData.beat.ToString() + ", " + currentAttackData.beatQuarter.ToString());
-        Debug.Log("ccc: " + Zaman.beat.ToString() + ", " + Zaman.beatQuarter.ToString());
-        Debug.Log(currentAttackPos.ToString() + ", " + patInd.ToString());
+       // Debug.Log("c: " + currentAttackData.beat.ToString() + ", " + currentAttackData.beatQuarter.ToString());
+       // Debug.Log("ccc: " + Zaman.beat.ToString() + ", " + Zaman.beatQuarter.ToString());
+       // Debug.Log(currentAttackPos.ToString() + ", " + patInd.ToString());
 
         if (Zaman.beat % dur == currentAttackData.beat && Zaman.beatQuarter == currentAttackData.beatQuarter)
         {
