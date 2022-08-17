@@ -23,7 +23,6 @@ public class ZamanVeBeat : MonoBehaviour
     {
         Patterns.player = player;
         audioSource.Play();
-        Zaman.tick(-Time.deltaTime * 1000);
     }
 
     // Update is called once per frame
@@ -56,7 +55,7 @@ public class ZamanVeBeat : MonoBehaviour
 
         AttackData currentAttackData = Patterns.patterns[patInd][currentAttackPos];
         Debug.Log("c: " + currentAttackData.beat.ToString() + ", " + currentAttackData.beatQuarter.ToString());
-        Debug.Log("ccc: " + Zaman.beat.ToString() + ", " + Zaman.beatQuarter.ToString());
+        Debug.Log("ccc: " + Zaman.beat.ToString() + ", " + Zaman.beatQuarter.ToString() + ". " + Zaman.beatQuarterCounter.ToString());
         Debug.Log(currentAttackPos.ToString() + ", " + patInd.ToString());
 
         if (Zaman.beat % dur == currentAttackData.beat && Zaman.beatQuarter == currentAttackData.beatQuarter)
@@ -105,6 +104,8 @@ public static class Zaman
     static int beatDuration = 60000 / bpm;
     static int quarterBeatDuration = beatDuration / 4;
 
+    static bool isFirstFrame = true;
+
 
     public static void baslat(float time)
     {
@@ -113,8 +114,13 @@ public static class Zaman
 
     public static void tick(float time)
     {
+        if (isFirstFrame)
+        {
+            isFirstFrame = false;
+            return;
+        }
         gecenSure += time;
-        beat = (int)(gecenSure / beatDuration) + 1;
+        beat = (int)(gecenSure / beatDuration);
         beatQuarter = (int)(gecenSure / quarterBeatDuration) % 4;
         beatQuarterCounter = beat * 4 + beatQuarter; //(int)(gecenSure / quarterBeatDuration);
     }
@@ -171,7 +177,7 @@ public static class Patterns
 
 }
 
-public class AttackData : MonoBehaviour
+public class AttackData
 {
     static string[] prefabPaths = { "Prefabs/Null", "Prefabs/Laser" };
 
@@ -191,7 +197,7 @@ public class AttackData : MonoBehaviour
 
     public GameObject create(Vector3 position, int startBeatQ)
     {
-        GameObject go = Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
+        GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         go.GetComponent<Attack>().type = type;
         go.GetComponent<Attack>().beat = beat;
         go.GetComponent<Attack>().beatQuarter = beatQuarter;
