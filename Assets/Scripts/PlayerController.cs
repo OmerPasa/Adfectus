@@ -485,28 +485,7 @@ namespace TarodevController
         {
             Destroy(gameObject);
         }
-        public void PlayerTakeDamage(int damage)
-        {
-            TakingDamage = true;
-            Playerhealth -= damage;
-            healthbar.SetHealth(Playerhealth);
-            Debug.Log("damageTaken");
-            ChangeAnimationState(PLAYER_TAKEDAMAGE);
-            Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
-            damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-            Invoke("DamageDelayComplete", damageDelay);
-        }
-        void DamageDelayComplete()
-        {
-            TakingDamage = false;
-        }
-        void OnCollisionEnter2D(Collision2D water)
-        {
-            if (water.gameObject.tag == "Water")
-            {
-                // mainMenu.GameIsOver();
-            }
-        }
+    }
         #endregion
 
         //=====================================================
