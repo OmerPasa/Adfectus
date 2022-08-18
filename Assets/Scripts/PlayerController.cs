@@ -27,9 +27,9 @@ namespace TarodevController
 
         //Animation States
     const string PLAYER_IDLE = "Player_Idle";
-    const string PLAYER_RUN = "Player_Movement";
+    const string PLAYER_RUN = "Player_Run";
     const string PLAYER_JUMP = "Player_Jump";
-    const string PLAYER_ATTACK = "Player_Movement";
+    const string PLAYER_ATTACK = "Player_Attack";
     const string PLAYER_AIR_ATTACK = "Player_Jump";
     const string PLAYER_DEATH = "Player_Death";
     const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
@@ -283,13 +283,11 @@ namespace TarodevController
             {
             Debug.Log("currentHorizontal speed is " +  _currentHorizontalSpeed);
 
-                if (_currentHorizontalSpeed != 0)
+                if (_currentHorizontalSpeed != 0.0f)
                 {
                     Debug.Log("Player_Run");
                     ChangeAnimationState(PLAYER_RUN);
-                }
-
-                if (_currentHorizontalSpeed == 0)
+                }else if (_currentHorizontalSpeed == 0.0f)
                 {
                     Debug.Log("Player_Idle");
                     ChangeAnimationState(PLAYER_IDLE);
@@ -359,15 +357,16 @@ namespace TarodevController
         private void CalculateJump()
         {
             // Jump if: grounded or within coyote threshold || sufficient jump buffer
-            if (Input.JumpDown && CanUseCoyote || HasBufferedJump)
+            if (Input.JumpDown && CanUseCoyote && playerJumping|| HasBufferedJump)
             {
+                playerJumping=false;
                 _currentVerticalSpeed = _jumpHeight;
                 _endedJumpEarly = false;
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
                 ChangeAnimationState(PLAYER_JUMP);
-                playerJumping=false;
+                
 
             }
             else
