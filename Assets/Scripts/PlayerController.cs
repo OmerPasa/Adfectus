@@ -34,12 +34,7 @@ namespace TarodevController
     const string PLAYER_DEATH = "Player_Death";
     const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
 
-    bool playerRunning;
-    bool playerJumping;
-    bool playerAttaking;
-    bool playerTakingDamage;
-    bool playerDying;
-    private bool isntDead;
+    bool playerRunning , playerJumping,playerAttaking,playerTakingDamage,playerDying;
     
         private Animator animator;
         private Rigidbody2D rb2d;
@@ -63,14 +58,13 @@ namespace TarodevController
 
         void Start()
     {
-        isntDead = true;
+        playerDying = false;
         rb2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         AfterFiringMusic = GetComponent<AudioSource>();
         BackGroundM = GetComponent<AudioSource>();
         sprite = GetComponent<SpriteRenderer>();
         Playerhealth = maxHealth;
-        ChangeAnimationState(PLAYER_IDLE);
         
     }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -80,11 +74,15 @@ namespace TarodevController
 
         private void Update()
         {
+            if (Playerhealth <= 0)
+            {
+                playerDying = true;
+                ChangeAnimationState(PLAYER_DEATH);
+            }
             if (!_active) return;
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
             _lastPosition = transform.position;
-            //Debug.Log(Velocity + "Velocity");
             GatherInput();
             RunCollisionChecks();
 
@@ -109,7 +107,12 @@ namespace TarodevController
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
-            Debug.Log(Input.X + "Input X");
+             //prevents further pushes and animation glitch.
+            if (UnityEngine.Input.GetButtonUp("Jump"))
+            {
+             playerJumping = true;   
+            }
+
             if (Input.X < 0 && isFacingLeft)
             {
                 Flip();
@@ -119,16 +122,6 @@ namespace TarodevController
                 Flip();
             }
             
-            if (Input.X == 0)
-            {
-                if (!playerAttaking && !playerDying && !playerJumping && !playerRunning)
-                {
-                    ChangeAnimationState(PLAYER_IDLE);   
-                }
-            }else
-            {
-                    ChangeAnimationState(PLAYER_RUN);
-            }
 
             if (Input.JumpDown)
             {
@@ -283,6 +276,25 @@ namespace TarodevController
                 // Don't walk through walls
                 _currentHorizontalSpeed = 0;
             }
+            Debug.Log(playerAttaking);
+            Debug.Log(playerDying);
+            Debug.Log(playerJumping);
+            if (!playerAttaking && !playerDying && !playerJumping)
+            {
+            Debug.Log("currentHorizontal speed is " +  _currentHorizontalSpeed);
+
+                if (_currentHorizontalSpeed != 0)
+                {
+                    Debug.Log("Player_Run");
+                    ChangeAnimationState(PLAYER_RUN);
+                }
+
+                if (_currentHorizontalSpeed == 0)
+                {
+                    Debug.Log("Player_Idle");
+                    ChangeAnimationState(PLAYER_IDLE);
+                }
+            }
         }
 
         #endregion
@@ -354,6 +366,9 @@ namespace TarodevController
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
+                ChangeAnimationState(PLAYER_JUMP);
+                playerJumping=false;
+
             }
             else
             {
@@ -410,7 +425,7 @@ namespace TarodevController
             playerRunning = true;
             var pos = transform.position;
             RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
-            ChangeAnimationState(PLAYER_RUN);
+
             var move = RawMovement * Time.deltaTime;
             var furthestPoint = pos + move;
 
