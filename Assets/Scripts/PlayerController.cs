@@ -47,7 +47,8 @@ namespace TarodevController
 
         [SerializeField]
         private float attackDelay;
-        private float damageDelay;
+        private float jumpDelay = 0.8f;
+        private float damageDelay = 2f;
         private float maxHealth = 1;
         public static float Playerhealth;
         private Vector3 IdleVelocity = new Vector3(0,0,0);
@@ -359,15 +360,13 @@ namespace TarodevController
             // Jump if: grounded or within coyote threshold || sufficient jump buffer
             if (Input.JumpDown && CanUseCoyote && playerJumping|| HasBufferedJump)
             {
-                playerJumping=false;
                 _currentVerticalSpeed = _jumpHeight;
                 _endedJumpEarly = false;
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
                 ChangeAnimationState(PLAYER_JUMP);
-                
-
+                Invoke("Jumploop", jumpDelay);
             }
             else
             {
@@ -375,10 +374,12 @@ namespace TarodevController
             }
 
             // End the jump early if button released
-            if (!_colDown && Input.JumpUp && !_endedJumpEarly && Velocity.y > 0)
+            if (!_colDown && Input.JumpUp && !_endedJumpEarly && playerJumping && Velocity.y > 0)
             {
                 // _currentVerticalSpeed = 0;
                 _endedJumpEarly = true;
+                ChangeAnimationState(PLAYER_JUMP);
+                Invoke("Jumploop", jumpDelay);
             }
 
             if (_colUp)
@@ -502,6 +503,12 @@ namespace TarodevController
         }
     }
         #endregion
+
+        void Jumploop()
+        {
+            Debug.Log("playerJumping");
+            playerJumping = false;
+        }
 
         //=====================================================
         // mini animation manager
