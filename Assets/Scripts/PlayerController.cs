@@ -47,7 +47,7 @@ namespace TarodevController
 
         [SerializeField]
         private float attackDelay;
-        private float jumpDelay = 0.8f;
+        private float jumpDelay = 0.7f;
         private float damageDelay = 2f;
         private float maxHealth = 1;
         public static float Playerhealth;
@@ -109,7 +109,7 @@ namespace TarodevController
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
              //prevents further pushes and animation glitch.
-            if (UnityEngine.Input.GetButtonUp("Jump"))
+            if (Input.JumpDown || Input.JumpUp)
             {
              playerJumping = true;   
             }
@@ -277,20 +277,14 @@ namespace TarodevController
                 // Don't walk through walls
                 _currentHorizontalSpeed = 0;
             }
-            Debug.Log(playerAttaking);
-            Debug.Log(playerDying);
-            Debug.Log(playerJumping);
             if (!playerAttaking && !playerDying && !playerJumping)
             {
-            Debug.Log("currentHorizontal speed is " +  _currentHorizontalSpeed);
 
                 if (_currentHorizontalSpeed != 0.0f)
                 {
-                    Debug.Log("Player_Run");
                     ChangeAnimationState(PLAYER_RUN);
                 }else if (_currentHorizontalSpeed == 0.0f)
                 {
-                    Debug.Log("Player_Idle");
                     ChangeAnimationState(PLAYER_IDLE);
                 }
             }
