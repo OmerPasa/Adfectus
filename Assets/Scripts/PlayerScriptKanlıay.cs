@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
-public class PlayerScript : MonoBehaviour
+public class PlayerScriptKanlıay : MonoBehaviour
 {
     public ParticleSystem dust;
     [SerializeField]
@@ -33,8 +33,6 @@ public class PlayerScript : MonoBehaviour
     AudioSource AfterFiringMusic;
     public AudioSource BackGroundM;
     public bool isFacingLeft = false;
-    public Transform firePoint;
-    public GameObject BulletPre;
 
     [SerializeField]
     private float attackDelay;
@@ -45,11 +43,11 @@ public class PlayerScript : MonoBehaviour
     public MainMenu mainMenu;
 
     //Animation States
-    const string PLAYER_IDLE = "Player_Idle_Gun";
-    const string PLAYER_RUN = "Player_Movement_Gun";
-    const string PLAYER_JUMP = "Player_Jump_Gun";
-    const string PLAYER_ATTACK = "Player_Movement_Firing";
-    const string PLAYER_AIR_ATTACK = "Player_Jump_Firing";
+    const string PLAYER_IDLE = "Player_Idle";
+    const string PLAYER_RUN = "Player_Run";
+    const string PLAYER_JUMP = "Player_Jump";
+    const string PLAYER_ATTACK = "Player_Attack";
+    const string PLAYER_AIR_ATTACK = "Player_AirAttack";
     const string PLAYER_DEATH = "Player_Death";
     const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
 
@@ -61,10 +59,7 @@ public class PlayerScript : MonoBehaviour
         isntDead = true;
         rb2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        AfterFiringMusic = GetComponent<AudioSource>();
-        BackGroundM = GetComponent<AudioSource>();
         Playerhealth = maxHealth;
-        healthbar.SetMaxHealth(maxHealth);
     }
     void Update()
     {
@@ -134,9 +129,8 @@ public class PlayerScript : MonoBehaviour
 
         //------------------------------------------
         //animation checks
-        
-        if (isGrounded && !isAttacking && isntDead && !TakingDamage)
-        {
+        Debug.Log("Xaxis is " + xAxis);
+
             if (xAxis != 0)
             {
                 ChangeAnimationState(PLAYER_RUN);
@@ -145,7 +139,7 @@ public class PlayerScript : MonoBehaviour
             {
                 ChangeAnimationState(PLAYER_IDLE);
             }
-        }
+        
 
 
         //Check if trying to jump 
@@ -165,20 +159,13 @@ public class PlayerScript : MonoBehaviour
             if (!isAttacking)
             {
                 isAttacking = true;
-                GameObject B = Instantiate(BulletPre,firePoint.position,firePoint.rotation);
-                B.GetComponent<BulletScriptt>().StartShooting(isFacingLeft);
-                AfterFiringMusic.Play();
                 if(isGrounded)
                 {
                     ChangeAnimationState(PLAYER_ATTACK);
-                    BackGroundM.volume = 0.4f;
-                    AfterFiringMusic.Play();
-                    CinemachineShake.Instance.ShakeCamera(1f, .5f);
                 }
                 else
                 {
                     ChangeAnimationState(PLAYER_AIR_ATTACK);
-                    BackGroundM.volume = 0.4f;
                 }
                 Invoke("AttackComplete", attackDelay);
             }
@@ -200,9 +187,7 @@ public class PlayerScript : MonoBehaviour
     void AttackComplete()
     {
         isAttacking = false;
-        BackGroundM.volume = 1f;
         Debug.Log("ATTACKCOMPLETE");
-        CinemachineShake.Instance.ShakeCamera(0f, 0f);
     }
     public void Die()
     {

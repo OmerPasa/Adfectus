@@ -27,19 +27,14 @@ namespace TarodevController
 
         //Animation States
     const string PLAYER_IDLE = "Player_Idle";
-    const string PLAYER_RUN = "Player_Movement";
+    const string PLAYER_RUN = "Player_Run";
     const string PLAYER_JUMP = "Player_Jump";
-    const string PLAYER_ATTACK = "Player_Movement";
+    const string PLAYER_ATTACK = "Player_Attack";
     const string PLAYER_AIR_ATTACK = "Player_Jump";
     const string PLAYER_DEATH = "Player_Death";
     const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
 
-    bool playerRunning;
-    bool playerJumping;
-    bool playerAttaking;
-    bool playerTakingDamage;
-    bool playerDying;
-    private bool isntDead;
+    bool playerRunning , playerJumping,playerAttaking,playerTakingDamage,playerDying;
     
         private Animator animator;
         private Rigidbody2D rb2d;
@@ -52,7 +47,8 @@ namespace TarodevController
 
         [SerializeField]
         private float attackDelay;
-        private float damageDelay;
+        private float jumpDelay = 0.7f;
+        private float damageDelay = 2f;
         private float maxHealth = 1;
         public static float Playerhealth;
         private Vector3 IdleVelocity = new Vector3(0,0,0);
@@ -63,14 +59,13 @@ namespace TarodevController
 
         void Start()
     {
-        isntDead = true;
+        playerDying = false;
         rb2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         AfterFiringMusic = GetComponent<AudioSource>();
         BackGroundM = GetComponent<AudioSource>();
         sprite = GetComponent<SpriteRenderer>();
         Playerhealth = maxHealth;
-        ChangeAnimationState(PLAYER_IDLE);
         
     }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -80,11 +75,15 @@ namespace TarodevController
 
         private void Update()
         {
+            if (Playerhealth <= 0)
+            {
+                playerDying = true;
+                ChangeAnimationState(PLAYER_DEATH);
+            }
             if (!_active) return;
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
             _lastPosition = transform.position;
-            //Debug.Log(Velocity + "Velocity");
             GatherInput();
             RunCollisionChecks();
 
@@ -109,7 +108,12 @@ namespace TarodevController
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
-            Debug.Log(Input.X + "Input X");
+             //prevents further pushes and animation glitch.
+            if (Input.JumpDown || Input.JumpUp)
+            {
+             playerJumping = true;   
+            }
+
             if (Input.X < 0 && isFacingLeft)
             {
                 Flip();
@@ -119,16 +123,6 @@ namespace TarodevController
                 Flip();
             }
             
-            if (Input.X == 0)
-            {
-                if (!playerAttaking && !playerDying && !playerJumping && !playerRunning)
-                {
-                    ChangeAnimationState(PLAYER_IDLE);   
-                }
-            }else
-            {
-                    ChangeAnimationState(PLAYER_RUN);
-            }
 
             if (Input.JumpDown)
             {
@@ -283,6 +277,17 @@ namespace TarodevController
                 // Don't walk through walls
                 _currentHorizontalSpeed = 0;
             }
+            if (!playerAttaking && !playerDying && !playerJumping)
+            {
+
+                if (_currentHorizontalSpeed != 0.0f)
+                {
+                    ChangeAnimationState(PLAYER_RUN);
+                }else if (_currentHorizontalSpeed == 0.0f)
+                {
+                    ChangeAnimationState(PLAYER_IDLE);
+                }
+            }
         }
 
         #endregion
@@ -347,13 +352,15 @@ namespace TarodevController
         private void CalculateJump()
         {
             // Jump if: grounded or within coyote threshold || sufficient jump buffer
-            if (Input.JumpDown && CanUseCoyote || HasBufferedJump)
+            if (Input.JumpDown && CanUseCoyote && playerJumping|| HasBufferedJump)
             {
                 _currentVerticalSpeed = _jumpHeight;
                 _endedJumpEarly = false;
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
+                ChangeAnimationState(PLAYER_JUMP);
+                Invoke("Jumploop", jumpDelay);
             }
             else
             {
@@ -361,10 +368,12 @@ namespace TarodevController
             }
 
             // End the jump early if button released
-            if (!_colDown && Input.JumpUp && !_endedJumpEarly && Velocity.y > 0)
+            if (!_colDown && Input.JumpUp && !_endedJumpEarly && playerJumping && Velocity.y > 0)
             {
                 // _currentVerticalSpeed = 0;
                 _endedJumpEarly = true;
+                ChangeAnimationState(PLAYER_JUMP);
+                Invoke("Jumploop", jumpDelay);
             }
 
             if (_colUp)
@@ -410,7 +419,7 @@ namespace TarodevController
             playerRunning = true;
             var pos = transform.position;
             RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
-            ChangeAnimationState(PLAYER_RUN);
+
             var move = RawMovement * Time.deltaTime;
             var furthestPoint = pos + move;
 
@@ -488,6 +497,12 @@ namespace TarodevController
         }
     }
         #endregion
+
+        void Jumploop()
+        {
+            Debug.Log("playerJumping");
+            playerJumping = false;
+        }
 
         //=====================================================
         // mini animation manager
