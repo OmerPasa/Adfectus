@@ -29,34 +29,15 @@ public class ZamanVeBeat : MonoBehaviour
     void Update()
     {
         Zaman.tick(Time.deltaTime * 1000);
-        //Debug.Log(Zaman.gecenSure / 1000);
-        //Debug.Log(Zaman.beat.ToString() + ", " + Zaman.beatQuarter.ToString() + ". " + Zaman.beatQuarterCounter.ToString());
-
         if (Zaman.beatQuarter == prevBeatQ)
         {
             return;
         }
 
-        /*if (Zaman.beat % 4 == 3 && Zaman.beat != prevBeat)
-        {
-            Debug.Log("Beat" + Zaman.beat.ToString() + ", " + prevBeat.ToString());
-            copy = Spawner.spawn(laser, transform.position, Quaternion.identity);
-            //copy.GetComponent<Laser>().target = GameObject.Find("player").transform;
-        }
-        else if (Zaman.beatQuarter % 4 == 0 && Zaman.beatQuarter != prevBeatQ)
-        {
-            Debug.Log("Q" + Zaman.beatQuarter.ToString() + ", " + prevBeatQ.ToString());
-            copy.GetComponent<Laser>().mode = 2;
-        }*/
-
-
         int patInd = currentLoop[currentLoopPos, 0];
         int dur = currentLoop[currentLoopPos, 1] + durStart;
 
         AttackData currentAttackData = Patterns.patterns[patInd][currentAttackPos];
-        //Debug.Log("c: " + currentAttackData.beat.ToString() + ", " + currentAttackData.beatQuarter.ToString());
-        //Debug.Log("ccc: " + Zaman.beat.ToString() + ", " + Zaman.beatQuarter.ToString() + ". " + Zaman.beatQuarterCounter.ToString());
-        //Debug.Log(currentAttackPos.ToString() + ", " + patInd.ToString());
 
         if (Zaman.beat % dur == currentAttackData.beat && Zaman.beatQuarter == currentAttackData.beatQuarter)
         {
@@ -71,7 +52,7 @@ public class ZamanVeBeat : MonoBehaviour
         {
             currentAttackPos = 0;
             currentLoopPos++;
-            //Debug.Log("L: " + Patterns.patterns.Length.ToString() + ", " + patInd.ToString());
+
             if (currentLoopPos >= Patterns.patterns.Length)
             {
                 currentLoopPos = 0;
@@ -86,13 +67,13 @@ public class ZamanVeBeat : MonoBehaviour
     }
 }
 
-public static class Spawner
+/*public static class Spawner
 {
     public static GameObject spawn(GameObject prefab, Vector3 position, Quaternion rotation)
     {
         return GameObject.Instantiate(prefab, position, rotation);
     }
-}
+}*/
 
 public static class Zaman
 {
@@ -179,7 +160,7 @@ public static class Patterns
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/Laser" };
+    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1" };
 
 
     public int type;
