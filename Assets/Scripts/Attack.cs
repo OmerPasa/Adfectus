@@ -10,6 +10,7 @@ public class Attack : MonoBehaviour
     public int startBeatQuarter;
     public int duration;
 
+
     void Update()
     {
         if (startBeatQuarter + duration == Zaman.beatQuarterCounter)
@@ -23,7 +24,10 @@ public class Attack : MonoBehaviour
         switch (type)
         {
             case 1:
-                GetComponent<Laser>().mode = 2;
+                GetComponent<LaserT0>().mode = 2;
+                break;
+            case 3:
+                //GetComponent<el>().eklemSayisi = 4;
                 break;
 
             default:
