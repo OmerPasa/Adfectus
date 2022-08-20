@@ -13,7 +13,7 @@ public class ZamanVeBeat : MonoBehaviour
     GameObject copy;
 
 
-    public int[,] currentLoop = Patterns.loop1;
+    public int[,] currentLoop = Patterns.loop4;
 
     public int currentLoopPos = 0;
     public int currentAttackPos = 0;
@@ -39,12 +39,12 @@ public class ZamanVeBeat : MonoBehaviour
         int patInd = currentLoop[currentLoopPos, 0]; //pattern index
         int dur = currentLoop[currentLoopPos, 1] + durStart; //döngü süresi
 
-        AttackData currentAttackData = Patterns.patterns[patInd][currentAttackPos]; //attak datası
+        AttackData currentAttackData = Patterns.patterns[patInd][currentAttackPos]; //atak datası
 
         if (Zaman.beat % dur == currentAttackData.beat && Zaman.beatQuarter == currentAttackData.beatQuarter)
-        { //attak zamanı geldiyse
+        { //atak zamanı geldiyse
             currentAttackPos++;
-            currentAttackData.create(transform.position, Zaman.beatQuarterCounter); //attak oluştur
+            currentAttackData.create(transform.position, Zaman.beatQuarterCounter); //atak oluştur
         }
 
         if (currentAttackPos >= Patterns.patterns[patInd].Length)
@@ -66,12 +66,13 @@ public class ZamanVeBeat : MonoBehaviour
 public static class Zaman
 {
     public static float gecenSure = 0;
-    public static int bpm = 120;
+    public static float bpm = 112.0f;
     public static int beat = 0;
     public static int beatQuarter = 0;
+
     public static int beatQuarterCounter = 0;
-    static int beatDuration = 60000 / bpm;
-    static int quarterBeatDuration = beatDuration / 4;
+    static float beatDuration = 60000 / bpm;
+    static float quarterBeatDuration = beatDuration / 4;
 
     static bool isFirstFrame = true;
 
@@ -91,7 +92,9 @@ public static class Zaman
         gecenSure += time;
         beat = (int)(gecenSure / beatDuration);
         beatQuarter = (int)(gecenSure / quarterBeatDuration) % 4;
+
         beatQuarterCounter = beat * 4 + beatQuarter; //(int)(gecenSure / quarterBeatDuration);
+
     }
 
 }
@@ -111,20 +114,53 @@ public static class Patterns
         { 1, 4 },
         { 1, 4 }
     };
+    public static int[,] loop3 = {
+        { 4, 4 },
+        { 0, 4 }
+    };
+
+    public static int[,] loop4 = {
+        { 1, 4 },
+        { 4, 4 },
+        { 3, 4 },
+        { 4, 4 },
+        { 1, 4 },
+        { 4, 4 },
+        { 5, 4 },
+        { 5, 4 }
+    };
 
     public static AttackData[][] patterns =
     {
         new AttackData[] {
-            new AttackData(1, 0, 0, 3),
-            new AttackData(1, 1, 2, 1),
+            new AttackData(1, 0, 0, 1),
+            new AttackData(1, 1, 0, 1),
             new AttackData(1, 2, 0, 1),
-            new AttackData(1, 3, 0, 3)
-        },
-        new AttackData[] {
-            new AttackData(1, 0, 0, 3),
-            new AttackData(1, 1, 2, 1),
-            new AttackData(1, 2, 0, 3),
             new AttackData(1, 3, 0, 1)
+        },
+        new AttackData[] { //5-6
+            new AttackData(1, 1, 0, 2),
+            new AttackData(1, 2, 0, 2),
+            new AttackData(1, 3, 0, 2),
+        },
+        new AttackData[] { //7-8
+            new AttackData(1, 1, 0, 2),
+            new AttackData(1, 1, 3, 2),
+            new AttackData(1, 2, 2, 2),
+            new AttackData(1, 3, 1, 2),
+        },
+        new AttackData[] { //7-8 alternative
+            new AttackData(1, 0, 3, 2),
+            new AttackData(1, 1, 2, 2),
+            new AttackData(1, 2, 1, 2),
+            new AttackData(1, 3, 1, 2),
+        },
+        new AttackData[] { //6-7
+            new AttackData(0, 3, 0, 4), //boş
+        },
+        new AttackData[] { //11-12 unkown
+            new AttackData(1, 1, 0, 3),
+            new AttackData(1, 2, 2, 3),
         }
     };
 }
@@ -147,8 +183,10 @@ public class AttackData
         this.duration = duration;
     }
 
-    public GameObject create(Vector3 position, int startBeatQ)
+    public void create(Vector3 position, int startBeatQ)
     {
+        if (type == 0) return;
+
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         go.GetComponent<Attack>().type = type;
         go.GetComponent<Attack>().beat = beat;
@@ -157,6 +195,5 @@ public class AttackData
         go.GetComponent<Attack>().duration = duration;
 
         Patterns.currentAttacks.Add(go);
-        return go;
     }
 }
