@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Laser : MonoBehaviour
+public class LaserT0 : MonoBehaviour
 {
     public LineRenderer lineRenderer;
     public Transform laserStart;
-    public Transform laserEnd;
+    //public Transform laserEnd;
+    Vector3 laserEndVec = new Vector3(0, 0, 0);
+    public EdgeCollider2D edgeCollider;
     Transform target;
     public Vector3 direction = Vector3.zero;
 
@@ -53,7 +55,7 @@ public class Laser : MonoBehaviour
             case 3:
                 lineRenderer.enabled = true;
                 lineRenderer.SetPosition(0, laserStart.position);
-                lineRenderer.SetPosition(1, laserEnd.position);
+                lineRenderer.SetPosition(1, laserEndVec);
                 break;
             case 4:
                 lineRenderer.enabled = false;
@@ -73,7 +75,8 @@ public class Laser : MonoBehaviour
         {
             updateDirection();
         }
-        laserEnd.position = direction * laserLength + laserStart.position;
+        //laserEndVec = direction * laserLength + laserStart.position;
+        laserEndVec = direction * laserLength;
         setLinePosition();
     }
     void setLaserGo()
@@ -85,6 +88,12 @@ public class Laser : MonoBehaviour
     void setLinePosition()
     {
         lineRenderer.SetPosition(0, new Vector3(0, 0, 0));
-        lineRenderer.SetPosition(1, laserEnd.position - laserStart.position);
+        lineRenderer.SetPosition(1, laserEndVec);
+
+
+        Vector2[] points = edgeCollider.points;
+        points.SetValue(new Vector2(laserEndVec.x, laserEndVec.y), 1);
+        edgeCollider.points = points;
     }
+
 }
