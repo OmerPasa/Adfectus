@@ -50,7 +50,8 @@ namespace TarodevController
         private float jumpDelay = 0.7f;
         private float damageDelay = 2f;
         private float maxHealth = 1;
-        public static float Playerhealth;
+        [SerializeField]
+        public static float Playerhealth = 1;
         private Vector3 IdleVelocity = new Vector3(0,0,0);
         public healthbar_control healthbar;
         public MainMenu mainMenu;
@@ -146,9 +147,9 @@ namespace TarodevController
 
         [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
 
-        private void OnCollisionEnter(Collision laser)   
+        private void OnTriggerEnter2D(Collider2D laser)   
         {
-            if (laser.gameObject.tag == "laser")
+            if (laser.gameObject.tag == "Laser")
             {
                 PlayerTakeDamage(0.1f);
                 Debug.Log("DamageTaken by Player");
