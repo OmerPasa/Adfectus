@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TarodevController
 {
@@ -81,6 +82,7 @@ namespace TarodevController
             if (Playerhealth <= 0)
             {
                 playerDying = true;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);
             }
