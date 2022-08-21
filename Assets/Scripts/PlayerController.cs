@@ -53,7 +53,6 @@ namespace TarodevController
         [SerializeField]
         public static float Playerhealth = 1;
         private Vector3 IdleVelocity = new Vector3(0,0,0);
-        public healthbar_control healthbar;
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
@@ -80,6 +79,7 @@ namespace TarodevController
             {
                 playerDying = true;
                 ChangeAnimationState(PLAYER_DEATH);
+                Invoke("Die", 3f);
             }
             if (!_active) return;
             // Calculate velocity
@@ -280,7 +280,6 @@ namespace TarodevController
             }
             if (!playerAttaking && !playerDying && !playerJumping)
             {
-
                 if (_currentHorizontalSpeed != 0.0f)
                 {
                     ChangeAnimationState(PLAYER_RUN);
