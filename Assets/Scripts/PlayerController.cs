@@ -21,9 +21,11 @@ namespace TarodevController
         public Vector3 RawMovement { get; private set; }
         public bool Grounded => _colDown;
         public bool _hasDashed;
+        public float dashSpeed;
+        private float dashTime;
+        public float startDashTime;
+        private int direction;
         public bool isFacingLeft;
-        private Vector3 absoluteZero;
-        public float Dash_Length;
 
         //Animation States
     const string PLAYER_IDLE = "Player_Idle";
@@ -41,7 +43,7 @@ namespace TarodevController
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
         public SpriteRenderer sprite;
-
+        public GameObject dashEffect;
         private string currentAnimaton;
         
 
@@ -66,6 +68,7 @@ namespace TarodevController
         BackGroundM = GetComponent<AudioSource>();
         sprite = GetComponent<SpriteRenderer>();
         Playerhealth = maxHealth;
+        dashTime = startDashTime;
         
     }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -387,21 +390,36 @@ namespace TarodevController
         #region Dash
         private void HandleDashing()
         {
-            if (UnityEngine.Input.GetButtonUp("Fire1") && !_hasDashed)
+            if (direction == 0)
             {
-                _hasDashed = true;
-                float dash = transform.position.x;
-                transform.position = new Vector3(dash + -Dash_Length, transform.position.y, transform.position.z);
-                Debug.Log("DASHED_Player");
-                _hasDashed = false;
-            }
-            else if (UnityEngine.Input.GetButtonUp("Fire2") && !_hasDashed)
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Q) && !_hasDashed)
+                {
+                    Instantiate(dashEffect, transform.position, Quaternion.identity);
+                    direction = 1;
+                }else if (UnityEngine.Input.GetKeyDown(KeyCode.E) && !_hasDashed)
+                {
+                    Instantiate(dashEffect, transform.position, Quaternion.identity);
+                    direction = 2;
+                }
+            }else
             {
-                _hasDashed = true;
-                float dash = transform.position.x;
-                transform.position = new Vector3(dash + +Dash_Length, transform.position.y, transform.position.z);
-                Debug.Log("DASHED_Player");
-                _hasDashed = false;
+                if (dashTime <= 0)
+                {
+                    direction = 0;
+                    dashTime = startDashTime;
+                    rb2d.velocity = Vector2.zero;
+                }else
+                {
+                    dashTime -= Time.deltaTime;
+
+                    if (direction == 1)
+                    {
+                        rb2d.velocity = Vector2.left * dashSpeed;
+                    }else if (direction == 2)
+                    {
+                        rb2d.velocity = Vector2.right * dashSpeed;
+                    }
+                }
             }
         }
 
