@@ -22,6 +22,7 @@ public class ZamanVeBeat : MonoBehaviour
     int prevBeatQC = -1;
     bool started = false;
 
+
     void Start()
     {
         StartCoroutine(StartAttack());
@@ -90,6 +91,14 @@ public static class Zaman
 
     static bool isFirstFrame = true;
 
+    public static void reset()
+    {
+        gecenSure = 0;
+        beat = 0;
+        beatQuarter = 0;
+        beatQuarterCounter = 0;
+        isFirstFrame = true;
+    }
 
     public static void baslat(float time)
     {

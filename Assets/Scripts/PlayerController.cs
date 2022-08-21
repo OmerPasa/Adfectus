@@ -29,16 +29,16 @@ namespace TarodevController
         public bool isFacingLeft;
 
         //Animation States
-    const string PLAYER_IDLE = "Player_Idle";
-    const string PLAYER_RUN = "Player_Run";
-    const string PLAYER_JUMP = "Player_Jump";
-    const string PLAYER_ATTACK = "Player_Attack";
-    const string PLAYER_AIR_ATTACK = "Player_Jump";
-    const string PLAYER_DEATH = "Player_Death";
-    const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
+        const string PLAYER_IDLE = "Player_Idle";
+        const string PLAYER_RUN = "Player_Run";
+        const string PLAYER_JUMP = "Player_Jump";
+        const string PLAYER_ATTACK = "Player_Attack";
+        const string PLAYER_AIR_ATTACK = "Player_Jump";
+        const string PLAYER_DEATH = "Player_Death";
+        const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
 
-    bool playerRunning , playerJumping,playerAttaking,playerTakingDamage,playerDying;
-    
+        bool playerRunning, playerJumping, playerAttaking, playerTakingDamage, playerDying;
+
         private Animator animator;
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
@@ -46,7 +46,7 @@ namespace TarodevController
         public SpriteRenderer sprite;
         public GameObject dashEffect;
         private string currentAnimaton;
-        
+
 
         [SerializeField]
         private float attackDelay;
@@ -55,23 +55,23 @@ namespace TarodevController
         private float maxHealth = 1;
         [SerializeField]
         public static float Playerhealth = 1;
-        private Vector3 IdleVelocity = new Vector3(0,0,0);
+        private Vector3 IdleVelocity = new Vector3(0, 0, 0);
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
 
         void Start()
-    {
-        playerDying = false;
-        rb2d = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        AfterFiringMusic = GetComponent<AudioSource>();
-        BackGroundM = GetComponent<AudioSource>();
-        sprite = GetComponent<SpriteRenderer>();
-        Playerhealth = maxHealth;
-        dashTime = startDashTime;
-        
-    }
+        {
+            playerDying = false;
+            rb2d = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>();
+            AfterFiringMusic = GetComponent<AudioSource>();
+            BackGroundM = GetComponent<AudioSource>();
+            sprite = GetComponent<SpriteRenderer>();
+            Playerhealth = maxHealth;
+            dashTime = startDashTime;
+
+        }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
         void Awake() => Invoke(nameof(Activate), 0.5f);
@@ -82,6 +82,7 @@ namespace TarodevController
             if (Playerhealth <= 0)
             {
                 playerDying = true;
+                Zaman.reset();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);
@@ -114,10 +115,10 @@ namespace TarodevController
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
-             //prevents further pushes and animation glitch.
+            //prevents further pushes and animation glitch.
             if (Input.JumpDown || Input.JumpUp)
             {
-             playerJumping = true;   
+                playerJumping = true;
             }
 
             if (Input.X < 0 && isFacingLeft)
@@ -128,7 +129,7 @@ namespace TarodevController
             {
                 Flip();
             }
-            
+
 
             if (Input.JumpDown)
             {
@@ -150,9 +151,9 @@ namespace TarodevController
         #region Collisions
 
 
-        [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
+        [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
 
-        private void OnTriggerEnter2D(Collider2D laser)   
+        private void OnTriggerEnter2D(Collider2D laser)
         {
             if (laser.gameObject.tag == "Laser")
             {
@@ -288,7 +289,8 @@ namespace TarodevController
                 if (_currentHorizontalSpeed != 0.0f)
                 {
                     ChangeAnimationState(PLAYER_RUN);
-                }else if (_currentHorizontalSpeed == 0.0f)
+                }
+                else if (_currentHorizontalSpeed == 0.0f)
                 {
                     ChangeAnimationState(PLAYER_IDLE);
                 }
@@ -357,7 +359,7 @@ namespace TarodevController
         private void CalculateJump()
         {
             // Jump if: grounded or within coyote threshold || sufficient jump buffer
-            if (Input.JumpDown && CanUseCoyote && playerJumping|| HasBufferedJump)
+            if (Input.JumpDown && CanUseCoyote && playerJumping || HasBufferedJump)
             {
                 _currentVerticalSpeed = _jumpHeight;
                 _endedJumpEarly = false;
@@ -398,26 +400,30 @@ namespace TarodevController
                 {
                     Instantiate(dashEffect, transform.position, Quaternion.identity);
                     direction = 1;
-                }else if (UnityEngine.Input.GetKeyDown(KeyCode.E) && !_hasDashed)
+                }
+                else if (UnityEngine.Input.GetKeyDown(KeyCode.E) && !_hasDashed)
                 {
                     Instantiate(dashEffect, transform.position, Quaternion.identity);
                     direction = 2;
                 }
-            }else
+            }
+            else
             {
                 if (dashTime <= 0)
                 {
                     direction = 0;
                     dashTime = startDashTime;
                     rb2d.velocity = Vector2.zero;
-                }else
+                }
+                else
                 {
                     dashTime -= Time.deltaTime;
 
                     if (direction == 1)
                     {
                         rb2d.velocity = Vector2.left * dashSpeed;
-                    }else if (direction == 2)
+                    }
+                    else if (direction == 2)
                     {
                         rb2d.velocity = Vector2.right * dashSpeed;
                     }
@@ -435,7 +441,8 @@ namespace TarodevController
 
         // We cast our bounds before moving to avoid future collisions
 
-        private void MoveCharacter() {
+        private void MoveCharacter()
+        {
             playerRunning = true;
             var pos = transform.position;
             RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
@@ -484,38 +491,38 @@ namespace TarodevController
 
         //on trigger () Will trigger the player take damage and it will done most of the other work
         //then Set_Health will give the color of current health.
-    public void Die()
-    {
-        Destroy(gameObject);
-    }
-    public void PlayerTakeDamage(float damage)
-    {
-        playerTakingDamage = true;
-        Playerhealth -= damage;
-        Set_Health(Playerhealth);
-        Debug.Log("damageTaken");
-        ChangeAnimationState(PLAYER_TAKEDAMAGE);
-        Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
-        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-        Invoke("DamageDelayComplete", damageDelay);////DLELETE 
-    }
-
-    // set new health to the sprite filter as a new color.
-    void Set_Health(float Playerhealth)
-    {
-        sprite.color = new Color (Playerhealth, Playerhealth, Playerhealth, 1);
-    }
-    void DamageDelayComplete()
-    {
-        playerTakingDamage = false;
-    }
-    void OnCollisionEnter2D(Collision2D water) 
-    {
-        if (water.gameObject.tag == "Water")
+        public void Die()
         {
             Destroy(gameObject);
         }
-    }
+        public void PlayerTakeDamage(float damage)
+        {
+            playerTakingDamage = true;
+            Playerhealth -= damage;
+            Set_Health(Playerhealth);
+            Debug.Log("damageTaken");
+            ChangeAnimationState(PLAYER_TAKEDAMAGE);
+            Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
+            damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+            Invoke("DamageDelayComplete", damageDelay);////DLELETE 
+        }
+
+        // set new health to the sprite filter as a new color.
+        void Set_Health(float Playerhealth)
+        {
+            sprite.color = new Color(Playerhealth, Playerhealth, Playerhealth, 1);
+        }
+        void DamageDelayComplete()
+        {
+            playerTakingDamage = false;
+        }
+        void OnCollisionEnter2D(Collision2D water)
+        {
+            if (water.gameObject.tag == "Water")
+            {
+                Destroy(gameObject);
+            }
+        }
         #endregion
 
         void Jumploop()
