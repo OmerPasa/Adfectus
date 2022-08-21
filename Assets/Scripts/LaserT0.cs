@@ -59,12 +59,14 @@ public class LaserT0 : MonoBehaviour
                 break;
             case 4:
                 lineRenderer.enabled = false;
+                Destroy(gameObject);
+
                 break;
 
         }
     }
 
-    void updateDirection()
+    public void updateDirection()
     {
         direction = (target.position - laserStart.position).normalized;
     }
