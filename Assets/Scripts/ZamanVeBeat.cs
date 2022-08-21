@@ -20,16 +20,30 @@ public class ZamanVeBeat : MonoBehaviour
     public int durStart = 0;
 
     int prevBeatQC = -1;
+    bool started = false;
 
     void Start()
     {
+        StartCoroutine(StartAttack());
+    }
+
+    IEnumerator StartAttack()
+    {
+        yield return new WaitForSeconds(3);
+
         Patterns.player = player;
         audioSource.Play();
+        started = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!started)
+        {
+            return;
+        }
+
         Zaman.tick(Time.deltaTime * 1000);
         if (Zaman.beatQuarterCounter == prevBeatQC)
         {//eğer Qbeat değişmediyse kontrol etmeye gerek yok
