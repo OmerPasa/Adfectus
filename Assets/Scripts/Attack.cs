@@ -7,15 +7,20 @@ public class Attack : MonoBehaviour
     public int type;
     public int beat;
     public int beatQuarter;
+    public int beatQQuarter;
+
     public int startBeatQuarter;
     public int duration;
+
+    bool sent = false;
 
 
     void Update()
     {
-        if (startBeatQuarter + duration == Zaman.beatQuarterCounter)
+        if (startBeatQuarter + duration == Zaman.beatQuarterCounter && !sent)
         {
             endAttack();
+            sent = true;
         }
     }
 
