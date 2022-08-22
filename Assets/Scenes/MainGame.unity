@@ -134,6 +134,8 @@ GameObject:
   - component: {fileID: 36421026}
   - component: {fileID: 36421027}
   - component: {fileID: 36421028}
+  - component: {fileID: 36421029}
+  - component: {fileID: 36421030}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Untagged
@@ -199,6 +201,7 @@ MonoBehaviour:
   speed: 2
 --- !u!1 &64733574
 GameObject:
+
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}

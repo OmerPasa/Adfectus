@@ -44,7 +44,7 @@ public class Attack : MonoBehaviour
                 //bosMainScr.currentAttackData = this;
                 break;
             case 3:
-                //GetComponent<el>().eklemSayisi = handData1;
+                GetComponent<BossMainScript>().Chasing = true;
                 break;
 
             default:

@@ -126,7 +126,7 @@ public static class Patterns
     public static GameObject boss;
     public static List<GameObject> currentAttacks = new List<GameObject>();
 
-
+    //hangi patternin ne kadar süreyle calışacağı
     public static int[,] loop1 = {
         { 0, 4 },
         { 1, 4 }
@@ -162,7 +162,7 @@ public static class Patterns
         { 5, 4 },
         { 5, 4 }
     };
-
+    //ritmin vakitleri ve türleri.
     public static AttackData[][] patterns =
     {
         new AttackData[] {
@@ -217,8 +217,8 @@ public static class Patterns
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Hand", "Prefabs/HandParcasi" };
-
+    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1" , "Prefabs/Chase"};
+}
 
     public int type;
     public int beat;
