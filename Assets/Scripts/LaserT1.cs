@@ -2,20 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LaserT0 : MonoBehaviour
+public class LaserT1 : MonoBehaviour
 {
     public LineRenderer lineRenderer;
     public Transform laserStart;
-    //public Transform laserEnd;
     Vector3 laserEndVec = new Vector3(0, 0, 0);
     public EdgeCollider2D edgeCollider;
-    Transform target;
+    //Transform target;
     public Vector3 direction = Vector3.zero;
 
-    public float speed;
+
+    public float rotationSpeed;
+    public float startAngle;
+    public float endAngle;
 
 
-    public float laserLength = 0;
+
+    //public float laserLength = 0;
 
 
     public int mode = 0;
@@ -29,7 +32,7 @@ public class LaserT0 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        target = Patterns.player.transform;
+
     }
 
     // Update is called once per frame
@@ -68,22 +71,22 @@ public class LaserT0 : MonoBehaviour
 
     public void updateDirection()
     {
-        direction = (target.position - laserStart.position).normalized;
+        //direction = (target.position - laserStart.position).normalized;
     }
     void setLaserFiring()
     {
-        laserLength += speed * Time.deltaTime;
+        //laserLength += speed * Time.deltaTime;
         if (direction == Vector3.zero)
         {
             updateDirection();
         }
-        //laserEndVec = direction * laserLength + laserStart.position;
-        laserEndVec = direction * laserLength;
+
+        //laserEndVec = direction * laserLength;
         setLinePosition();
     }
     void setLaserGo()
     {
-        laserStart.position += direction * (speed * Time.deltaTime);
+        //laserStart.position += direction * (speed * Time.deltaTime);
         setLinePosition();
     }
 

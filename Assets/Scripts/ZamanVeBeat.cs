@@ -7,11 +7,8 @@ public class ZamanVeBeat : MonoBehaviour
 //atakları doğru zamanda spawn eder
 {
     public GameObject player;
+    public GameObject boss;
     public AudioSource audioSource;
-
-    public GameObject laser;
-    GameObject copy;
-
 
     public int[,] currentLoop = Patterns.loop4;
 
@@ -33,6 +30,7 @@ public class ZamanVeBeat : MonoBehaviour
         yield return new WaitForSeconds(3);
 
         Patterns.player = player;
+        Patterns.boss = boss;
         audioSource.Play();
         started = true;
     }
@@ -125,6 +123,7 @@ public static class Zaman
 public static class Patterns
 {
     public static GameObject player;
+    public static GameObject boss;
     public static List<GameObject> currentAttacks = new List<GameObject>();
 
     //hangi patternin ne kadar süreyle calışacağı
@@ -143,6 +142,17 @@ public static class Patterns
     };
 
     public static int[,] loop4 = {
+        { 1, 4 },
+        { 4, 4 },
+        { 3, 4 },
+        { 4, 4 },
+        { 1, 4 },
+        { 4, 4 },
+        { 4, 4 },
+        { 4, 4 }
+    };
+
+    public static int[,] loop5 = {
         { 1, 4 },
         { 4, 4 },
         { 3, 4 },
@@ -183,27 +193,73 @@ public static class Patterns
         },
         new AttackData[] { //11-12 unkown
             new AttackData(1, 1, 0, 3),
-            new AttackData(1, 2, 2, 3),
+
+            new AttackData(3, 2, 2, 3, handData1:4),
+            new AttackData(4, 2, 2, 3, handParcasiData1:GetGameObject(3)),
+            new AttackData(4, 3, 2, 3, handParcasiData1:GetGameObject(3)),
         }
     };
+
+
+    public static GameObject GetGameObject(int type)
+    {
+        foreach (GameObject go in Patterns.currentAttacks)
+        {
+            if (go.GetComponent<Attack>().type == type)
+            {
+                return go;
+            }
+        }
+
+        return null;
+    }
 }
 
 public class AttackData
 {
     static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1" , "Prefabs/Chase"};
-
+}
 
     public int type;
     public int beat;
     public int beatQuarter;
     public int duration;
 
-    public AttackData(int type, int beat, int beatQuarter, int duration)
+    public int handData1;
+    public GameObject handParcasiData1;
+
+    public AttackData(int type, int beat, int beatQuarter, int duration, int handData1 = -1, GameObject handParcasiData1 = null)
     {
         this.type = type;
         this.beat = beat;
         this.beatQuarter = beatQuarter;
         this.duration = duration;
+        this.handData1 = handData1;
+        this.handParcasiData1 = handParcasiData1;
+    }
+
+    public void action(Vector3 pos, int beatQuarterCounter)
+    {
+        if (type == 0)
+        {
+            return;
+        }
+
+        if (type > 0) //type 0 ise boş
+        {
+            create(pos, beatQuarterCounter);
+            return;
+        }
+
+        switch (type)
+        {
+            case -1:
+                //Patterns.boss.GetComponent<BossMainScript>().fonksiyonAdi(this);
+                break;
+
+        }
+
+
     }
 
     public void create(Vector3 position, int startBeatQ)
@@ -216,6 +272,16 @@ public class AttackData
         go.GetComponent<Attack>().beatQuarter = beatQuarter;
         go.GetComponent<Attack>().startBeatQuarter = startBeatQ;
         go.GetComponent<Attack>().duration = duration;
+
+        switch (type)
+        {
+            case 3:
+                go.GetComponent<Attack>().handData1 = handData1;
+                break;
+            case 4:
+                go.GetComponent<Attack>().handParcasiData1 = handParcasiData1;
+                break;
+        }
 
         Patterns.currentAttacks.Add(go);
     }
