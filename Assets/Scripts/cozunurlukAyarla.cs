@@ -1,16 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class cozunurlukAyarla : MonoBehaviour
 {
-    int x = 1280;
-    int y = 720;
+    public bool setAtSceneStart = false;
+    float x = 1280.0f;
+    float y = 720.0f;
 
-    // Start is called before the first frame update
     void Start()
     {
-        Ayarla();
+        if (setAtSceneStart)
+            Ayarla();
     }
 
     void Update()
@@ -19,7 +18,7 @@ public class cozunurlukAyarla : MonoBehaviour
         {
             if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
             {
-                Screen.SetResolution(x, y, FullScreenMode.Windowed);
+                Screen.SetResolution((int)x, (int)y, FullScreenMode.Windowed);
             }
             else
             {
@@ -31,15 +30,14 @@ public class cozunurlukAyarla : MonoBehaviour
 
     void Ayarla()
     {
-        //Screen.SetResolution(1024, 576, FullScreenMode.FullScreenWindow);
-
-        if (Screen.width / x > Screen.height / y)
+        bool isWide = (Screen.width / x > Screen.height / y);
+        if (isWide)
         {
-            Screen.SetResolution(Screen.currentResolution.height / y * x, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
+            Screen.SetResolution((int)(Screen.currentResolution.height * x / y), Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
         }
         else
         {
-            Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.width / x * y, FullScreenMode.FullScreenWindow);
+            Screen.SetResolution(Screen.currentResolution.width, (int)(Screen.currentResolution.width * y / x), FullScreenMode.FullScreenWindow);
         }
     }
 
