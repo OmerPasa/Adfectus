@@ -217,8 +217,7 @@ public static class Patterns
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1" , "Prefabs/Chase"};
-}
+    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Chase" };
 
     public int type;
     public int beat;
