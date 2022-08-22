@@ -32,7 +32,7 @@ public class Attack : MonoBehaviour
                 GetComponent<LaserT0>().mode = 2;
                 break;
             case 3:
-                //GetComponent<el>().eklemSayisi = 4;
+                GetComponent<BossMainScript>().Chasing = true;
                 break;
 
             default:
