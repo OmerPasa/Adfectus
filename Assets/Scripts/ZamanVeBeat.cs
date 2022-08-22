@@ -7,6 +7,7 @@ public class ZamanVeBeat : MonoBehaviour
 //atakları doğru zamanda spawn eder
 {
     public GameObject player;
+    public GameObject boss;
     public AudioSource audioSource;
 
     public int[,] currentLoop = Patterns.loop4;
@@ -29,6 +30,7 @@ public class ZamanVeBeat : MonoBehaviour
         yield return new WaitForSeconds(3);
 
         Patterns.player = player;
+        Patterns.boss = boss;
         audioSource.Play();
         started = true;
     }
@@ -121,6 +123,7 @@ public static class Zaman
 public static class Patterns
 {
     public static GameObject player;
+    public static GameObject boss;
     public static List<GameObject> currentAttacks = new List<GameObject>();
 
 
@@ -233,6 +236,30 @@ public class AttackData
         this.duration = duration;
         this.handData1 = handData1;
         this.handParcasiData1 = handParcasiData1;
+    }
+
+    public void action(Vector3 pos, int beatQuarterCounter)
+    {
+        if (type == 0)
+        {
+            return;
+        }
+
+        if (type > 0) //type 0 ise boş
+        {
+            create(pos, beatQuarterCounter);
+            return;
+        }
+
+        switch (type)
+        {
+            case -1:
+                //Patterns.boss.GetComponent<BossMainScript>().fonksiyonAdi(this);
+                break;
+
+        }
+
+
     }
 
     public void create(Vector3 position, int startBeatQ)
