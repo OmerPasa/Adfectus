@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,6 +16,10 @@ namespace TarodevController
     public class PlayerController : MonoBehaviour, IPlayerController
     {
         // Public for external hooks
+        public GameObject currentOneWayPlatform;
+        [SerializeField] private BoxCollider2D playerCollider;
+
+
         public Vector3 Velocity { get; private set; }
         public FrameInput Input { get; private set; }
         public bool JumpingThisFrame { get; private set; }
@@ -59,6 +64,8 @@ namespace TarodevController
         public MainMenu mainMenu;
         private Vector3 _lastPosition;
         private float _currentHorizontalSpeed, _currentVerticalSpeed;
+        protected RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
+        protected List<RaycastHit2D> hitBufferList = new List<RaycastHit2D>(16);
 
         void Start()
         {
@@ -70,6 +77,7 @@ namespace TarodevController
             sprite = GetComponent<SpriteRenderer>();
             Playerhealth = maxHealth;
             dashTime = startDashTime;
+            hitBufferList.Clear();
 
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -87,6 +95,7 @@ namespace TarodevController
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);
             }
+            
             if (!_active) return;
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
@@ -108,10 +117,19 @@ namespace TarodevController
 
         private void GatherInput()
         {
+            if (UnityEngine.Input.GetKeyDown(KeyCode.S))
+            {
+                if (currentOneWayPlatform != null)
+                {
+                    StartCoroutine(DisableCollusion());
+                }
+            }
+
+
 
             Input = new FrameInput
             {
-                JumpDown = UnityEngine.Input.GetButtonDown("Jump"),
+                JumpDown =  UnityEngine.Input.GetButtonUp("Jump"),
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
@@ -153,6 +171,7 @@ namespace TarodevController
 
         [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
 
+
         private void OnTriggerEnter2D(Collider2D laser)
         {
             if (laser.gameObject.tag == "Laser")
@@ -161,6 +180,8 @@ namespace TarodevController
                 Debug.Log("DamageTaken by Player");
             }
         }
+
+
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;
@@ -170,12 +191,15 @@ namespace TarodevController
         private bool _colUp, _colRight, _colDown, _colLeft;
 
         private float _timeLeftGrounded;
+        RaycastHit2D hit;
 
         // We use these raycast checks for pre-collision information
         private void RunCollisionChecks()
         {
+
             // Generate ray ranges. 
             CalculateRayRanged();
+
 
             // Ground
             LandingThisFrame = false;
@@ -197,6 +221,18 @@ namespace TarodevController
             bool RunDetection(RayRange range)
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
+            }
+            if (UnityEngine.Input.GetKeyDown(KeyCode.W))
+            {
+                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 1f , _groundLayer );
+                //Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
+                if (hit.collider.gameObject.tag == "OneWayPlatform" && hit.collider.gameObject.tag != null)
+                {
+                    currentOneWayPlatform = hit.collider.gameObject;
+                    Debug.Log($"currentoneway is{currentOneWayPlatform.name}");
+                    hit.collider.gameObject.SetActive(false);
+                    Invoke("OneWayPlatform", 0.4f);
+                }
             }
         }
 
@@ -516,18 +552,39 @@ namespace TarodevController
         {
             playerTakingDamage = false;
         }
-        void OnCollisionEnter2D(Collision2D water)
-        {
-            if (water.gameObject.tag == "Water")
-            {
-                Destroy(gameObject);
-            }
-        }
         #endregion
 
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("OneWayPlatform"))
+            {
+            currentOneWayPlatform = collision.gameObject;
+
+            }
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("OneWayPlatform"))
+            {
+                currentOneWayPlatform = null;
+            }
+        }
+        private IEnumerator DisableCollusion()
+        {
+
+            BoxCollider2D platformCollider = currentOneWayPlatform.GetComponent<BoxCollider2D>();
+            Debug.Log($"current disabled collusion {platformCollider.gameObject.name}"  );
+            Physics2D.IgnoreCollision(playerCollider, platformCollider);
+            yield return new WaitForSeconds(0.6f);
+            Physics2D.IgnoreCollision(playerCollider, platformCollider, false);
+        }
+        private void OneWayPlatform()
+        {
+            hit.collider.gameObject.SetActive(true);
+        }
         void Jumploop()
         {
-            Debug.Log("playerJumping");
             playerJumping = false;
         }
 
