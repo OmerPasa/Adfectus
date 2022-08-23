@@ -10,7 +10,7 @@ public class Attack : MonoBehaviour
     public int beat;
     public int beatQuarter;
     public int duration;
-    public int handData1;
+    public int g1;
     public GameObject handParcasiData1;*/
 
 
@@ -19,14 +19,14 @@ public class Attack : MonoBehaviour
 
     void Update()
     {
-        /*if (Zaman.beat == eklemBeat[index] && Zaman.beatQuarter == eklemBeatQuarter[index])
+        /*if (TimeB.beat == eklemBeat[index] && TimeB.beatQuarter == eklemBeatQuarter[index])
         {
 
         }*/
 
 
 
-        if (startBeatQuarter + data.duration == Zaman.beatQuarterCounter && !sent)
+        if (startBeatQuarter + data.duration == TimeB.beatQuarterCounter && !sent)
         {
             endAttack();
             sent = true;
