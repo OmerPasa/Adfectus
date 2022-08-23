@@ -9,30 +9,36 @@ public class LaserT1 : MonoBehaviour
     Vector3 laserEndVec = new Vector3(0, 0, 0);
     public EdgeCollider2D edgeCollider;
     //Transform target;
-    public Vector3 direction = Vector3.zero;
+    public Vector3 directionVec = Vector3.zero;
 
 
     public float rotationSpeed;
     public float startAngle;
     public float endAngle;
+    public bool clockwise;
+    float angleDiff;
+    float operationTotalTime;
 
 
 
     //public float laserLength = 0;
 
 
-    public int mode = 0;
-    //0 no laser
+    public int mode = 1;
+    //0 stopped laser
     //1 laser firing
-    //2 laser 
-    //3 laser ending
-    //4 laser ended
+    //2 laser ended
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        operationTotalTime = Zaman.quarterBeatDuration * GetComponent<Attack>().data.duration;
+        startAngle = GetComponent<Attack>().data.f1;
+        endAngle = GetComponent<Attack>().data.f2;
+        clockwise = GetComponent<Attack>().data.b1;
+        angleDiff = (endAngle - startAngle) / operationTotalTime * Mathf.PI / 180;
+        directionVec = angleToVector(startAngle * Mathf.PI / 180);
     }
 
     // Update is called once per frame
@@ -42,53 +48,50 @@ public class LaserT1 : MonoBehaviour
         switch (mode)
         {
             case 0:
-                lineRenderer.enabled = false;
+                lineRenderer.enabled = true;
                 break;
             case 1:
                 lineRenderer.enabled = true;
                 setLaserFiring();
 
-
                 break;
             case 2:
-                lineRenderer.enabled = true;
-                setLaserGo();
-
-                break;
-            case 3:
-                lineRenderer.enabled = true;
-                lineRenderer.SetPosition(0, laserStart.position);
-                lineRenderer.SetPosition(1, laserEndVec);
-                break;
-            case 4:
-                lineRenderer.enabled = false;
+                //lineRenderer.enabled = false;
                 Destroy(gameObject);
-
                 break;
 
         }
+    }
+
+    Vector3 angleToVector(float angle)
+    {//radian to vector
+        return new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+    }
+    float vectorToAngle(Vector3 vec)
+    {//vector to radian
+        return Mathf.Atan2(vec.y, vec.x);
     }
 
     public void updateDirection()
     {
-        //direction = (target.position - laserStart.position).normalized;
+        Debug.Log("updateDirection: " + vectorToAngle(directionVec) + ". " + angleDiff + " " + rotationSpeed + " " + Time.deltaTime + " : " + (angleDiff * rotationSpeed * Time.deltaTime));
+        //directionVec = Quaternion.AngleAxis(angleDiff * rotationSpeed * Time.deltaTime * Mathf.PI / 180, directionVec) * Vector3.right;
+
+        directionVec = angleToVector(vectorToAngle(directionVec) + angleDiff * rotationSpeed * Time.deltaTime);
+        //directionVec = (target.position - laserStart.position).normalized;
     }
     void setLaserFiring()
     {
-        //laserLength += speed * Time.deltaTime;
-        if (direction == Vector3.zero)
-        {
-            updateDirection();
-        }
-
-        //laserEndVec = direction * laserLength;
+        laserEndVec = directionVec * 10;
         setLinePosition();
+        updateDirection();
+
     }
-    void setLaserGo()
+    /*void setLaserGo()
     {
         //laserStart.position += direction * (speed * Time.deltaTime);
         setLinePosition();
-    }
+    }*/
 
     void setLinePosition()
     {

@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-    public int type;
+    public AttackData data;
+    public int startBeatQuarter;
+    /*public int type;
     public int beat;
     public int beatQuarter;
-
-    public int startBeatQuarter;
     public int duration;
-
-
     public int handData1;
-    public GameObject handParcasiData1;
+    public GameObject handParcasiData1;*/
 
 
     bool sent = false;
@@ -28,7 +26,7 @@ public class Attack : MonoBehaviour
 
 
 
-        if (startBeatQuarter + duration == Zaman.beatQuarterCounter && !sent)
+        if (startBeatQuarter + data.duration == Zaman.beatQuarterCounter && !sent)
         {
             endAttack();
             sent = true;
@@ -37,11 +35,14 @@ public class Attack : MonoBehaviour
 
     public void endAttack()
     {
-        switch (type)
+        switch (data.type)
         {
             case 1:
                 GetComponent<LaserT0>().mode = 2;
                 //bosMainScr.currentAttackData = this;
+                break;
+            case 2:
+                GetComponent<LaserT1>().mode = 2;
                 break;
             case 3:
                 GetComponent<BossMainScript>().Chasing = true;

@@ -85,7 +85,7 @@ public static class Zaman
 
     public static int beatQuarterCounter = 0;
     static float beatDuration = 60000 / bpm;
-    static float quarterBeatDuration = beatDuration / 4;
+    public static float quarterBeatDuration = beatDuration / 4;
 
     static bool isFirstFrame = true;
 
@@ -148,8 +148,8 @@ public static class Patterns
         { 4, 4 },
         { 1, 4 },
         { 4, 4 },
-        { 4, 4 },
-        { 4, 4 }
+        { 5, 4 },
+        { 5, 4 }
     };
 
     public static int[,] loop5 = {
@@ -164,39 +164,39 @@ public static class Patterns
     };
     //ritmin vakitleri ve türleri.
     public static AttackData[][] patterns =
-    {
+    {   //0
         new AttackData[] {
             new AttackData(1, 0, 0, 1),
             new AttackData(1, 1, 0, 1),
             new AttackData(1, 2, 0, 1),
             new AttackData(1, 3, 0, 1)
-        },
+        },//1
         new AttackData[] { //5-6
-            new AttackData(1, 1, 0, 2),
-            new AttackData(1, 2, 0, 2),
-            new AttackData(1, 3, 0, 2),
-        },
+            new AttackData(1, 1, 0, 4),
+            new AttackData(2, 2, 0, 2, f1: 270, f2: 180, b1: true),
+            new AttackData(2, 3, 0, 4, f1: 270, f2: 0, b1: false),
+        },//2
         new AttackData[] { //7-8
             new AttackData(1, 1, 0, 2),
             new AttackData(1, 1, 3, 2),
             new AttackData(1, 2, 2, 2),
             new AttackData(1, 3, 1, 2),
-        },
+        },//3
         new AttackData[] { //7-8 alternative
             new AttackData(1, 0, 3, 2),
-            new AttackData(1, 1, 2, 2),
+            new AttackData(2, 1, 2, 4, f1: 270, f2: 180, b1: true),
             new AttackData(1, 2, 1, 2),
-            new AttackData(1, 3, 1, 2),
-        },
+            new AttackData(2, 3, 1, 4, f1: 270, f2: 0, b1: false),
+        },//4
         new AttackData[] { //6-7
             new AttackData(0, 3, 0, 4), //boş
-        },
+        },//5
         new AttackData[] { //11-12 unkown
-            new AttackData(1, 1, 0, 3),
-
-            new AttackData(3, 2, 2, 3, handData1:4),
-            new AttackData(4, 2, 2, 3, handParcasiData1:GetGameObject(3)),
-            new AttackData(4, 3, 2, 3, handParcasiData1:GetGameObject(3)),
+            new AttackData(2, 1, 0, 4, f1: 270, f2: 180, b1: true),
+            new AttackData(2, 2, 2, 4, f1: 270, f2: 0, b1: false),
+            //new AttackData(3, 2, 2, 3, handData1:4),
+            //new AttackData(4, 2, 2, 3, handParcasiData1:GetGameObject(3)),
+            //new AttackData(4, 3, 2, 3, handParcasiData1:GetGameObject(3)),
         }
     };
 
@@ -205,7 +205,7 @@ public static class Patterns
     {
         foreach (GameObject go in Patterns.currentAttacks)
         {
-            if (go.GetComponent<Attack>().type == type)
+            if (go.GetComponent<Attack>().data.type == type)
             {
                 return go;
             }
@@ -224,17 +224,27 @@ public class AttackData
     public int beatQuarter;
     public int duration;
 
+    public float f1;
+    public float f2;
+    public bool b1;
+
     public int handData1;
     public GameObject handParcasiData1;
 
-    public AttackData(int type, int beat, int beatQuarter, int duration, int handData1 = -1, GameObject handParcasiData1 = null)
+    public AttackData(int type, int beat, int beatQuarter, int duration, float f1 = -1f, float f2 = -1f, bool b1 = false, int handData1 = -1, GameObject handParcasiData1 = null)
     {
         this.type = type;
         this.beat = beat;
         this.beatQuarter = beatQuarter;
         this.duration = duration;
+
+        this.f1 = f1;
+        this.f2 = f2;
+        this.b1 = b1;
+
         this.handData1 = handData1;
         this.handParcasiData1 = handParcasiData1;
+
     }
 
     public void action(Vector3 pos, int beatQuarterCounter)
@@ -263,24 +273,9 @@ public class AttackData
 
     public void create(Vector3 position, int startBeatQ)
     {
-        if (type == 0) return;
-
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
-        go.GetComponent<Attack>().type = type;
-        go.GetComponent<Attack>().beat = beat;
-        go.GetComponent<Attack>().beatQuarter = beatQuarter;
+        go.GetComponent<Attack>().data = this;
         go.GetComponent<Attack>().startBeatQuarter = startBeatQ;
-        go.GetComponent<Attack>().duration = duration;
-
-        switch (type)
-        {
-            case 3:
-                go.GetComponent<Attack>().handData1 = handData1;
-                break;
-            case 4:
-                go.GetComponent<Attack>().handParcasiData1 = handParcasiData1;
-                break;
-        }
 
         Patterns.currentAttacks.Add(go);
     }
