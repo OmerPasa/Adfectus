@@ -15,7 +15,6 @@ public class LaserT1 : MonoBehaviour
     public float rotationSpeed;
     public float startAngle;
     public float endAngle;
-    public bool clockwise;
     float angleDiff;
     float operationTotalTime;
 
@@ -29,10 +28,9 @@ public class LaserT1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        operationTotalTime = TimeB.quarterBeatDuration * GetComponent<Attack>().data.duration;
+        operationTotalTime = GetComponent<Attack>().data.duration.getDurInSeconds();
         startAngle = GetComponent<Attack>().data.f1;
         endAngle = GetComponent<Attack>().data.f2;
-        clockwise = GetComponent<Attack>().data.b1;
         angleDiff = (endAngle - startAngle) / operationTotalTime * Mathf.PI / 180;
         directionVec = angleToVector(startAngle * Mathf.PI / 180);
     }
