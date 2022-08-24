@@ -30,13 +30,15 @@ public class BossMainScript : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             rb2d.rotation = angle;
             moveDirection = direction;
+        }else
+        {
+            Patrol();
         }
         dist = Vector2.Distance(transform.position, waypoints[waypointIndex].position);
         if (dist < 1f)
         {
             IncreaseIndex();
         }
-        Patrol();
     }
 
     private void FixedUpdate()
