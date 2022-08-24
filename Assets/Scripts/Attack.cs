@@ -4,47 +4,55 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-    public int type;
+    public AttackData data;
+    //public int startBeatQuarter;
+    /*public int type;
     public int beat;
     public int beatQuarter;
-
-    public int startBeatQuarter;
     public int duration;
-
-
-    public int handData1;
-    public GameObject handParcasiData1;
-
-
-    bool sent = false;
+    public int g1;
+    public GameObject handParcasiData1;*/
 
 
     void Update()
     {
-        /*if (Zaman.beat == eklemBeat[index] && Zaman.beatQuarter == eklemBeatQuarter[index])
+        /*if (TimeB.beat == eklemBeat[index] && TimeB.beatQuarter == eklemBeatQuarter[index])
         {
 
         }*/
 
 
-
-        if (startBeatQuarter + duration == Zaman.beatQuarterCounter && !sent)
+        if (data == null)
         {
+            return;
+        }
+
+        /*if (data.duration.CounterEQ < TimeB.Counter_Q)
+        {
+            return;
+        }*/
+
+        Debug.Log("cq: " + TimeB.Counter_Q + ", data CQ" + data.duration.CounterEQ + " ");
+        if (data.duration.CounterEQ == TimeB.Counter_Q)
+        {
+            Debug.Log(data.type + " end");
             endAttack();
-            sent = true;
         }
     }
 
     public void endAttack()
     {
-        switch (type)
+        switch (data.type)
         {
+            case -1:
+                //GetComponent<BossMainScript>().Chasing = false;
+                break;
             case 1:
                 GetComponent<LaserT0>().mode = 2;
                 //bosMainScr.currentAttackData = this;
                 break;
-            case 3:
-                GetComponent<BossMainScript>().Chasing = true;
+            case 2:
+                GetComponent<LaserT1>().mode = 2;
                 break;
 
             default:

@@ -90,7 +90,7 @@ namespace TarodevController
             if (Playerhealth <= 0)
             {
                 playerDying = true;
-                Zaman.reset();
+                TimeB.reset();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);

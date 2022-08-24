@@ -29,7 +29,7 @@ public class LaserT0 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        target = Patterns.player.transform;
+        target = LoopData.player.transform;
     }
 
     // Update is called once per frame

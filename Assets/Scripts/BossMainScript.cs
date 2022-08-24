@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BossMainScript : MonoBehaviour
 {
-    public Transform[]waypoints;
+    public Transform[] waypoints;
     public Transform target;
     Rigidbody2D rb2d;
     Vector2 moveDirection;
@@ -12,13 +12,14 @@ public class BossMainScript : MonoBehaviour
     private int waypointIndex;
     private float dist;
     public bool Chasing;
-    private void Awake() {
-    rb2d = GetComponent<Rigidbody2D>();    
+    private void Awake()
+    {
+        rb2d = GetComponent<Rigidbody2D>();
     }
     void Start()
     {
-        target = GameObject.Find("Player").transform;
-        waypointIndex= 0;
+        target = GameObject.Find("player").transform;
+        waypointIndex = 0;
     }
 
     void Update()
@@ -40,10 +41,11 @@ public class BossMainScript : MonoBehaviour
         }
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate()
+    {
         if (target && Chasing)
         {
-            rb2d.velocity = new Vector2(moveDirection.x , moveDirection.y) * moveSpeed;
+            rb2d.velocity = new Vector2(moveDirection.x, moveDirection.y) * moveSpeed;
         }
     }
     void Patrol()

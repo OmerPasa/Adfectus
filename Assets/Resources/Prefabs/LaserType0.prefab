@@ -48,13 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11f3636f415e05141a1c72e96df8ac56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
-  beat: 0
-  beatQuarter: 0
-  startBeatQuarter: 0
-  duration: 0
-  handData1: 0
-  handParcasiData1: {fileID: 0}
 --- !u!68 &7043623803633872166
 EdgeCollider2D:
   m_ObjectHideFlags: 0
