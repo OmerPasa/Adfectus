@@ -27,15 +27,8 @@ public class Attack : MonoBehaviour
             return;
         }
 
-        /*if (data.duration.CounterEQ < TimeB.Counter_Q)
-        {
-            return;
-        }*/
-
-        Debug.Log("cq: " + TimeB.Counter_Q + ", data CQ" + data.duration.CounterEQ + " ");
         if (data.duration.CounterEQ == TimeB.Counter_Q)
         {
-            Debug.Log(data.type + " end");
             endAttack();
         }
     }
