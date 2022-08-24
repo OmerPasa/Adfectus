@@ -18,7 +18,7 @@ public class BossMainScript : MonoBehaviour
     }
     void Start()
     {
-        target = GameObject.Find("player").transform;
+        target = GameObject.Find("Player").transform;
         waypointIndex = 0;
     }
 
@@ -30,7 +30,8 @@ public class BossMainScript : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             rb2d.rotation = angle;
             moveDirection = direction;
-        }else
+        }
+        else
         {
             Patrol();
         }
