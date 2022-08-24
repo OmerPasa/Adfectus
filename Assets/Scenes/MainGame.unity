@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &36421026
 Transform:
   m_ObjectHideFlags: 0
@@ -198,7 +198,7 @@ MonoBehaviour:
   - {fileID: 332110723}
   - {fileID: 1610317455}
   target: {fileID: 0}
-  moveSpeed: 0
+  moveSpeed: 2
   Chasing: 0
 --- !u!1 &64733574
 GameObject:
@@ -1931,7 +1931,7 @@ MonoBehaviour:
   _fallClamp: -10
   _minFallSpeed: 80
   _maxFallSpeed: 120
-  _jumpHeight: 22
+  _jumpHeight: 25
   _jumpApexThreshold: 10
   _coyoteTimeThreshold: 0.1
   _jumpBuffer: 0.1

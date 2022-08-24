@@ -224,7 +224,7 @@ namespace TarodevController
             }
             if (UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
-                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 1f , _groundLayer );
+                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 2.2f , _groundLayer );
                 //Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
                 if (hit.collider.gameObject.tag == "OneWayPlatform" && hit.collider.gameObject.tag != null)
                 {
