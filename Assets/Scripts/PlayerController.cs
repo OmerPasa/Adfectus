@@ -91,7 +91,8 @@ namespace TarodevController
             {
                 playerDying = true;
                 TimeB.reset();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                FindObjectOfType<GameManager>().EndGame();
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);
             }

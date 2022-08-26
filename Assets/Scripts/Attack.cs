@@ -24,7 +24,7 @@ public class Attack : MonoBehaviour
         switch (data.type)
         {
             case -1:
-                //GetComponent<BossMainScript>().Chasing = false;
+                GetComponent<BossMainScript>().Chasing = false;
                 break;
             case 1:
                 GetComponent<LaserT0>().mode = 2;

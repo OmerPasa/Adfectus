@@ -392,16 +392,7 @@ public class AttackData
             case -1:
                 LoopData.boss.GetComponent<Attack>().data = clone;
 
-                /*1LoopData.boss.GetComponent<BossMainScript>().Chasing = true;
-                LoopData.boss.GetComponent<BossMainScript>().ChasingTime = duration;
-                LoopData.boss.GetComponent<BossMainScript>().ChasingTimeEnd = f1;
-
-                if (TimeB.isBeatReached(ChasingTimeEnd))
-                {
-                    LoopData.boss.GetComponent<BossMainScript>().Chasing = false;
-                }
-
-                LoopData.boss.GetComponent<BossMainScript>().Chasing_start(data);*/
+                LoopData.boss.GetComponent<BossMainScript>().Chasing = true;
                 break;
 
         }
