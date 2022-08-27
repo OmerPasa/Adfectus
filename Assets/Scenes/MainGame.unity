@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 36421027}
   - component: {fileID: 36421028}
   - component: {fileID: 36421029}
+  - component: {fileID: 36421030}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Enemy
@@ -201,6 +202,7 @@ MonoBehaviour:
   target: {fileID: 0}
   moveSpeed: 2
   Chasing: 0
+  Weakened: 0
 --- !u!114 &36421029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,6 +215,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11f3636f415e05141a1c72e96df8ac56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &36421030
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36421025}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
 --- !u!1 &64733574
 GameObject:
   m_ObjectHideFlags: 0
@@ -1982,16 +2005,16 @@ MonoBehaviour:
   _detectorCount: 3
   _detectionRayLength: 0.44
   _rayBuffer: 0.3
-  _acceleration: 90
+  _acceleration: 54.46
   _moveClamp: 13
   _deAcceleration: 60
   _apexBonus: 2
   _fallClamp: -10
-  _minFallSpeed: 80
-  _maxFallSpeed: 120
-  _jumpHeight: 25
+  _minFallSpeed: 49.9
+  _maxFallSpeed: 71.5
+  _jumpHeight: 20.2
   _jumpApexThreshold: 10
-  _coyoteTimeThreshold: 0.1
+  _coyoteTimeThreshold: 0.2
   _jumpBuffer: 0.1
   _jumpEndEarlyGravityModifier: 3
   _freeColliderIterations: 1000
