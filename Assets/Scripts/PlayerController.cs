@@ -19,7 +19,11 @@ namespace TarodevController
         public GameObject currentOneWayPlatform;
         [SerializeField] private BoxCollider2D playerCollider;
 
-
+        [SerializeField]private float timeBtwAttack;
+        [SerializeField]public float startTimeBtwAttack;
+        public float attackRange;
+        public Transform attackPos;
+        public LayerMask whatIsEnemies;
         public Vector3 Velocity { get; private set; }
         public FrameInput Input { get; private set; }
         public bool JumpingThisFrame { get; private set; }
@@ -27,10 +31,12 @@ namespace TarodevController
         public Vector3 RawMovement { get; private set; }
         public bool Grounded => _colDown;
         public bool _hasDashed;
+        private bool isAttacking;
         public float dashSpeed;
         private float dashTime;
         public float startDashTime;
         private int direction;
+        public int damage = 1;
         public bool isFacingLeft;
 
         //Animation States
@@ -91,7 +97,7 @@ namespace TarodevController
             {
                 playerDying = true;
                 TimeB.reset();
-                FindObjectOfType<GameManager>().EndGame();
+                GetComponent<GameManager>().EndGame();
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);
@@ -236,6 +242,28 @@ namespace TarodevController
 
                     Invoke("OneWayPlatform", 0.3f);
                 }
+            }
+
+            Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
+
+            if (timeBtwAttack <= 0)
+            {
+            if (enemiesInRange.Length >= 1)
+            {
+                //for giving every one of enemies damage.
+                for (int i = 0; i < enemiesInRange.Length; i++)
+                {
+                isAttacking = true;
+                ChangeAnimationState(PLAYER_ATTACK);
+                damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+                Invoke("AttackComplete", damageDelay);
+                enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damage);
+                }
+            }
+            timeBtwAttack = startTimeBtwAttack;
+            } else
+            {
+                timeBtwAttack -= Time.deltaTime;
             }
         }
 
@@ -543,7 +571,7 @@ namespace TarodevController
             ChangeAnimationState(PLAYER_TAKEDAMAGE);
             Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-            Invoke("DamageDelayComplete", damageDelay);////DLELETE 
+            Invoke("DamageDelayComplete", damageDelay); 
         }
 
         // set new health to the sprite filter as a new color.
@@ -589,6 +617,12 @@ namespace TarodevController
         void Jumploop()
         {
             playerJumping = false;
+        }
+
+        void AttackComplete()
+        {
+            isAttacking = false;
+            Debug.Log("ATTACKCOMPLETEBOSS");
         }
 
         //=====================================================

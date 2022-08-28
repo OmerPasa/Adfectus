@@ -16,6 +16,17 @@ public class GameManager : MonoBehaviour
             Invoke("Restart", RestartDelay);
         }
     }
+
+        public void GameWon ()
+    {
+        if (gameHasEnded == false)
+        {
+            gameHasEnded =  true;
+            Debug.Log("GAME GameWon");
+            //we may change a game scene or play video etc.
+            //Invoke("Restart", RestartDelay);
+        }
+    }
     void Restart () 
     {
         SceneManager.LoadScene("MainGame");

@@ -6,11 +6,14 @@ public class BossMainScript : MonoBehaviour
 {
     public Transform[] waypoints;
     public Transform target;
+    [SerializeField] public CapsuleCollider2D BossCollider;
     Rigidbody2D rb2d;
     Vector2 moveDirection;
     public int moveSpeed;
-private int waypointIndex;
+    private int waypointIndex;
+    public float BossHealth = 5;
     private float dist;
+    public float damageDelay;
     public bool Chasing;
     public bool Weakened;
     private Animator animator;
@@ -18,11 +21,13 @@ private int waypointIndex;
     const string BOSS_LASER = "Boss_Laser";
     const string BOSS_TEETH= "Boss_Teeth";
     const string BOSS_WEAK = "Boss_Weak";
+    const string BOSS_TAKEDAMAGE = "Boss_TakeDamage";
     const string BOSS_DEATH = "Boss_Death";
 
 private void Awake()
     {
         rb2d = GetComponent<Rigidbody2D>();
+        BossCollider.enabled = false;
     }
     void Start()
     {
@@ -34,12 +39,18 @@ private void Awake()
 
     void Update()
     {
+        if (BossHealth <= 0)
+        {
+            ChangeAnimationState(BOSS_DEATH);
+            GetComponent<GameManager>().GameWon();
+        }
         if (Weakened)
         {
-            Chasing = false;
-            
+            BossCollider.enabled = true;
+            ChangeAnimationState(BOSS_WEAK);
+
         }
-        if (target && Chasing)
+        if (target && Chasing && !Weakened)
         {
             Vector3 direction = (target.position - transform.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -66,6 +77,7 @@ private void Awake()
     void Patrol()
     {
         Chasing = false;
+        ChangeAnimationState(BOSS_LASER);
         transform.position = Vector2.MoveTowards(transform.position, waypoints[waypointIndex].position, moveSpeed * Time.deltaTime);
         //transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
     }
@@ -77,7 +89,21 @@ private void Awake()
             waypointIndex = 0;
         }
     }
-            void ChangeAnimationState(string newAnimation)
+
+    public void BossTakeDamage(float damage)
+    {
+        ChangeAnimationState(BOSS_TAKEDAMAGE);
+        BossHealth -= damage;
+        GetComponent<healthbar_control>().SetHealth(BossHealth);
+        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+        Invoke("DamageDelayComplete", damageDelay); 
+    }
+    void DamageDelayComplete()
+    {
+        Weakened = false;
+        BossCollider.enabled = true;
+    }
+    void ChangeAnimationState(string newAnimation)
     {
         if (currentAnimaton == newAnimation) return;
 
