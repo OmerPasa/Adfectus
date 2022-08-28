@@ -85,8 +85,8 @@ public static class LoopData
         },//1
         new AttackData[] { //5-6
             new AttackData(1, 1, 0, 2),
-            new AttackData(2, 2, 0, 4, f1: 270, f2: 240),
-            new AttackData(2, 3, 0, 4, f1: 270, f2: 300),
+            new AttackData(2, 2, 0, 4, f1: 260, f2: 230),
+            new AttackData(3, 3, 0, 4, f1: 5),
         },//2
         new AttackData[] { //7-8
             new AttackData(-1, 1, 0, 2),
