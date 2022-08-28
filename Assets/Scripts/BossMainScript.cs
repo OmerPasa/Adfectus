@@ -16,6 +16,7 @@ public class BossMainScript : MonoBehaviour
     public float damageDelay;
     public bool Chasing;
     public bool Weakened;
+    public bool Patroling;
     private Animator animator;
     private string currentAnimaton;
     const string BOSS_LASER = "Boss_Laser";
@@ -34,29 +35,36 @@ private void Awake()
         // ChangeAnimationState(BOSS_LASER);
         animator = GetComponent<Animator>();
         target = GameObject.Find("Player").transform;
+        GetComponent<healthbar_control>().SetMaxHealth(BossHealth);
         waypointIndex = 0;
+        Patroling = true;
     }
 
     void Update()
     {
+        Debug.Log("currrentState patroling " + Patroling );
+        Debug.Log("currrentState chase " + Chasing );
+        Debug.Log("currrentState weakened " + Weakened );
         if (BossHealth <= 0)
         {
+            Patroling = false;
             ChangeAnimationState(BOSS_DEATH);
             GetComponent<GameManager>().GameWon();
         }
         if (Weakened)
         {
+            Patroling = false;
             BossCollider.enabled = true;
             ChangeAnimationState(BOSS_WEAK);
 
         }
-        if (target && Chasing && !Weakened)
+        if (Chasing && !Weakened)
         {
             Vector3 direction = (target.position - transform.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             moveDirection = direction;
         }
-        else
+        if(!Chasing && !Weakened && Patroling)
         {
             Patrol();
         }
@@ -102,6 +110,7 @@ private void Awake()
     {
         Weakened = false;
         BossCollider.enabled = true;
+        Patroling = true;
     }
     void ChangeAnimationState(string newAnimation)
     {

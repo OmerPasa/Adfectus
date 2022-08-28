@@ -18,9 +18,6 @@ namespace TarodevController
         // Public for external hooks
         public GameObject currentOneWayPlatform;
         [SerializeField] private BoxCollider2D playerCollider;
-
-        [SerializeField]private float timeBtwAttack;
-        [SerializeField]public float startTimeBtwAttack;
         public float attackRange;
         public Transform attackPos;
         public LayerMask whatIsEnemies;
@@ -97,10 +94,16 @@ namespace TarodevController
             {
                 playerDying = true;
                 TimeB.reset();
+                Debug.Log("game resetting");
                 GetComponent<GameManager>().EndGame();
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
-                Invoke("Die", 3f);
+                Invoke("Die", 2f);
+            }
+
+            if (true)
+            {
+                
             }
             
             if (!_active) return;
@@ -130,6 +133,10 @@ namespace TarodevController
                 {
                     StartCoroutine(DisableCollusion());
                 }
+            }
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                isAttacking = true;
             }
 
 
@@ -246,24 +253,20 @@ namespace TarodevController
 
             Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
-            if (timeBtwAttack <= 0)
+            if (isAttacking)
             {
-            if (enemiesInRange.Length >= 1)
-            {
-                //for giving every one of enemies damage.
-                for (int i = 0; i < enemiesInRange.Length; i++)
+                if (enemiesInRange.Length >= 1)
                 {
-                isAttacking = true;
-                ChangeAnimationState(PLAYER_ATTACK);
-                damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                Invoke("AttackComplete", damageDelay);
-                enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damage);
+                    //for giving every one of enemies damage.
+                    for (int i = 0; i < enemiesInRange.Length; i++)
+                    {
+                    isAttacking = true;
+                    ChangeAnimationState(PLAYER_ATTACK);
+                    damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+                    Invoke("AttackComplete", damageDelay);
+                    enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damage);
+                    }
                 }
-            }
-            timeBtwAttack = startTimeBtwAttack;
-            } else
-            {
-                timeBtwAttack -= Time.deltaTime;
             }
         }
 

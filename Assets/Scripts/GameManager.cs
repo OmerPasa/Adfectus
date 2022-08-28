@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     static bool gameHasEnded = false;
     public float RestartDelay = 1f;
+
     public void EndGame ()
     {
         if (gameHasEnded == false)
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-        public void GameWon ()
+    public void GameWon ()
     {
         if (gameHasEnded == false)
         {
