@@ -23,6 +23,9 @@ public class Attack : MonoBehaviour
     {
         switch (data.type)
         {
+            case -2:
+                GetComponent<BossMainScript>().BossCollider.enabled = false;
+                break;
             case -1:
                 GetComponent<BossMainScript>().Chasing = false;
                 break;

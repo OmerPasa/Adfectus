@@ -18,8 +18,9 @@ namespace TarodevController
         // Public for external hooks
         public GameObject currentOneWayPlatform;
         [SerializeField] private BoxCollider2D playerCollider;
-
-
+        public float attackRange;
+        public Transform attackPos;
+        public LayerMask whatIsEnemies;
         public Vector3 Velocity { get; private set; }
         public FrameInput Input { get; private set; }
         public bool JumpingThisFrame { get; private set; }
@@ -27,10 +28,12 @@ namespace TarodevController
         public Vector3 RawMovement { get; private set; }
         public bool Grounded => _colDown;
         public bool _hasDashed;
+        private bool isAttacking;
         public float dashSpeed;
         private float dashTime;
         public float startDashTime;
         private int direction;
+        public int damageBoss = 1;
         public bool isFacingLeft;
 
         //Animation States
@@ -48,6 +51,7 @@ namespace TarodevController
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
+        public GameObject GameManager_;
         public SpriteRenderer sprite;
         public GameObject dashEffect;
         private string currentAnimaton;
@@ -78,7 +82,6 @@ namespace TarodevController
             Playerhealth = maxHealth;
             dashTime = startDashTime;
             hitBufferList.Clear();
-
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
@@ -91,10 +94,17 @@ namespace TarodevController
             {
                 playerDying = true;
                 TimeB.reset();
-                FindObjectOfType<GameManager>().EndGame();
+                GameManager_.GetComponent<GameManager>().EndGame();
+                Debug.Log("game resetting");
+
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
-                Invoke("Die", 3f);
+                Invoke("Die", 2f);
+            }
+
+            if (true)
+            {
+                
             }
             
             if (!_active) return;
@@ -124,6 +134,10 @@ namespace TarodevController
                 {
                     StartCoroutine(DisableCollusion());
                 }
+            }
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                isAttacking = true;
             }
 
 
@@ -235,6 +249,24 @@ namespace TarodevController
                     playerJumping = false;
 
                     Invoke("OneWayPlatform", 0.3f);
+                }
+            }
+
+            Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
+
+            if (isAttacking)
+            {
+                if (enemiesInRange.Length >= 1)
+                {
+                    //for giving every one of enemies damage.
+                    for (int i = 0; i < enemiesInRange.Length; i++)
+                    {
+                    isAttacking = true;
+                    ChangeAnimationState(PLAYER_ATTACK);
+                    damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+                    Invoke("AttackComplete", damageDelay);
+                    enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
+                    }
                 }
             }
         }
@@ -539,11 +571,9 @@ namespace TarodevController
             playerTakingDamage = true;
             Playerhealth -= damage;
             Set_Health(Playerhealth);
-            Debug.Log("damageTaken");
             ChangeAnimationState(PLAYER_TAKEDAMAGE);
-            Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-            Invoke("DamageDelayComplete", damageDelay);////DLELETE 
+            Invoke("DamageDelayComplete", damageDelay); 
         }
 
         // set new health to the sprite filter as a new color.
@@ -589,6 +619,12 @@ namespace TarodevController
         void Jumploop()
         {
             playerJumping = false;
+        }
+
+        void AttackComplete()
+        {
+            isAttacking = false;
+            Debug.Log("ATTACKCOMPLETEBOSS");
         }
 
         //=====================================================
