@@ -386,10 +386,10 @@ public static class LoopData
     public static AttackData[][] patterns =
     {   //0
         new AttackData[] {
-            new AttackData(1, 0, 0, 1),
-            new AttackData(1, 1, 0, 1),
-            new AttackData(1, 2, 0, 1),
-            new AttackData(1, 3, 0, 1)
+            new AttackData(-1, 0, 0, 1),
+            new AttackData(-1, 1, 0, 1),
+            new AttackData(-1, 2, 0, 1),
+            new AttackData(-1, 3, 0, 1)
         },//1
         new AttackData[] { //5-6
             new AttackData(1, 1, 0, 2),
@@ -397,10 +397,10 @@ public static class LoopData
             new AttackData(2, 3, 0, 4, f1: 270, f2: 300),
         },//2
         new AttackData[] { //7-8
-            new AttackData(1, 1, 0, 2),
-            new AttackData(1, 1, 3, 2),
-            new AttackData(1, 2, 2, 2),
-            new AttackData(1, 3, 1, 2),
+            new AttackData(-1, 1, 0, 2),
+            new AttackData(-1, 1, 3, 2),
+            new AttackData(-1, 2, 2, 2),
+            new AttackData(-1, 3, 1, 2),
         },//3
         new AttackData[] { //7-8 alternative
             new AttackData(1, 0, 3, 2),
@@ -512,16 +512,7 @@ public class AttackData
             case -1:
                 LoopData.boss.GetComponent<Attack>().data = clone;
 
-                /*1LoopData.boss.GetComponent<BossMainScript>().Chasing = true;
-                LoopData.boss.GetComponent<BossMainScript>().ChasingTime = duration;
-                LoopData.boss.GetComponent<BossMainScript>().ChasingTimeEnd = f1;
-
-                if (TimeB.isBeatReached(ChasingTimeEnd))
-                {
-                    LoopData.boss.GetComponent<BossMainScript>().Chasing = false;
-                }
-
-                LoopData.boss.GetComponent<BossMainScript>().Chasing_start(data);*/
+                LoopData.boss.GetComponent<BossMainScript>().Chasing = true;
                 break;
 
         }

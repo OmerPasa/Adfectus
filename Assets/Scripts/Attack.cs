@@ -5,23 +5,9 @@ using UnityEngine;
 public class Attack : MonoBehaviour
 {
     public AttackData data;
-    //public int startBeatQuarter;
-    /*public int type;
-    public int beat;
-    public int beatQuarter;
-    public int duration;
-    public int g1;
-    public GameObject handParcasiData1;*/
-
 
     void Update()
     {
-        /*if (TimeB.beat == eklemBeat[index] && TimeB.beatQuarter == eklemBeatQuarter[index])
-        {
-
-        }*/
-
-
         if (data == null)
         {
             return;
@@ -38,7 +24,7 @@ public class Attack : MonoBehaviour
         switch (data.type)
         {
             case -1:
-                //GetComponent<BossMainScript>().Chasing = false;
+                GetComponent<BossMainScript>().Chasing = false;
                 break;
             case 1:
                 GetComponent<LaserT0>().mode = 2;

@@ -91,7 +91,8 @@ namespace TarodevController
             {
                 playerDying = true;
                 TimeB.reset();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                FindObjectOfType<GameManager>().EndGame();
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 3f);
             }
@@ -129,7 +130,7 @@ namespace TarodevController
 
             Input = new FrameInput
             {
-                JumpDown =  UnityEngine.Input.GetButtonUp("Jump"),
+                JumpDown =  UnityEngine.Input.GetButtonDown("Jump"),
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
@@ -222,16 +223,18 @@ namespace TarodevController
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
-            if (UnityEngine.Input.GetKeyDown(KeyCode.W))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
             {
-                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 2.2f , _groundLayer );
-                //Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
-                if (hit.collider.gameObject.tag == "OneWayPlatform" && hit.collider.gameObject.tag != null)
+                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f , _groundLayer );
+                // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
+                if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform" )
                 {
                     currentOneWayPlatform = hit.collider.gameObject;
                     Debug.Log($"currentoneway is{currentOneWayPlatform.name}");
                     hit.collider.gameObject.SetActive(false);
-                    Invoke("OneWayPlatform", 0.4f);
+                    playerJumping = false;
+
+                    Invoke("OneWayPlatform", 0.3f);
                 }
             }
         }
