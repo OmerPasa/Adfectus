@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1" };
+    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Tooth" };
     // (-1 = Chase)
 
     public int type;
-    //public int W;
-    //public int Q;
+
     public Duration duration; //list of different objects with different start durations
 
     public float f1; public float f2;
@@ -32,7 +31,7 @@ public class AttackData
     {
         this.type = type;
 
-        this.duration = new Duration(W, Q, duration); //base duration for attackdata calculations on boss, id:0
+        this.duration = new Duration(W, Q, duration); //base duration for attackdata calculations on boss
 
         this.f1 = f1;
         this.f2 = f2;
@@ -49,8 +48,6 @@ public class AttackData
             return;
         }
 
-
-
         int[] wAndQ = Duration.durToTime(Counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
 
@@ -64,12 +61,9 @@ public class AttackData
         {
             case -1:
                 LoopData.boss.GetComponent<Attack>().data = clone;
-
                 LoopData.boss.GetComponent<BossMainScript>().Chasing = true;
                 break;
-
         }
-
 
     }
 
