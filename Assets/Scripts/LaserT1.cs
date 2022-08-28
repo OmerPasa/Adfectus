@@ -5,7 +5,7 @@ using UnityEngine;
 public class LaserT1 : MonoBehaviour
 {
     public LineRenderer lineRenderer;
-    //Transform laserStart;
+    public Transform laserStart;
     Vector3 laserEndVec = new Vector3(0, 0, 0);
     public EdgeCollider2D edgeCollider;
     //Transform target;
@@ -46,7 +46,6 @@ public class LaserT1 : MonoBehaviour
                 break;
             case 1:
                 lineRenderer.enabled = true;
-                transform.position = LoopData.boss.transform.position;
                 setLaserFiring();
 
                 break;
@@ -75,7 +74,7 @@ public class LaserT1 : MonoBehaviour
     }
     void setLaserFiring()
     {
-        laserEndVec = directionVec * 7.2f;
+        laserEndVec = directionVec * 5;
         setLinePosition();
         updateDirection();
 

@@ -36,8 +36,6 @@ public class Attack : MonoBehaviour
             case 2:
                 GetComponent<LaserT1>().mode = 2;
                 break;
-            case 3:
-                break;
 
             default:
                 Destroy(gameObject);
