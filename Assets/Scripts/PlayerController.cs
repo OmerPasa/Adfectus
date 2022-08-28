@@ -33,7 +33,7 @@ namespace TarodevController
         private float dashTime;
         public float startDashTime;
         private int direction;
-        public int damage = 1;
+        public int damageBoss = 1;
         public bool isFacingLeft;
 
         //Animation States
@@ -51,6 +51,7 @@ namespace TarodevController
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
+        public GameObject GameManager_;
         public SpriteRenderer sprite;
         public GameObject dashEffect;
         private string currentAnimaton;
@@ -81,7 +82,6 @@ namespace TarodevController
             Playerhealth = maxHealth;
             dashTime = startDashTime;
             hitBufferList.Clear();
-
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
@@ -94,8 +94,9 @@ namespace TarodevController
             {
                 playerDying = true;
                 TimeB.reset();
+                GameManager_.GetComponent<GameManager>().EndGame();
                 Debug.Log("game resetting");
-                GetComponent<GameManager>().EndGame();
+
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 2f);
@@ -264,7 +265,7 @@ namespace TarodevController
                     ChangeAnimationState(PLAYER_ATTACK);
                     damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
                     Invoke("AttackComplete", damageDelay);
-                    enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damage);
+                    enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
                     }
                 }
             }
@@ -570,9 +571,7 @@ namespace TarodevController
             playerTakingDamage = true;
             Playerhealth -= damage;
             Set_Health(Playerhealth);
-            Debug.Log("damageTaken");
             ChangeAnimationState(PLAYER_TAKEDAMAGE);
-            Debug.Log("ANİMATİON CHANGED TO TAKEDAMAGE!!!!!!!!");
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
             Invoke("DamageDelayComplete", damageDelay); 
         }

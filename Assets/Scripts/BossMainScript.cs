@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BossMainScript : MonoBehaviour
 {
+    public GameObject Healthbar;
+    public GameObject GameManager;
     public Transform[] waypoints;
     public Transform target;
     [SerializeField] public CapsuleCollider2D BossCollider;
@@ -13,7 +15,7 @@ public class BossMainScript : MonoBehaviour
     private int waypointIndex;
     public float BossHealth = 5;
     private float dist;
-    public float damageDelay;
+    public float damageDelay = 5f;
     public bool Chasing;
     public bool Weakened;
     public bool Patroling;
@@ -35,7 +37,7 @@ private void Awake()
         // ChangeAnimationState(BOSS_LASER);
         animator = GetComponent<Animator>();
         target = GameObject.Find("Player").transform;
-        GetComponent<healthbar_control>().SetMaxHealth(BossHealth);
+        Healthbar.GetComponent<healthbar_control>().SetMaxHealth(BossHealth);
         waypointIndex = 0;
         Patroling = true;
     }
@@ -47,9 +49,10 @@ private void Awake()
         Debug.Log("currrentState weakened " + Weakened );
         if (BossHealth <= 0)
         {
+            Debug.Log("game won");
             Patroling = false;
             ChangeAnimationState(BOSS_DEATH);
-            GetComponent<GameManager>().GameWon();
+            GameManager.GetComponent<GameManager>().GameWon();
         }
         if (Weakened)
         {
@@ -100,16 +103,17 @@ private void Awake()
 
     public void BossTakeDamage(float damage)
     {
+        Debug.Log("Boss Taken damage");
         ChangeAnimationState(BOSS_TAKEDAMAGE);
         BossHealth -= damage;
-        GetComponent<healthbar_control>().SetHealth(BossHealth);
-        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+        Debug.Log("BossHealth " + BossHealth);
+        Healthbar.GetComponent<healthbar_control>().SetHealth(BossHealth);
         Invoke("DamageDelayComplete", damageDelay); 
     }
     void DamageDelayComplete()
     {
         Weakened = false;
-        BossCollider.enabled = true;
+        BossCollider.enabled = false;
         Patroling = true;
     }
     void ChangeAnimationState(string newAnimation)

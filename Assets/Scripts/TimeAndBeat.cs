@@ -411,7 +411,7 @@ public class AttackData
     public void create(AttackData clone, Vector3 position, int startBeatQ)
     {
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
-        Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
+        // Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
 
         //replaced with duration.counterSQ
