@@ -8,7 +8,7 @@ public class TimeAndBeat : MonoBehaviour
 {
     public GameObject player;
     public GameObject boss;
-    public AudioSource audioSource;
+    public AudioSource[] audioSources;
 
     public int currentLoopPos = 0;
     public int currentAttackPos = 0;
@@ -29,13 +29,20 @@ public class TimeAndBeat : MonoBehaviour
 
         LoopData.player = player;
         LoopData.boss = boss;
-        audioSource.Play();
+        play(0);
+        currentLoopPos = 0;
         active = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        /*if (Input.GetKeyDown(KeyCode.C))
+        {
+            LoopController.isObjectiveCompleted = !LoopController.isObjectiveCompleted;
+        }*/
+
         if (!active)
         {
             return;
@@ -45,6 +52,19 @@ public class TimeAndBeat : MonoBehaviour
         if (TimeB.Counter_Q == prevBeatQC)
         {//eğer Qbeat değişmediyse kontrol etmeye gerek yok
             return;
+        }
+        Debug.Log("bQC: " + TimeB.Counter_Q);
+
+        if (LoopController.needChange && LoopController.changeIndex > TimeB.Counter_Q)
+        {//loop değişmesi gerekiyor ve değişme zamanı gelmediyse
+            prevBeatQC = TimeB.Counter_Q;
+            return;
+        }
+        if (LoopController.needChange && LoopController.changeIndex == TimeB.Counter_Q)
+        {//loop değişmesi gerekiyor ve değişme zamanı geldiyse
+            LoopController.needChange = false;
+            playUpdate();
+            Debug.Log("Loop changed");
         }
 
         int patInd = LoopController.currentLoop[currentLoopPos, 0]; //pattern index
@@ -65,12 +85,14 @@ public class TimeAndBeat : MonoBehaviour
 
             if (currentLoopPos >= LoopController.currentLoop.GetLength(0))
             {//loopPos kontrolü
+                LoopController.currentLoopEnd();
+                Debug.Log("Loop end. " + LoopController.currentIndex + " " + LoopController.prevIndex);
+
                 currentLoopPos = 0;
+
             }
         }
-
         prevBeatQC = TimeB.Counter_Q;
-
     }
 
     public AttackData getNextAttack()
@@ -93,9 +115,24 @@ public class TimeAndBeat : MonoBehaviour
         }
 
         return LoopData.patterns[LoopController.currentLoop[0, 0]][0];
+    }
 
+    public void playUpdate()
+    {
+        stop(LoopController.prevIndex);
+        play(LoopController.currentIndex);
+    }
 
+    public void play(int index)
+    {
+        audioSources[index].enabled = true;
+        audioSources[index].Play();
+    }
 
+    public void stop(int index)
+    {
+        audioSources[index].Stop();
+        audioSources[index].enabled = false;
     }
 }
 
@@ -222,9 +259,53 @@ public static class TimeB
 
 public static class LoopController
 {
-    public static int[,] currentLoop = LoopData.loops[0];
+    public static int prevIndex = 0;
+    public static int currentIndex = 0;
+    public static int[,] currentLoop = LoopData.loops[currentIndex];
 
 
+    public static bool loopAllLoops = false;
+    public static bool isObjectiveCompleted = true;
+    public static bool needChange = false;
+    public static int changeIndex = 0;
+
+
+    public static bool currentLoopEnd()
+    {
+        //changeindex is when it will change to the next loop
+        changeIndex += LoopData.loopTotalSize(currentIndex);
+        if (!isObjectiveCompleted)
+        {
+            //play the same loop
+            return false;
+        }
+
+
+        needChange = true;
+        currentLoop = getNextLoop();
+        return true;
+    }
+
+    public static int[,] getNextLoop()
+    {
+        prevIndex = currentIndex;
+        currentIndex++;
+        if (currentIndex >= LoopData.loops.Length)
+        {
+            currentIndex = 0;
+        }
+
+        if (currentIndex == 0 && !loopAllLoops)
+        {
+            end();
+        }
+        return LoopData.loops[currentIndex];
+    }
+
+    public static void end()
+    {
+        Debug.Log("end");
+    }
 
 }
 
@@ -238,20 +319,7 @@ public static class LoopData
 
     public static int[][,] loops = {
     //patternIndex, duration
-        new int[,] {
-            { 0, 4 },
-            { 1, 4 }
-        },
-        new int[,] {
-            { 0, 4 },
-            { 1, 4 },
-            { 1, 4 }
-        },
-        new int[,] {
-            { 4, 4 },
-            { 0, 4 }
-        },
-        new int[,] {
+        new int[,] {//start
             { 1, 4 },
             { 4, 4 },
             { 3, 4 },
@@ -261,7 +329,47 @@ public static class LoopData
             { 5, 4 },
             { 5, 4 }
         },
-        new int[,] {
+        new int[,] {//boss1
+            { 1, 4 },
+            { 4, 4 },
+            { 3, 4 },
+            { 4, 4 },
+            { 1, 4 },
+            { 4, 4 },
+            { 5, 4 },
+            { 5, 4 }
+        },
+        new int[,] {//boss2
+            { 1, 4 },
+            { 4, 4 },
+            { 3, 4 },
+            { 4, 4 },
+            { 1, 4 },
+            { 4, 4 },
+            { 5, 4 },
+            { 5, 4 }
+        },
+       new int[,] {//boss3
+            { 1, 4 },
+            { 4, 4 },
+            { 3, 4 },
+            { 4, 4 },
+            { 1, 4 },
+            { 4, 4 },
+            { 5, 4 },
+            { 5, 4 },
+            { 1, 4 },
+            { 4, 4 },
+            { 5, 4 },
+            { 5, 4 }
+        },
+        new int[,] {//rise
+            { 1, 4 },
+            { 4, 4 },
+            { 3, 4 },
+            { 4, 4 }
+        },
+        new int[,] {//boss4
             { 1, 4 },
             { 4, 4 },
             { 3, 4 },
@@ -271,6 +379,7 @@ public static class LoopData
             { 5, 4 },
             { 5, 4 }
         }
+
     };
 
     //AttactType, W, Q, other params...
@@ -305,12 +414,23 @@ public static class LoopData
         new AttackData[] { //11-12 unkown
             new AttackData(2, 1, 0, 4, f1: 270, f2: 240),
             new AttackData(2, 2, 2, 4, f1: 270, f2: 300),
-            new AttackData(-1, 2, 2, 4, f1: 4),
+            new AttackData(0, 3, 0, 4), //empty
+            //new AttackData(-1, 2, 2, 4, f1: 4),
             //new AttackData(3, 2, 2, 3, handData1:4),
             //new AttackData(4, 2, 2, 3, handPartData1:GetGameObject(3)),
             //new AttackData(4, 3, 2, 3, handPartData1:GetGameObject(3)),
         }
     };
+
+    public static int loopTotalSize(int loopIndex)
+    {//returns totatl Q of the loop
+        int total = 0;
+        for (int i = 0; i < loops[loopIndex].GetLength(0); i++)
+        {
+            total += loops[loopIndex][i, 1];
+        }
+        return total * 4;
+    }
 
 
     public static GameObject GetGameObject(int type)
@@ -412,7 +532,7 @@ public class AttackData
     public void create(AttackData clone, Vector3 position, int startBeatQ)
     {
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
-        Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
+        //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
 
         //replaced with duration.counterSQ
