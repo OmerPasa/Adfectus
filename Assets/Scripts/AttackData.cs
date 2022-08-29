@@ -63,6 +63,11 @@ public class AttackData
                 LoopData.boss.GetComponent<Attack>().data = clone;
                 LoopData.boss.GetComponent<BossMainScript>().Chasing = true;
                 break;
+            case -2:
+                LoopData.boss.GetComponent<Attack>().data = clone;
+                LoopData.boss.GetComponent<BossMainScript>().Weakened = true;
+                LoopData.boss.GetComponent<BossMainScript>().BossCollider.enabled = false;
+                break;
         }
 
     }
