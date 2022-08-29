@@ -19,6 +19,8 @@ public class BossMainScript : MonoBehaviour
     public bool Chasing;
     public bool Weakened;
     public bool Patroling;
+    public bool laserAnim;
+    public bool teethAnim;
     private Animator animator;
     private string currentAnimaton;
     const string BOSS_LASER = "Boss_Laser";
@@ -34,7 +36,6 @@ private void Awake()
     }
     void Start()
     {
-        // ChangeAnimationState(BOSS_LASER);
         animator = GetComponent<Animator>();
         target = GameObject.Find("Player").transform;
         Healthbar.GetComponent<healthbar_control>().SetMaxHealth(BossHealth);
@@ -88,9 +89,21 @@ private void Awake()
     void Patrol()
     {
         Chasing = false;
-        ChangeAnimationState(BOSS_LASER);
+        AttackAnimation();
         transform.position = Vector2.MoveTowards(transform.position, waypoints[waypointIndex].position, moveSpeed * Time.deltaTime);
         //transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
+    }
+
+    public void AttackAnimation()
+    {
+        if (laserAnim)
+        {
+            ChangeAnimationState(BOSS_LASER);
+        }
+        if (teethAnim)
+        {
+            ChangeAnimationState(BOSS_TEETH);
+        }
     }
     void IncreaseIndex()
     {
