@@ -25,6 +25,7 @@ public class Attack : MonoBehaviour
         {
             case -2:
                 GetComponent<BossMainScript>().BossCollider.enabled = false;
+                LoopData.boss.GetComponent<BossMainScript>().Weakened = false;
                 break;
             case -1:
                 GetComponent<BossMainScript>().Chasing = false;

@@ -18,6 +18,7 @@ public class Tooth : MonoBehaviour
     void Start()
     {
         speed = GetComponent<Attack>().data.f1;
+        /*if (GetComponent<Attack>().data.b1){}*/
         target = LoopData.player.transform;
         directionVec = (target.position - transform.position).normalized;
         transform.rotation = Quaternion.FromToRotation(Vector3.up, directionVec);
@@ -50,6 +51,6 @@ public class Tooth : MonoBehaviour
             return 1;
         }
 
-        return ((5 - dist) * (5 - dist) / 30) + 1;
+        return ((5 - dist) * (5 - dist) / 20) + 1;
     }
 }

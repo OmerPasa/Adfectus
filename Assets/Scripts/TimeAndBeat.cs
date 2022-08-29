@@ -74,7 +74,12 @@ public class TimeAndBeat : MonoBehaviour
         if (TimeB.W % dur == currentAttackData.duration.beatSW && TimeB.Q == currentAttackData.duration.beatSQ)
         { //atak TimeBı geldiyse
             currentAttackData.action(transform.position, TimeB.Counter_Q); //atak oluştur
-            currentAttackPos++;
+            for (int size = 0; size < currentAttackData.extraAttackCount; size++)
+            {
+                Debug.Log("extra attack: " + size + ", " + currentAttackData.extraAttackCount);
+                LoopData.patterns[patInd][currentAttackPos + size + 1].action(transform.position, TimeB.Counter_Q); //atak oluştur
+            }
+            currentAttackPos += 1 + currentAttackData.extraAttackCount;
         }
 
 

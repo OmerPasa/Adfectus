@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Tooth" };
-    // (-1 = Chase)
+    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Tooth", "Prefabs/LaserType2", "Prefabs/LaserType3", "Prefabs/LaserType4" };
+    // (-1 = Chase, -2 = Weakened)
 
     public int type;
+    public int extraAttackCount;
 
     public Duration duration; //list of different objects with different start durations
 
@@ -24,12 +25,14 @@ public class AttackData
 
     public AttackData
     (int type, int W, int Q, int duration,
+        int extraAttackCount = 0,
         float f1 = -1f, float f2 = -1f,
         bool b1 = false,
         GameObject g1 = null
     )
     {
         this.type = type;
+        this.extraAttackCount = extraAttackCount;
 
         this.duration = new Duration(W, Q, duration); //base duration for attackdata calculations on boss
 
@@ -77,6 +80,8 @@ public class AttackData
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
+
+        //LoopData.boss.GetComponent<BossMainScript>().attackAnim(clone);
         if (clone.type == 3)
         {
             LoopData.boss.GetComponent<BossMainScript>().teethAnim = true;
