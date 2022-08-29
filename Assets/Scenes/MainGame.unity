@@ -210,6 +210,8 @@ MonoBehaviour:
   Chasing: 0
   Weakened: 0
   Patroling: 0
+  laserAnim: 0
+  teethAnim: 0
 --- !u!114 &36421029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,7 +591,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 497408459}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.6714431, y: 0.042537265, z: -1.1529344}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
