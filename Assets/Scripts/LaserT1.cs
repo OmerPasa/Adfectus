@@ -56,11 +56,11 @@ public class LaserT1 : MonoBehaviour
         }
     }
 
-    Vector3 angleToVector(float angle)
+    static Vector3 angleToVector(float angle)
     {//radian to vector
         return new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
     }
-    float vectorToAngle(Vector3 vec)
+    static float vectorToAngle(Vector3 vec)
     {//vector to radian
         return Mathf.Atan2(vec.y, vec.x);
     }

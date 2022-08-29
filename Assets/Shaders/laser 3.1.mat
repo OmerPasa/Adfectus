@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: laser
+  m_Name: laser 3.1
   m_Shader: {fileID: -6465566751694194690, guid: 8f086a1c34825f142bea876cec5b1bc7, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -51,10 +51,10 @@ Material:
     m_Ints: []
     m_Floats:
     - _EnableExternalAlpha: 0
-    - _LaserEdgeSmoothness: 7.04
+    - _LaserEdgeSmoothness: 5.43
     - _LaserScale: 5
-    - _LaserThickness: 42.31
-    - _speed: 0.8
+    - _LaserThickness: 8.63
+    - _speed: 0.55
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}

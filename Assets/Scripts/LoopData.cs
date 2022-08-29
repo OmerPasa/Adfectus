@@ -12,23 +12,22 @@ public static class LoopData
     public static int[][,] loops = {
     //patternIndex, duration
         new int[,] {//start
-            { 1, 4 },
             { 4, 4 },
-            { 3, 4 },
+            { 4, 4 },
+            { 4, 4 },
             { 4, 4 }
         },
         new int[,] {//boss1
-            { 1, 4 },
-            { 4, 4 },
-            { 3, 4 },
-            { 4, 4 },
-            { 1, 4 },
-            { 4, 4 },
-            { 5, 4 },
-            { 5, 4 }
+            { 6, 4 },
+            { 7, 4 },
+            { 8, 4 },
+            { 7, 4 },
+            { 6, 4 },
+            { 7, 4 },
+            { 9, 8 }
         },
         new int[,] {//boss2
-            { 1, 4 },
+            { 10, 4 },
             { 4, 4 },
             { 3, 4 },
             { 4, 4 },
@@ -78,27 +77,37 @@ public static class LoopData
             new AttackData(-1, 1, 0, 1),
             new AttackData(-1, 2, 0, 1),
             new AttackData(-1, 3, 0, 1)
-        },//1
+        },
+        
+        //1
         new AttackData[] { //5-6
             new AttackData(1, 1, 0, 2),
             new AttackData(2, 2, 0, 4, f1: 260, f2: 230),
             new AttackData(3, 3, 0, 4, f1: 5),
-        },//2
+        },
+        
+        //2
         new AttackData[] { //7-8
             new AttackData(-1, 1, 0, 2),
             new AttackData(-1, 1, 3, 2),
             new AttackData(-1, 2, 2, 2),
             new AttackData(-1, 3, 1, 2),
-        },//3
+        },
+        
+        //3
         new AttackData[] { //7-8 alternative
             new AttackData(1, 0, 3, 2),
             new AttackData(2, 1, 2, 4, f1: 270, f2: 240),
             new AttackData(1, 2, 1, 2),
             new AttackData(2, 3, 1, 4, f1: 270, f2: 300),
-        },//4
+        },
+        
+        //4
         new AttackData[] { //6-7
             new AttackData(0, 3, 0, 4), //empty
-        },//5
+        },
+        
+        //5
         new AttackData[] { //11-12 unkown
             new AttackData(2, 1, 0, 4, f1: 270, f2: 240),
             new AttackData(2, 2, 2, 4, f1: 270, f2: 300),
@@ -107,7 +116,52 @@ public static class LoopData
             //new AttackData(3, 2, 2, 3, handData1:4),
             //new AttackData(4, 2, 2, 3, handPartData1:GetGameObject(3)),
             //new AttackData(4, 3, 2, 3, handPartData1:GetGameObject(3)),
-        }
+        },
+        
+        //6
+        new AttackData[] { //5-6 f
+            new AttackData(2, 1, 0, 4, f1: 210, f2: 170),
+            new AttackData(2, 2, 0, 4, f1: 330, f2: 370),
+            new AttackData(2, 3, 0, 4, f1: 270, f2: 310, extraAttackCount: 1),
+            new AttackData(2, 3, 0, 4, f1: 270, f2: 230)
+        },
+
+        //7
+        new AttackData[] { //6-7 f
+            new AttackData(3, 0, 1, 4, f1: 5),
+            new AttackData(3, 0, 2, 4, f1: 5),
+            new AttackData(3, 0, 3, 4, f1: 5),
+            new AttackData(3, 1, 1, 4, f1: 3),
+            new AttackData(3, 1, 3, 4, f1: 5),
+            new AttackData(3, 2, 1, 4, f1: 5),
+            new AttackData(3, 2, 2, 4, f1: 5),
+            new AttackData(3, 2, 3, 4, f1: 5),
+            new AttackData(3, 3, 1, 4, f1: 5),
+            new AttackData(3, 3, 3, 4, f1: 5)
+        },
+
+        //8
+        new AttackData[] { //6-7 f
+            new AttackData(2, 1, 0, 3, f1: 210, f2: 190),
+            new AttackData(2, 1, 3, 3, f1: 330, f2: 350),
+            new AttackData(2, 2, 2, 3, f1: 250, f2: 230),
+            new AttackData(2, 3, 1, 3, f1: 290, f2: 310)
+        },
+
+        //9
+        new AttackData[] { //weakening f
+            new AttackData(0, 0, 0, 32), // -2 has a bug???????????????????????????
+            new AttackData(0, 7, 3, 1) //empty
+        },
+
+        //10
+        new AttackData[] { //13-14 f
+            new AttackData(5, 1, 0, 4, f1: 210, f2: 170, extraAttackCount: 1),
+            new AttackData(6, 1, 0, 4, f1: 210, f2: 170),
+            new AttackData(2, 2, 0, 4, f1: 330, f2: 370),
+            new AttackData(5, 3, 0, 4, f1: 270, f2: 310, extraAttackCount: 1),
+            new AttackData(6, 3, 0, 4, f1: 270, f2: 230)
+        },
     };
 
     public static int loopTotalSize(int loopIndex)
