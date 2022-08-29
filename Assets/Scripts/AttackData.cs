@@ -80,7 +80,18 @@ public class AttackData
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
+
         //LoopData.boss.GetComponent<BossMainScript>().attackAnim(clone);
+        if (clone.type == 3)
+        {
+            LoopData.boss.GetComponent<BossMainScript>().teethAnim = true;
+            LoopData.boss.GetComponent<BossMainScript>().laserAnim = false;
+        }
+        if (clone.type == 1 && clone.type == 2)
+        {
+            LoopData.boss.GetComponent<BossMainScript>().laserAnim = true;
+            LoopData.boss.GetComponent<BossMainScript>().teethAnim = false;
+        }
 
         //replaced with duration.counterSQ
         //go.GetComponent<Attack>().startQ = startBeatQ;
