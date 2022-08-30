@@ -20,6 +20,7 @@ public class TimeAndBeat : MonoBehaviour
 
     void Start()
     {
+        TimeB.reset();
         StartCoroutine(StartAttack());
     }
 
