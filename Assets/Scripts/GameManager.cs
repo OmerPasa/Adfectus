@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject badEnding;
     static bool gameHasEndedGoodWay = false;
     public GameObject goodEnding;
-    public float restartDelay = 10f;
+    public float restartDelay = 13f;
 
     private void Start() {
         gameHasEndedBadWay= false;
