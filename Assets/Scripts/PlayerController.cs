@@ -489,14 +489,19 @@ namespace TarodevController
                 {
                     dashTime -= Time.deltaTime;
 
-                    if (direction == 1)
+                    if (direction == 1 )
                     {
                         rb2d.velocity = Vector2.left * dashSpeed;
+                        Physics.IgnoreLayerCollision(8, 9, true);
+                        Invoke("dashRecovery", 2f);
                     }
                     else if (direction == 2)
                     {
                         rb2d.velocity = Vector2.right * dashSpeed;
+                        Physics2D.IgnoreLayerCollision(8, 9 , true);
+                        Invoke("dashRecovery", 2f);
                     }
+                    
                 }
             }
         }
@@ -624,6 +629,10 @@ namespace TarodevController
         {
             isAttacking = false;
             Debug.Log("ATTACKCOMPLETEBOSS");
+        }
+        void dashRecovery()
+        {
+            Physics2D.IgnoreLayerCollision( 8, 9 , false);
         }
 
         //=====================================================
