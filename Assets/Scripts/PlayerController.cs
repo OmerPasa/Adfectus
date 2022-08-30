@@ -93,7 +93,6 @@ namespace TarodevController
             if (Playerhealth <= 0)
             {
                 playerDying = true;
-                TimeB.reset();
                 GameManager_.GetComponent<GameManager>().EndGame();
                 Debug.Log("game resetting");
 
@@ -490,7 +489,7 @@ namespace TarodevController
                 {
                     dashTime -= Time.deltaTime;
 
-                    if (direction == 1 )
+                    if (direction == 1)
                     {
                         rb2d.velocity = Vector2.left * dashSpeed;
                         Physics.IgnoreLayerCollision(8, 9, true);
@@ -499,10 +498,10 @@ namespace TarodevController
                     else if (direction == 2)
                     {
                         rb2d.velocity = Vector2.right * dashSpeed;
-                        Physics2D.IgnoreLayerCollision(8, 9 , true);
+                        Physics2D.IgnoreLayerCollision(8, 9, true);
                         Invoke("dashRecovery", 2f);
                     }
-                    
+
                 }
             }
         }
@@ -633,11 +632,11 @@ namespace TarodevController
         }
         void dashRecovery()
         {
-            Physics2D.IgnoreLayerCollision( 8, 9 , false);
+            Physics2D.IgnoreLayerCollision(8, 9, false);
         }
         void CreateDust()
         {
-            dashEffect.Play();    
+            dashEffect.Play();
         }
 
         //=====================================================
