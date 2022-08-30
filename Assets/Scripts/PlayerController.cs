@@ -17,6 +17,8 @@ namespace TarodevController
     {
         // Public for external hooks
         public GameObject currentOneWayPlatform;
+        public GameObject CeilingCheck1;
+        public GameObject CeilingCheck2;
         [SerializeField] private BoxCollider2D playerCollider;
         public float attackRange;
         public Transform attackPos;
@@ -144,7 +146,7 @@ namespace TarodevController
             Input = new FrameInput
             {
                 JumpDown = UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.UpArrow),
-                JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
+                JumpUp = UnityEngine.Input.GetKeyUp(KeyCode.Space) || UnityEngine.Input.GetKeyUp(KeyCode.W) || UnityEngine.Input.GetKeyUp(KeyCode.UpArrow),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
             //prevents further pushes and animation glitch.
@@ -239,6 +241,26 @@ namespace TarodevController
             if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
             {
                 hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
+                // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
+                if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform")
+                {
+                    currentOneWayPlatform = hit.collider.gameObject;
+                    hit.collider.gameObject.SetActive(false);
+                    playerJumping = false;
+
+                    Invoke("OneWayPlatform", 0.3f);
+                }
+                hit = Physics2D.Raycast(CeilingCheck1.transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
+                // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
+                if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform")
+                {
+                    currentOneWayPlatform = hit.collider.gameObject;
+                    hit.collider.gameObject.SetActive(false);
+                    playerJumping = false;
+
+                    Invoke("OneWayPlatform", 0.3f);
+                }
+                hit = Physics2D.Raycast(CeilingCheck2.transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
                 // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
                 if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform")
                 {
