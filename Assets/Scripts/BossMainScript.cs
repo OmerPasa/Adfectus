@@ -52,7 +52,7 @@ private void Awake()
         {
             Debug.Log("game won");
             Patroling = false;
-            ChangeAnimationState(BOSS_WEAK);
+            ChangeAnimationState(BOSS_DEATH);
             GameManager.GetComponent<GameManager>().GameWon();
         }
         if (Weakened)
@@ -60,9 +60,7 @@ private void Awake()
             Patroling = false;
             BossCollider.enabled = true;
             ChangeAnimationState(BOSS_WEAK);
-        }else
-        {
-            Patroling = true;
+
         }
         if (Chasing && !Weakened)
         {
@@ -88,26 +86,25 @@ private void Awake()
             rb2d.velocity = new Vector2(moveDirection.x, moveDirection.y) * moveSpeed;
         }
     }
-    public void attackAnim(AttackData clone)
-    {
-        if (clone.type == 3)
-        {
-            Debug.Log("teeth");
-            ChangeAnimationState(BOSS_TEETH);
-        }
-        if (clone.type == 1 || clone.type == 2 || clone.type == 4 || clone.type == 5 || clone.type == 6)
-        {
-            Debug.Log("laser");
-            ChangeAnimationState(BOSS_LASER);
-        }
-    }
     void Patrol()
     {
         Chasing = false;
+        AttackAnimation();
         transform.position = Vector2.MoveTowards(transform.position, waypoints[waypointIndex].position, moveSpeed * Time.deltaTime);
         //transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
     }
 
+    public void AttackAnimation()
+    {
+        if (laserAnim)
+        {
+            ChangeAnimationState(BOSS_LASER);
+        }
+        if (teethAnim)
+        {
+            ChangeAnimationState(BOSS_TEETH);
+        }
+    }
     void IncreaseIndex()
     {
         waypointIndex++;

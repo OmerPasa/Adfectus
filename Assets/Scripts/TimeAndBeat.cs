@@ -53,7 +53,7 @@ public class TimeAndBeat : MonoBehaviour
         {//eğer Qbeat değişmediyse kontrol etmeye gerek yok
             return;
         }
-        // Debug.Log("bQC: " + TimeB.Counter_Q);
+        Debug.Log("bQC: " + TimeB.Counter_Q);
 
         if (LoopController.needChange && LoopController.changeIndex > TimeB.Counter_Q)
         {//loop değişmesi gerekiyor ve değişme zamanı gelmediyse
@@ -64,7 +64,7 @@ public class TimeAndBeat : MonoBehaviour
         {//loop değişmesi gerekiyor ve değişme zamanı geldiyse
             LoopController.needChange = false;
             playUpdate();
-            // Debug.Log("Loop changed");
+            Debug.Log("Loop changed");
         }
 
         int patInd = LoopController.currentLoop[currentLoopPos, 0]; //pattern index
@@ -76,7 +76,7 @@ public class TimeAndBeat : MonoBehaviour
             currentAttackData.action(transform.position, TimeB.Counter_Q); //atak oluştur
             for (int size = 0; size < currentAttackData.extraAttackCount; size++)
             {
-                // Debug.Log("extra attack: " + size + ", " + currentAttackData.extraAttackCount);
+                Debug.Log("extra attack: " + size + ", " + currentAttackData.extraAttackCount);
                 LoopData.patterns[patInd][currentAttackPos + size + 1].action(transform.position, TimeB.Counter_Q); //atak oluştur
             }
             currentAttackPos += 1 + currentAttackData.extraAttackCount;
@@ -91,7 +91,7 @@ public class TimeAndBeat : MonoBehaviour
             if (currentLoopPos >= LoopController.currentLoop.GetLength(0))
             {//loopPos kontrolü
                 LoopController.currentLoopEnd();
-                // Debug.Log("Loop end. " + LoopController.currentIndex + " " + LoopController.prevIndex);
+                Debug.Log("Loop end. " + LoopController.currentIndex + " " + LoopController.prevIndex);
 
                 currentLoopPos = 0;
 

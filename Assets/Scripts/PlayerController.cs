@@ -244,6 +244,7 @@ namespace TarodevController
                 if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform" )
                 {
                     currentOneWayPlatform = hit.collider.gameObject;
+                    Debug.Log($"currentoneway is{currentOneWayPlatform.name}");
                     hit.collider.gameObject.SetActive(false);
                     playerJumping = false;
 
