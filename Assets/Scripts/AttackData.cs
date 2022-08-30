@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AttackData
@@ -75,6 +76,7 @@ public class AttackData
                 break;
             case -2:
                 LoopData.boss.GetComponent<Attack>().data = clone;
+                Debug.Log("Case2");
                 LoopData.boss.GetComponent<BossMainScript>().Weakened = true;
                 LoopData.boss.GetComponent<BossMainScript>().BossCollider.enabled = false;
                 break;
@@ -87,18 +89,9 @@ public class AttackData
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
-
-        //LoopData.boss.GetComponent<BossMainScript>().attackAnim(clone);
-        if (clone.type == 3)
-        {
-            LoopData.boss.GetComponent<BossMainScript>().teethAnim = true;
-            LoopData.boss.GetComponent<BossMainScript>().laserAnim = false;
-        }
-        if (clone.type == 1 && clone.type == 2)
-        {
-            LoopData.boss.GetComponent<BossMainScript>().laserAnim = true;
-            LoopData.boss.GetComponent<BossMainScript>().teethAnim = false;
-        }
+        Debug.Log("clone number " + clone.type);
+        LoopData.boss.GetComponent<BossMainScript>().attackAnim(clone);
+        Debug.Log("cloning");
 
         //replaced with duration.counterSQ
         //go.GetComponent<Attack>().startQ = startBeatQ;
