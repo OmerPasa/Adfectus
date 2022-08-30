@@ -7,6 +7,7 @@ TagManager:
   - OneWayPlatform
   - Enemy
   - Ground
+  - Laser
   layers:
   - Default
   - TransparentFX
@@ -16,8 +17,8 @@ TagManager:
   - UI
   - Ground
   - Boss
-  - 
-  - 
+  - Player
+  - Laser & Teeth
   - 
   - 
   - 

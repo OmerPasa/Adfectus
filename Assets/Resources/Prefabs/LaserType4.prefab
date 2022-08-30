@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8308166402603793005}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: end
   m_TagString: Laser
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8308166402853175268}
   - component: {fileID: 8308166402853175269}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Line
   m_TagString: Laser
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 8308166403411408261}
   - component: {fileID: 8308166403411408269}
   - component: {fileID: 130156886089754217}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LaserType4
   m_TagString: Laser
   m_Icon: {fileID: 0}
