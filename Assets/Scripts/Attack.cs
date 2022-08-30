@@ -23,6 +23,12 @@ public class Attack : MonoBehaviour
     {
         switch (data.type)
         {
+            case -5:
+                break;
+            case -4:
+                break;
+            case -3:
+                break;
             case -2:
                 GetComponent<BossMainScript>().BossCollider.enabled = false;
                 LoopData.boss.GetComponent<BossMainScript>().Weakened = false;

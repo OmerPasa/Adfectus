@@ -104,9 +104,9 @@ namespace TarodevController
 
             if (true)
             {
-                
+
             }
-            
+
             if (!_active) return;
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
@@ -144,7 +144,7 @@ namespace TarodevController
 
             Input = new FrameInput
             {
-                JumpDown =  UnityEngine.Input.GetButtonDown("Jump"),
+                JumpDown = UnityEngine.Input.GetButtonDown("Jump"),
                 JumpUp = UnityEngine.Input.GetButtonUp("Jump"),
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
@@ -239,9 +239,9 @@ namespace TarodevController
             }
             if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
             {
-                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f , _groundLayer );
+                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
                 // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
-                if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform" )
+                if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform")
                 {
                     currentOneWayPlatform = hit.collider.gameObject;
                     hit.collider.gameObject.SetActive(false);
@@ -260,11 +260,12 @@ namespace TarodevController
                     //for giving every one of enemies damage.
                     for (int i = 0; i < enemiesInRange.Length; i++)
                     {
-                    isAttacking = true;
-                    ChangeAnimationState(PLAYER_ATTACK);
-                    damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                    Invoke("AttackComplete", damageDelay);
-                    enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
+                        LoopController.isObjectiveCompleted = true;
+                        isAttacking = true;
+                        ChangeAnimationState(PLAYER_ATTACK);
+                        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+                        Invoke("AttackComplete", damageDelay);
+                        enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
                     }
                 }
             }
@@ -577,7 +578,7 @@ namespace TarodevController
             Set_Health(Playerhealth);
             ChangeAnimationState(PLAYER_TAKEDAMAGE);
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-            Invoke("DamageDelayComplete", damageDelay); 
+            Invoke("DamageDelayComplete", damageDelay);
         }
 
         // set new health to the sprite filter as a new color.
@@ -595,7 +596,7 @@ namespace TarodevController
         {
             if (collision.gameObject.CompareTag("OneWayPlatform"))
             {
-            currentOneWayPlatform = collision.gameObject;
+                currentOneWayPlatform = collision.gameObject;
 
             }
         }
@@ -611,7 +612,7 @@ namespace TarodevController
         {
 
             BoxCollider2D platformCollider = currentOneWayPlatform.GetComponent<BoxCollider2D>();
-            Debug.Log($"current disabled collusion {platformCollider.gameObject.name}"  );
+            Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
             Physics2D.IgnoreCollision(playerCollider, platformCollider);
             yield return new WaitForSeconds(0.6f);
             Physics2D.IgnoreCollision(playerCollider, platformCollider, false);

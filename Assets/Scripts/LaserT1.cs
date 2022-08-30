@@ -28,6 +28,7 @@ public class LaserT1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        lineRenderer.enabled = false;
         operationTotalTime = GetComponent<Attack>().data.duration.getDurInSeconds();
         startAngle = GetComponent<Attack>().data.f1;
         endAngle = GetComponent<Attack>().data.f2;
@@ -75,7 +76,7 @@ public class LaserT1 : MonoBehaviour
     }
     void setLaserFiring()
     {
-        laserEndVec = directionVec * 7.2f;
+        laserEndVec = directionVec * 15;
         setLinePosition();
         updateDirection();
 

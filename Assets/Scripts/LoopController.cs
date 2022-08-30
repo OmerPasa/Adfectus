@@ -6,7 +6,7 @@ public static class LoopController
 
 
     public static bool loopAllLoops = false;
-    public static bool isObjectiveCompleted = true;
+    public static bool isObjectiveCompleted = false;
     public static bool needChange = false;
     public static int changeIndex = 0;
 
@@ -21,7 +21,7 @@ public static class LoopController
             return false;
         }
 
-
+        isObjectiveCompleted = false;
         needChange = true;
         currentLoop = getNextLoop();
         return true;

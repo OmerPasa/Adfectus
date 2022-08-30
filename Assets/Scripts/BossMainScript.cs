@@ -21,15 +21,18 @@ public class BossMainScript : MonoBehaviour
     public bool Patroling;
     public bool laserAnim;
     public bool teethAnim;
+    public bool fadein;
+    public bool fadeout;
+    AttackData fade;
     private Animator animator;
     private string currentAnimaton;
     const string BOSS_LASER = "Boss_Laser";
-    const string BOSS_TEETH= "Boss_Teeth";
+    const string BOSS_TEETH = "Boss_Teeth";
     const string BOSS_WEAK = "Boss_Weak";
     const string BOSS_TAKEDAMAGE = "Boss_TakeDamage";
     const string BOSS_DEATH = "Boss_Death";
 
-private void Awake()
+    private void Awake()
     {
         rb2d = GetComponent<Rigidbody2D>();
         BossCollider.enabled = false;
@@ -45,9 +48,9 @@ private void Awake()
 
     void Update()
     {
-        Debug.Log("currrentState patroling " + Patroling );
-        Debug.Log("currrentState chase " + Chasing );
-        Debug.Log("currrentState weakened " + Weakened );
+        /*Debug.Log("currrentState patroling " + Patroling);
+        Debug.Log("currrentState chase " + Chasing);
+        Debug.Log("currrentState weakened " + Weakened);*/
         if (BossHealth <= 0)
         {
             Debug.Log("game won");
@@ -60,7 +63,8 @@ private void Awake()
             Patroling = false;
             BossCollider.enabled = true;
             ChangeAnimationState(BOSS_WEAK);
-        }else
+        }
+        else
         {
             Patroling = true;
         }
@@ -70,7 +74,7 @@ private void Awake()
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             moveDirection = direction;
         }
-        if(!Chasing && !Weakened && Patroling)
+        if (!Chasing && !Weakened && Patroling)
         {
             Patrol();
         }
@@ -78,6 +82,36 @@ private void Awake()
         if (dist < 1f)
         {
             IncreaseIndex();
+        }
+
+        if (fadein)
+        {
+            if (fade.f1 > fade.f2)
+            {
+                GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, fade.f2 / fade.f1);
+                Debug.Log("fadein: " + (fade.f2 / fade.f1));
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                fadein = false;
+            }
+            fade.f2 += Time.deltaTime;
+        }
+
+        if (fadeout)
+        {
+            if (fade.f1 > fade.f2)
+            {
+                GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, (fade.f1 - fade.f2) / fade.f1);
+                Debug.Log("fadeout: " + ((fade.f1 - fade.f2) / fade.f1));
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+                fadeout = false;
+            }
+            fade.f2 += Time.deltaTime;
         }
     }
 
@@ -124,7 +158,7 @@ private void Awake()
         BossHealth -= damage;
         Debug.Log("BossHealth " + BossHealth);
         Healthbar.GetComponent<healthbar_control>().SetHealth(BossHealth);
-        Invoke("DamageDelayComplete", damageDelay); 
+        Invoke("DamageDelayComplete", damageDelay);
     }
     void DamageDelayComplete()
     {
@@ -138,5 +172,21 @@ private void Awake()
 
         animator.Play(newAnimation);
         currentAnimaton = newAnimation;
+    }
+
+    public void fadeIn(AttackData data)
+    {
+        fade = data;
+        fade.f1 = TimeB.quarterBeatDuration * fade.duration.duration / 1000;
+        fade.f2 = 0.0f;
+        fadein = true;
+    }
+
+    public void fadeOut(AttackData data)
+    {
+        fade = data;
+        fade.f1 = TimeB.quarterBeatDuration * fade.duration.duration / 1000;
+        fade.f2 = 0.0f;
+        fadeout = true;
     }
 }

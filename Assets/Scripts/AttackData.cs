@@ -3,15 +3,22 @@ using UnityEngine;
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Tooth", "Prefabs/LaserType2", "Prefabs/LaserType3", "Prefabs/LaserType4" };
-    // (-1 = Chase, -2 = Weakened)
+    static string[] prefabPaths = { "Prefabs/Null",
+    "Prefabs/LaserType0",
+    "Prefabs/LaserType1",
+    "Prefabs/Tooth",
+    "Prefabs/LaserType2",
+    "Prefabs/LaserType3",
+    "Prefabs/LaserType4",
+     "Prefabs/LaserType5" };
+    // (-1 = Chase, -2 = Weakened, -3 = objective pass, -4 = fade in, -5 = fade out)
 
     public int type;
     public int extraAttackCount;
 
     public Duration duration; //list of different objects with different start durations
 
-    public float f1; public float f2;
+    public float f1; public float f2; public float f3;
     public bool b1;
 
     public GameObject g1;
@@ -19,7 +26,7 @@ public class AttackData
     public AttackData(AttackData data, Duration dur)
     {
         type = data.type; duration = dur;
-        f1 = data.f1; f2 = data.f2;
+        f1 = data.f1; f2 = data.f2; f3 = data.f3;
         b1 = data.b1;
         g1 = data.g1;
     }
@@ -27,7 +34,7 @@ public class AttackData
     public AttackData
     (int type, int W, int Q, int duration,
         int extraAttackCount = 0,
-        float f1 = -1f, float f2 = -1f,
+        float f1 = -1f, float f2 = -1f, float f3 = -1f,
         bool b1 = false,
         GameObject g1 = null
     )
@@ -39,6 +46,7 @@ public class AttackData
 
         this.f1 = f1;
         this.f2 = f2;
+        this.f3 = f3;
         this.b1 = b1;
 
         this.g1 = g1;
@@ -72,6 +80,15 @@ public class AttackData
                 Debug.Log("Case2");
                 LoopData.boss.GetComponent<BossMainScript>().Weakened = true;
                 LoopData.boss.GetComponent<BossMainScript>().BossCollider.enabled = false;
+                break;
+            case -3:
+                LoopController.isObjectiveCompleted = true;
+                break;
+            case -4:
+                LoopData.boss.GetComponent<BossMainScript>().fadeIn(clone);
+                break;
+            case -5:
+                LoopData.boss.GetComponent<BossMainScript>().fadeOut(clone);
                 break;
         }
 

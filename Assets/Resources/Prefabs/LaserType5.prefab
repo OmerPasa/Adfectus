@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8308166402603793005}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: end
   m_TagString: Laser
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8308166402853175268}
   - component: {fileID: 8308166402853175269}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Line
   m_TagString: Laser
   m_Icon: {fileID: 0}
@@ -55,14 +55,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8308166402853175267}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.23}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0008726948, w: 0.99999964}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8308166403411408259}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.1}
 --- !u!120 &8308166402853175269
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -114,8 +114,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.04160411
-        value: 0.0542605
+        time: 0.030258179
+        value: 0.12567925
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -127,8 +127,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.6603774, g: 0.64163417, b: 0.058561735, a: 1}
-      key1: {r: 1, g: 0.85205483, b: 0.32452828, a: 1}
+      key0: {r: 1, g: 0, b: 0.8455415, a: 0.3882353}
+      key1: {r: 1, g: 0.032075405, b: 0.8960376, a: 0.3882353}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -173,9 +173,8 @@ GameObject:
   - component: {fileID: 8308166403411408259}
   - component: {fileID: 8308166403411408261}
   - component: {fileID: 8308166403411408269}
-  - component: {fileID: 130156886089754217}
-  m_Layer: 9
-  m_Name: LaserType4
+  m_Layer: 0
+  m_Name: LaserType5
   m_TagString: Laser
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -189,7 +188,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8308166403411408258}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.87, y: -4.58, z: 0.16}
+  m_LocalPosition: {x: 1.87, y: -4.58, z: -0.028972438}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -223,31 +222,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 8308166402853175269}
-  edgeCollider: {fileID: 130156886089754217}
+  edgeCollider: {fileID: 0}
   directionVec: {x: 0, y: 0, z: 0}
   rotationSpeed: 1000
   startAngle: 90
   endAngle: 225
   mode: 1
---- !u!68 &130156886089754217
-EdgeCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8308166403411408258}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
-  m_Points:
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
