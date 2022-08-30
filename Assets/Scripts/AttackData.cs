@@ -2,7 +2,14 @@ using UnityEngine;
 
 public class AttackData
 {
-    static string[] prefabPaths = { "Prefabs/Null", "Prefabs/LaserType0", "Prefabs/LaserType1", "Prefabs/Tooth", "Prefabs/LaserType2", "Prefabs/LaserType3", "Prefabs/LaserType4" };
+    static string[] prefabPaths = { "Prefabs/Null",
+    "Prefabs/LaserType0",
+    "Prefabs/LaserType1",
+    "Prefabs/Tooth",
+    "Prefabs/LaserType2",
+    "Prefabs/LaserType3",
+    "Prefabs/LaserType4",
+     "Prefabs/LaserType5" };
     // (-1 = Chase, -2 = Weakened)
 
     public int type;
