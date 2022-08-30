@@ -236,7 +236,7 @@ namespace TarodevController
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.S))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
                 hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
                 // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
