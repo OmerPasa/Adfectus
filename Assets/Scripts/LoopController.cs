@@ -48,4 +48,14 @@ public static class LoopController
         //ğ
     }
 
+    public static void reset()
+    {
+        prevIndex = 0;
+        currentIndex = 0;
+        currentLoop = LoopData.loops[currentIndex];
+        isObjectiveCompleted = false;
+        needChange = false;
+        changeIndex = 0;
+    }
+
 }

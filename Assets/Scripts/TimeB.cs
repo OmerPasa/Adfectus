@@ -19,6 +19,7 @@ public static class TimeB
         Q = 0;
         Counter_Q = 0;
         isFirstFrame = true;
+        LoopController.reset();
     }
 
     public static void baslat(float time)
