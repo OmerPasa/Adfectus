@@ -127,7 +127,7 @@ namespace TarodevController
 
         private void GatherInput()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.S))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.S) || UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
             {
                 if (currentOneWayPlatform != null)
                 {
@@ -236,7 +236,7 @@ namespace TarodevController
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
             {
                 hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
                 // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
