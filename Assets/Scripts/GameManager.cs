@@ -5,19 +5,22 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject blackCurtain;
+    public SpriteRenderer Renderer;
     static bool gameHasEndedBadWay = false;
     public GameObject badEnding;
     static bool gameHasEndedGoodWay = false;
     public GameObject goodEnding;
-    public float restartDelay = 1f;
+    public float restartDelay = 12f;
 
     public void EndGame ()
     {
         if (gameHasEndedBadWay == false)
         {
-            blackCurtain.transform.position = Vector3.Lerp(blackCurtain.transform.position,transform.position, Time.time);
-            badEnding.SetActive(true);// also implement fading
+            for (float i = 0; i <= 1.0f; i += 0.01f)
+            {
+            Renderer.color = new Color(20, 10, 10, i);
+            }
+            badEnding.SetActive(true);
             gameHasEndedBadWay =  true;
             Debug.Log("GAME OVER");
             Invoke("Restart", restartDelay);
@@ -28,7 +31,10 @@ public class GameManager : MonoBehaviour
     {
         if (gameHasEndedGoodWay == false)
         {
-            blackCurtain.transform.position = Vector3.Lerp(blackCurtain.transform.position,transform.position, Time.time);
+            for (float i = 0; i <= 1.0f; i += 0.01f)
+            {
+            Renderer.color = new Color(20, 10, 10, i);
+            }
             goodEnding.SetActive(true); //also implement fading
             gameHasEndedGoodWay =  true;
             Debug.Log("GAME GameWon");
@@ -38,6 +44,6 @@ public class GameManager : MonoBehaviour
     }
     void Restart () 
     {
-        SceneManager.LoadScene("MainGame");
+        SceneManager.LoadScene("MEnu");
     }
 }
