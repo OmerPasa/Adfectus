@@ -51,10 +51,8 @@ public static class LoopData
             { 9, 8 }
         },
         new int[,] {//end
-            { 4, 4 },
-            { 4, 4 },
-            { 4, 4 },
-            { 4, 4 }
+            { 9, 8 },
+            { 9, 8 }
         },
 
     };
@@ -72,7 +70,7 @@ public static class LoopData
         //1
         new AttackData[] { //5-6
             new AttackData(1, 1, 0, 2),
-            new AttackData(7, 1, 3, 4, f1: 260, f2: 230),
+            new AttackData(7, 1, 3, 4, f1: 260, f2: 260),
             new AttackData(2, 2, 0, 4, f1: 260, f2: 230),
             new AttackData(3, 3, 0, 4, f1: 5),
         },
@@ -111,13 +109,13 @@ public static class LoopData
         
         //6
         new AttackData[] { //5-6 f
-            new AttackData(7, 0, 2, 1, f1: 210, f2: 170),
+            new AttackData(7, 0, 2, 1, f1: 210, f2: 210),
             new AttackData(2, 1, 0, 4, f1: 210, f2: 170),
 
-            new AttackData(7, 1, 2, 1, f1: 330, f2: 370),
+            new AttackData(7, 1, 2, 1, f1: 330, f2: 330),
             new AttackData(2, 2, 0, 4, f1: 330, f2: 370),
 
-            new AttackData(7, 2, 2, 1, f1: 270, f2: 230),
+            new AttackData(7, 2, 2, 1, f1: 270, f2: 270),
             new AttackData(2, 3, 0, 4, f1: 270, f2: 310, extraAttackCount: 1),
             new AttackData(2, 3, 0, 4, f1: 270, f2: 230)
         },
@@ -138,16 +136,16 @@ public static class LoopData
 
         //8
         new AttackData[] { //7-8 f
-            new AttackData(7, 0, 2, 1, f1: 210, f2: 190),
+            new AttackData(7, 0, 2, 1, f1: 210, f2: 210),
             new AttackData(2, 1, 0, 3, f1: 210, f2: 190),
 
-            new AttackData(7, 1, 1, 1, f1: 330, f2: 350),
+            new AttackData(7, 1, 1, 1, f1: 330, f2: 330),
             new AttackData(2, 1, 3, 3, f1: 330, f2: 350),
 
-            new AttackData(7, 2, 0, 1, f1: 250, f2: 230),
+            new AttackData(7, 2, 0, 1, f1: 250, f2: 250),
             new AttackData(2, 2, 2, 3, f1: 250, f2: 230),
 
-            new AttackData(7, 2, 3, 1, f1: 290, f2: 310),
+            new AttackData(7, 2, 3, 1, f1: 290, f2: 290),
             new AttackData(2, 3, 1, 3, f1: 290, f2: 310)
         },
 
@@ -173,13 +171,13 @@ public static class LoopData
 
         //11
         new AttackData[] { //21-22 f
-            new AttackData(7, 0, 2, 1, f1: 360, f2: 330, extraAttackCount: 1),
-            new AttackData(7, 0, 2, 1, f1: 320, f2: 290),
+            new AttackData(7, 0, 2, 1, f1: 360, f2: 360, extraAttackCount: 1),
+            new AttackData(7, 0, 2, 1, f1: 320, f2: 320),
             new AttackData(2, 1, 0, 4, f1: 360, f2: 330, extraAttackCount: 1),
             new AttackData(2, 1, 0, 4, f1: 320, f2: 290),
 
-            new AttackData(7, 1, 2, 1, f1: 180, f2: 210, extraAttackCount: 1),
-            new AttackData(7, 1, 2, 1, f1: 220, f2: 250),
+            new AttackData(7, 1, 2, 1, f1: 180, f2: 180, extraAttackCount: 1),
+            new AttackData(7, 1, 2, 1, f1: 220, f2: 220),
             new AttackData(2, 2, 0, 4, f1: 180, f2: 210, extraAttackCount: 1),
             new AttackData(2, 2, 0, 4, f1: 220, f2: 250),
 
@@ -210,10 +208,10 @@ public static class LoopData
             new AttackData(3, 1, 2, 4, f1: 5),
             new AttackData(3, 2, 0, 4, f1: 5, extraAttackCount: 2),
 
-            new AttackData(7, 2, 0, 1, f1: 220, f2: 290),
-            new AttackData(7, 2, 0, 1, f1: 320, f2: 250),
-            new AttackData(2, 2, 2, 6, f1: 220, f2: 290, extraAttackCount: 1),
-            new AttackData(2, 2, 2, 6, f1: 320, f2: 250),
+            new AttackData(7, 2, 0, 1, f1: 200, f2: 200),
+            new AttackData(7, 2, 0, 1, f1: 340, f2: 340),
+            new AttackData(2, 2, 2, 6, f1: 200, f2: 240, extraAttackCount: 1),
+            new AttackData(2, 2, 2, 6, f1: 340, f2: 300),
         },
 
         //14
@@ -224,8 +222,8 @@ public static class LoopData
             new AttackData(3, 1, 2, 4, f1: 5),
             new AttackData(3, 2, 0, 4, f1: 5,  extraAttackCount: 2),
 
-            new AttackData(7, 2, 0, 1, f1: 260, f2: 220),
-            new AttackData(7, 2, 0, 1, f1: 280, f2: 320),
+            new AttackData(7, 2, 0, 1, f1: 260, f2: 260),
+            new AttackData(7, 2, 0, 1, f1: 280, f2: 280),
             new AttackData(2, 2, 2, 6, f1: 260, f2: 220, extraAttackCount: 1),
             new AttackData(2, 2, 2, 6, f1: 280, f2: 320),
         },
