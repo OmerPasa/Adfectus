@@ -93,12 +93,13 @@ namespace TarodevController
             if (Playerhealth <= 0)
             {
                 playerDying = true;
-                //TimeB.reset();
+                TimeB.reset();
                 GameManager_.GetComponent<GameManager>().EndGame();
                 Debug.Log("game resetting");
 
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
+                Invoke("Die", 2f);
             }
 
             if (true)
@@ -489,7 +490,7 @@ namespace TarodevController
                 {
                     dashTime -= Time.deltaTime;
 
-                    if (direction == 1)
+                    if (direction == 1 )
                     {
                         rb2d.velocity = Vector2.left * dashSpeed;
                         Physics.IgnoreLayerCollision(8, 9, true);
@@ -498,10 +499,10 @@ namespace TarodevController
                     else if (direction == 2)
                     {
                         rb2d.velocity = Vector2.right * dashSpeed;
-                        Physics2D.IgnoreLayerCollision(8, 9, true);
+                        Physics2D.IgnoreLayerCollision(8, 9 , true);
                         Invoke("dashRecovery", 2f);
                     }
-
+                    
                 }
             }
         }
@@ -566,6 +567,10 @@ namespace TarodevController
 
         //on trigger () Will trigger the player take damage and it will done most of the other work
         //then Set_Health will give the color of current health.
+        public void Die()
+        {
+            Destroy(gameObject);
+        }
         public void PlayerTakeDamage(float damage)
         {
             playerTakingDamage = true;
@@ -628,11 +633,11 @@ namespace TarodevController
         }
         void dashRecovery()
         {
-            Physics2D.IgnoreLayerCollision(8, 9, false);
+            Physics2D.IgnoreLayerCollision( 8, 9 , false);
         }
         void CreateDust()
         {
-            dashEffect.Play();
+            dashEffect.Play();    
         }
 
         //=====================================================
