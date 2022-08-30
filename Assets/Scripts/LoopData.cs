@@ -12,10 +12,7 @@ public static class LoopData
     public static int[][,] loops = {
     //patternIndex, duration
         new int[,] {//start
-            { 4, 4 },
-            { 4, 4 },
-            { 4, 4 },
-            { 4, 4 }
+            { 17, 16 },
         },
         new int[,] {//boss1
             { 6, 4 },
@@ -30,8 +27,7 @@ public static class LoopData
             { 10, 8 },
             { 10, 8 },
             { 10, 8 },
-            { 4, 4 },
-            { 4, 4 }
+            { 9, 8 }
         },
        new int[,] {//boss3
             { 11, 4 },
@@ -40,14 +36,10 @@ public static class LoopData
             { 12, 4 },
             { 11, 4 },
             { 12, 4 },
-            { 4, 4 },
-            { 4, 4 }
+            { 9, 8 }
         },
         new int[,] {//rise
-            { 4, 4 },
-            { 4, 4 },
-            { 4, 4 },
-            { 4, 4 }
+            { 18, 16 },
         },
         new int[,] {//boss4
             { 13, 4 },
@@ -56,9 +48,14 @@ public static class LoopData
             { 15, 4 },
             { 13, 4 },
             { 14, 4 },
+            { 9, 8 }
+        },
+        new int[,] {//end
+            { 4, 4 },
+            { 4, 4 },
             { 4, 4 },
             { 4, 4 }
-        }
+        },
 
     };
 
@@ -253,6 +250,25 @@ public static class LoopData
             new AttackData(3, 3, 1, 4, f1: 5),
             new AttackData(3, 3, 2, 4, f1: 5),
             new AttackData(3, 3, 3, 4, f1: 5),
+        },
+
+        //16
+        new AttackData[] { //pass the objective  (unused)
+            new AttackData(-3, 3, 0, 4),
+        },
+
+        //17
+        new AttackData[] { //instant fade out f
+            new AttackData(-5, 0, 0, 0),
+            new AttackData(-3, 1, 0, 4),
+            new AttackData(-4, 8, 0, 32),
+        },
+
+        //18
+        new AttackData[] { //rise f
+            new AttackData(-5, 0, 0, 24),
+            new AttackData(-3, 3, 0, 4),
+            new AttackData(-4, 8, 0, 32),
         },
     };
 
