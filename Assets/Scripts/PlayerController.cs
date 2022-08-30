@@ -53,7 +53,7 @@ namespace TarodevController
         public AudioSource BackGroundM;
         public GameObject GameManager_;
         public SpriteRenderer sprite;
-        public GameObject dashEffect;
+        public ParticleSystem dashEffect;
         private string currentAnimaton;
 
 
@@ -99,7 +99,6 @@ namespace TarodevController
 
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);
-                Invoke("Die", 2f);
             }
 
             if (true)
@@ -469,12 +468,12 @@ namespace TarodevController
             {
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Q) && !_hasDashed)
                 {
-                    Instantiate(dashEffect, transform.position, Quaternion.identity);
+                    CreateDust();
                     direction = 1;
                 }
                 else if (UnityEngine.Input.GetKeyDown(KeyCode.E) && !_hasDashed)
                 {
-                    Instantiate(dashEffect, transform.position, Quaternion.identity);
+                    CreateDust();
                     direction = 2;
                 }
             }
@@ -567,10 +566,6 @@ namespace TarodevController
 
         //on trigger () Will trigger the player take damage and it will done most of the other work
         //then Set_Health will give the color of current health.
-        public void Die()
-        {
-            Destroy(gameObject);
-        }
         public void PlayerTakeDamage(float damage)
         {
             playerTakingDamage = true;
@@ -634,6 +629,10 @@ namespace TarodevController
         void dashRecovery()
         {
             Physics2D.IgnoreLayerCollision( 8, 9 , false);
+        }
+        void CreateDust()
+        {
+            dashEffect.Play();    
         }
 
         //=====================================================
