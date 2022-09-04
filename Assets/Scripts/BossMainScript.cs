@@ -89,7 +89,7 @@ public class BossMainScript : MonoBehaviour
             if (fade.f1 > fade.f2)
             {
                 GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, fade.f2 / fade.f1);
-                Debug.Log("fadein: " + (fade.f2 / fade.f1));
+                // Debug.Log("fadein: " + (fade.f2 / fade.f1));
             }
             else
             {

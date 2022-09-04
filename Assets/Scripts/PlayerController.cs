@@ -62,6 +62,8 @@ namespace TarodevController
         private float jumpDelay = 0.7f;
         private float damageDelay = 2f;
         private float maxHealth = 1;
+        public float damageToPlayer;
+
         [SerializeField]
         public static float Playerhealth = 1;
         private Vector3 IdleVelocity = new Vector3(0, 0, 0);
@@ -85,7 +87,11 @@ namespace TarodevController
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
-        void Awake() => Invoke(nameof(Activate), 0.5f);
+        void Awake(){
+            damageToPlayer = PlayerPrefs.GetFloat("damageToPlayer");
+            Debug.Log("damagetoplayerin game is " + damageToPlayer);
+            Invoke(nameof(Activate), 0.5f);
+        }
         void Activate() => _active = true;
 
         private void Update()
@@ -101,9 +107,9 @@ namespace TarodevController
                 Invoke("Die", 2f);
             }
 
-            if (true)
+            if (transform.position.y <= -4)
             {
-
+                transform.position = new Vector3(0,-2);
             }
 
             if (!_active) return;
@@ -190,7 +196,8 @@ namespace TarodevController
         {
             if (laser.gameObject.tag == "Laser")
             {
-                PlayerTakeDamage(0.1f);
+                PlayerTakeDamage(damageToPlayer);
+                Debug.Log("amount of damage " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
             }
         }
