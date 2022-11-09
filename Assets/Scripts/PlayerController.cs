@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace TarodevController
@@ -35,6 +36,7 @@ namespace TarodevController
         private int direction;
         public int damageBoss = 1;
         public bool isFacingLeft;
+        private InputManager inputManager;
 
         //Animation States
         const string PLAYER_IDLE = "Player_Idle";
@@ -91,6 +93,13 @@ namespace TarodevController
             damageToPlayer = PlayerPrefs.GetFloat("damageToPlayer");
             Debug.Log("damagetoplayerin game is " + damageToPlayer);
             Invoke(nameof(Activate), 0.5f);
+
+            inputManager = new InputManager();
+            inputManager.Player.Enable();
+            inputManager.Player.Attack.performed += Attack_performed;
+            //inputManager.Player.Dash.performed += Dash_performed;
+            //inputManager.Player.Jump.performed += Jump_performed;
+            //inputManager.Player.Move.performed += Movement_performed;
         }
         void Activate() => _active = true;
 
@@ -125,32 +134,25 @@ namespace TarodevController
             CalculateJump(); // Possibly overrides vertical
 
             HandleDashing();//Checks dash movement codes.
-            MoveCharacter(); // Actually perform the axis movement
+            inputManager.Player.Move.performed +=  MoveCharacter; // Actually perform the axis movement
         }
 
 
         #region Gather Input
-
         private void GatherInput()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.S) || UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+            if (inputManager.Player.Onewayplatform.triggered)
             {
                 if (currentOneWayPlatform != null)
                 {
                     StartCoroutine(DisableCollusion());
                 }
             }
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                isAttacking = true;
-            }
-
-
-
+            
             Input = new FrameInput
             {
-                JumpDown = UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.UpArrow),
-                JumpUp = UnityEngine.Input.GetKeyUp(KeyCode.Space) || UnityEngine.Input.GetKeyUp(KeyCode.W) || UnityEngine.Input.GetKeyUp(KeyCode.UpArrow),
+                JumpDown = inputManager.Player.Jump.triggered, //make fix usinghold and jump jump actionto start this bool  
+                JumpUp = inputManager.Player.Jump.triggered,
                 X = UnityEngine.Input.GetAxisRaw("Horizontal")
             };
             //prevents further pushes and animation glitch.
@@ -173,6 +175,12 @@ namespace TarodevController
             {
                 _lastJumpPressed = Time.time;
             }
+        }
+
+        public void Attack_performed(InputAction.CallbackContext context)
+        {
+            Debug.Log("Attacking");
+            isAttacking = true;
         }
         #endregion
 
@@ -469,16 +477,17 @@ namespace TarodevController
         #endregion
 
         #region Dash
+
         private void HandleDashing()
         {
             if (direction == 0)
             {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Q) && !_hasDashed)
+                if (inputManager.Player.DashLeft.triggered && !_hasDashed)
                 {
                     CreateDust();
                     direction = 1;
                 }
-                else if (UnityEngine.Input.GetKeyDown(KeyCode.E) && !_hasDashed)
+                else if (inputManager.Player.DashRight.triggered && !_hasDashed)
                 {
                     CreateDust();
                     direction = 2;
@@ -523,7 +532,7 @@ namespace TarodevController
 
         // We cast our bounds before moving to avoid future collisions
 
-        private void MoveCharacter()
+        private void MoveCharacter(InputAction.CallbackContext context)
         {
             playerRunning = true;
             var pos = transform.position;

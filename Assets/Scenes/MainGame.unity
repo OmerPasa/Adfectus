@@ -3866,6 +3866,7 @@ MonoBehaviour:
   sprite: {fileID: 1982680926}
   dashEffect: {fileID: 1218278508}
   attackDelay: 1
+  damageToPlayer: 0
   mainMenu: {fileID: 0}
   _characterBounds:
     m_Center: {x: 0, y: 0, z: 0}
