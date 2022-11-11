@@ -27,6 +27,7 @@ namespace TarodevController
         public bool JumpingThisFrame { get; private set; }
         public bool LandingThisFrame { get; private set; }
         public Vector3 RawMovement { get; private set; }
+        public Vector2 GetAxisRaw;
         public bool Grounded => _colDown;
         public bool _hasDashed;
         private bool isAttacking;
@@ -125,6 +126,8 @@ namespace TarodevController
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
             _lastPosition = transform.position;
+
+            
             GatherInput();
             RunCollisionChecks();
 
@@ -134,13 +137,14 @@ namespace TarodevController
             CalculateJump(); // Possibly overrides vertical
 
             HandleDashing();//Checks dash movement codes.
-            inputManager.Player.Move.performed +=  MoveCharacter; // Actually perform the axis movement
+            MoveCharacter(); // Actually perform the axis movement
         }
 
 
         #region Gather Input
         private void GatherInput()
         {
+            GetAxisRaw = inputManager.Player.Move.ReadValue<Vector2>();
             if (inputManager.Player.Onewayplatform.triggered)
             {
                 if (currentOneWayPlatform != null)
@@ -148,12 +152,12 @@ namespace TarodevController
                     StartCoroutine(DisableCollusion());
                 }
             }
-            
+
             Input = new FrameInput
             {
                 JumpDown = inputManager.Player.Jump.triggered, //make fix usinghold and jump jump actionto start this bool  
                 JumpUp = inputManager.Player.Jump.triggered,
-                X = UnityEngine.Input.GetAxisRaw("Horizontal")
+                X = GetAxisRaw.x,
             };
             //prevents further pushes and animation glitch.
             if (Input.JumpDown || Input.JumpUp)
@@ -251,7 +255,7 @@ namespace TarodevController
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+            if (inputManager.Player.Jump.triggered)
             {
                 hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
                 // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
@@ -532,7 +536,7 @@ namespace TarodevController
 
         // We cast our bounds before moving to avoid future collisions
 
-        private void MoveCharacter(InputAction.CallbackContext context)
+        private void MoveCharacter()
         {
             playerRunning = true;
             var pos = transform.position;

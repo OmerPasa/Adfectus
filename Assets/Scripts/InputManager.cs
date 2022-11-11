@@ -80,6 +80,15 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FullScreen"",
+                    ""type"": ""Button"",
+                    ""id"": ""ebb11210-a925-4b99-9814-3c087cecd03b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -106,8 +115,8 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""1bc5f6b3-1661-4c44-ab1d-e5a6cf745765"",
+                    ""name"": ""wasd"",
+                    ""id"": ""edaebfcb-ba91-4aa4-97ed-9659905d1737"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -117,67 +126,56 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""down"",
-                    ""id"": ""5fb203bc-8e41-4c9b-aab6-bb01a2d6c2fe"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""PC"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""b95880ec-68b8-491b-badd-21070d229a59"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""PC"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": ""left"",
-                    ""id"": ""b016af0e-4239-430e-a141-38dc58fa8e6e"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""PC"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""1dc032f9-bf0b-4a73-8b17-f41bbb49db83"",
+                    ""id"": ""71bb8f6e-1330-47a2-b466-e7c894cd9ae9"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""PC"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""347eac38-ebc3-4a75-8ca0-858b0f4665cc"",
-                    ""path"": ""<Keyboard>/rightArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""PC"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""b676d521-4bac-4ed9-8cc3-87c259f9ce32"",
+                    ""id"": ""d6a1c6ba-6e0a-4f77-aeb3-b06a0306b698"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""PC"",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""ArrowKeys"",
+                    ""id"": ""5e722860-1420-418e-b327-a5ed1743cfb2"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""d46a192f-9fc9-478a-b552-cf929e4ae45f"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""66f3b6f7-b885-4a47-8d54-2097f38b3a15"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -258,6 +256,17 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
                     ""action"": ""Onewayplatform"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ea6f66ee-313c-4d53-a205-000a08807a27"",
+                    ""path"": ""<Keyboard>/f11"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""FullScreen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -289,6 +298,7 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
         m_Player_DashRight = m_Player.FindAction("DashRight", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Onewayplatform = m_Player.FindAction("Onewayplatform", throwIfNotFound: true);
+        m_Player_FullScreen = m_Player.FindAction("FullScreen", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -354,6 +364,7 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_DashRight;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Onewayplatform;
+    private readonly InputAction m_Player_FullScreen;
     public struct PlayerActions
     {
         private @InputManager m_Wrapper;
@@ -364,6 +375,7 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
         public InputAction @DashRight => m_Wrapper.m_Player_DashRight;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Onewayplatform => m_Wrapper.m_Player_Onewayplatform;
+        public InputAction @FullScreen => m_Wrapper.m_Player_FullScreen;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -391,6 +403,9 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
                 @Onewayplatform.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnOnewayplatform;
                 @Onewayplatform.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnOnewayplatform;
                 @Onewayplatform.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnOnewayplatform;
+                @FullScreen.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFullScreen;
+                @FullScreen.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFullScreen;
+                @FullScreen.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFullScreen;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -413,6 +428,9 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
                 @Onewayplatform.started += instance.OnOnewayplatform;
                 @Onewayplatform.performed += instance.OnOnewayplatform;
                 @Onewayplatform.canceled += instance.OnOnewayplatform;
+                @FullScreen.started += instance.OnFullScreen;
+                @FullScreen.performed += instance.OnFullScreen;
+                @FullScreen.canceled += instance.OnFullScreen;
             }
         }
     }
@@ -434,5 +452,6 @@ public partial class @InputManager : IInputActionCollection2, IDisposable
         void OnDashRight(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnOnewayplatform(InputAction.CallbackContext context);
+        void OnFullScreen(InputAction.CallbackContext context);
     }
 }

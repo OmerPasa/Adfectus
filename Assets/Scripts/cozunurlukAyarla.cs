@@ -5,16 +5,18 @@ public class cozunurlukAyarla : MonoBehaviour
     public bool setAtSceneStart = false;
     float x = 1280.0f;
     float y = 720.0f;
+    private InputManager inputManager;
 
     void Start()
     {
+        inputManager = new InputManager();
         if (setAtSceneStart)
             Ayarla();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F11))
+        if (inputManager.Player.FullScreen.triggered)
         {
             if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
             {

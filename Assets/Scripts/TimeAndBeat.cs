@@ -39,10 +39,10 @@ public class TimeAndBeat : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.C))
+/*        if (Input.GetKeyDown(KeyCode.C))
         {
             LoopController.isObjectiveCompleted = !LoopController.isObjectiveCompleted;
-        }
+        }*/
 
         if (!active)
         {
