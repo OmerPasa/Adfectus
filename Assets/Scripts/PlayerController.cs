@@ -103,7 +103,6 @@ namespace TarodevController
             //inputManager.Player.Move.performed += Movement_performed;
         }
         void Activate() => _active = true;
-
         private void Update()
         {
             if (Playerhealth <= 0)
@@ -116,12 +115,14 @@ namespace TarodevController
                 ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 2f);
             }
-
             if (transform.position.y <= -4)
             {
-                transform.position = new Vector3(0,-2);
+                transform.position = new Vector3(0, -2);
             }
-
+        }
+        private void FixedUpdate()
+        {
+            
             if (!_active) return;
             // Calculate velocity
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
@@ -163,6 +164,7 @@ namespace TarodevController
             if (Input.JumpDown || Input.JumpUp)
             {
                 playerJumping = true;
+                Debug.Log("PlayerisJumping");
             }
 
             if (Input.X < 0 && isFacingLeft)
@@ -224,7 +226,12 @@ namespace TarodevController
         private bool _colUp, _colRight, _colDown, _colLeft;
 
         private float _timeLeftGrounded;
+
         RaycastHit2D hit;
+        RaycastHit2D hitL;
+        Vector2 hitLpos;
+        RaycastHit2D hitR;
+        Vector2 hitRpos;
 
         // We use these raycast checks for pre-collision information
         private void RunCollisionChecks()
@@ -255,19 +262,26 @@ namespace TarodevController
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
-            if (inputManager.Player.Jump.triggered)
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector2.up),Color.green, 5f);
+            //hitLpos = transform.position.x - 0.2;   // Write a function that slightly changes x value and applies it to array.
+            hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 5f, _groundLayer);
+            
+            if (hit.collider != null)
             {
-                hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.up), 4f, _groundLayer);
-                // Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
-                if (hit.collider.gameObject.tag != null && hit.collider.gameObject.tag == "OneWayPlatform")
+                if (hit.collider.gameObject.CompareTag("OneWayPlatform") && playerJumping)
                 {
+
                     currentOneWayPlatform = hit.collider.gameObject;
                     hit.collider.gameObject.SetActive(false);
                     playerJumping = false;
-
-                    Invoke("OneWayPlatform", 0.3f);
+                    Debug.Log($"Raycast called.tag was {hit.collider.tag}.");
+                    Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
+                    Invoke("OneWayPlatform", 0.2f);
                 }
-            }
+            }    
+                //Raycast2D hit = Physics2D.Raycast(transform.position, out transform.TransformDirection(Vector2.up) hit, 4f, _groundLayer);
+
+
 
             Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
@@ -638,7 +652,8 @@ namespace TarodevController
         }
         private void OneWayPlatform()
         {
-            hit.collider.gameObject.SetActive(true);
+            Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
+            currentOneWayPlatform.gameObject.SetActive(true);
         }
         void Jumploop()
         {

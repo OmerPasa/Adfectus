@@ -3865,6 +3865,7 @@ MonoBehaviour:
   whatIsEnemies:
     serializedVersion: 2
     m_Bits: 128
+  GetAxisRaw: {x: 0, y: 0}
   _hasDashed: 0
   dashSpeed: 30
   startDashTime: 0.1
