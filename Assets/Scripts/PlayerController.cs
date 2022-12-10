@@ -19,6 +19,8 @@ namespace TarodevController
         // Public for external hooks
         public GameObject currentOneWayPlatform;
         [SerializeField] private BoxCollider2D playerCollider;
+        [SerializeField] private BoxCollider2D bCol2d;
+        [SerializeField] public Collider2D col2DHit = null;
         public float attackRange;
         public Transform attackPos;
         public LayerMask whatIsEnemies;
@@ -48,7 +50,7 @@ namespace TarodevController
         const string PLAYER_DEATH = "Player_Death";
         const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
 
-        bool playerRunning, playerJumping, playerAttaking, playerTakingDamage, playerDying;
+        bool playerRunning, playerJumping, playerAttaking, playerTakingDamage, playerDying, Onewaying;
 
         private Animator animator;
         private Rigidbody2D rb2d;
@@ -58,8 +60,7 @@ namespace TarodevController
         public SpriteRenderer sprite;
         public ParticleSystem dashEffect;
         private string currentAnimaton;
-        private BoxCollider2D bCol2d;
-        public Collider2D col2DHit = null;
+
 
         [SerializeField]
         private float attackDelay;
@@ -128,7 +129,6 @@ namespace TarodevController
             Velocity = (transform.position - _lastPosition) / Time.deltaTime;
             _lastPosition = transform.position;
 
-            
             GatherInput();
             RunCollisionChecks();
 
@@ -164,7 +164,7 @@ namespace TarodevController
             if (Input.JumpDown || Input.JumpUp)
             {
                 playerJumping = true;
-                Debug.Log("PlayerisJumping");
+                //Debug.Log("PlayerisJumping");
             }
 
             if (Input.X < 0 && isFacingLeft)
@@ -227,8 +227,6 @@ namespace TarodevController
 
         private float _timeLeftGrounded;
 
-
-        RaycastHit2D hit;
         
         RaycastHit2D hitL;
         RaycastHit2D hitR;
@@ -259,7 +257,7 @@ namespace TarodevController
             }
 
             _colDown = groundedCheck;
-
+            
             // The rest
             _colUp = RunDetection(_raysUp);
             _colLeft = RunDetection(_raysLeft);
@@ -269,22 +267,25 @@ namespace TarodevController
             {
                 return EvaluateRayPositions(range).Any(point => Physics2D.Raycast(point, range.Dir, _detectionRayLength, _groundLayer));
             }
-            Debug.DrawRay(startPositionLeft, transform.TransformDirection(Vector2.up), Color.green, 5f);
-            Debug.DrawRay(startPositionRight, transform.TransformDirection(Vector2.up), Color.green, 5f);
-            hitL = Physics2D.Raycast(startPositionLeft, transform.TransformDirection(Vector2.up), 5f, _groundLayer);   //  a function that slightly changes x value and applies it to array.
-            hitR = Physics2D.Raycast(startPositionRight, transform.TransformDirection(Vector2.up), 5f, _groundLayer);
+            Debug.DrawRay(startPositionLeft, transform.TransformDirection(Vector2.up), Color.green, 1f);
+            Debug.DrawRay(startPositionRight, transform.TransformDirection(Vector2.up), Color.green, 1f);
+            hitL = Physics2D.Raycast(startPositionLeft, transform.TransformDirection(Vector2.up), 1f, _groundLayer);   //  a function that slightly changes x value and applies it to array.
+            hitR = Physics2D.Raycast(startPositionRight, transform.TransformDirection(Vector2.up), 1f, _groundLayer);
             
-            if (hitL.collider != null || hitR.collider != null)
+            if (hitL.collider != null || hitR.collider != null && playerJumping)
             {
                 col2DHit = hitL.collider != null ? hitL.collider : hitR.collider;
-                if (col2DHit.gameObject.CompareTag("OneWayPlatform") && playerJumping)
+                if (col2DHit.gameObject.CompareTag("OneWayPlatform") && playerJumping && !Onewaying)
                 {
+                    //Debug.Log($"Raycast called.tag was {col2DHit}.");
                     currentOneWayPlatform = col2DHit.gameObject;
+                    //Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
                     currentOneWayPlatform.SetActive(false);
+                    Onewaying = true;
                     playerJumping = false;
-                    Debug.Log($"Raycast called.tag was {col2DHit.tag}.");
+                    //Debug.Log($"Raycast called.tag was {col2DHit.tag}.");
                     Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
-                    Invoke("OneWayPlatform", 0.4f);
+                    Invoke("OneWayPlatform", 0.3f);
                 }
             }    
                 //Raycast2D hit = Physics2D.Raycast(transform.position, out transform.TransformDirection(Vector2.up) hit, 4f, _groundLayer);
@@ -651,7 +652,6 @@ namespace TarodevController
         }
         private IEnumerator DisableCollusion()
         {
-
             BoxCollider2D platformCollider = currentOneWayPlatform.GetComponent<BoxCollider2D>();
             Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
             Physics2D.IgnoreCollision(playerCollider, platformCollider);
@@ -660,10 +660,13 @@ namespace TarodevController
         }
         private void OneWayPlatform()
         {
+            currentOneWayPlatform?.gameObject.SetActive(true);
             Debug.Log($"currentonewayplatform from inside LAST part is {currentOneWayPlatform}.");
-            currentOneWayPlatform.gameObject.SetActive(true);
-            Debug.Log($"col2DHit from inside LAST part is {col2DHit}.");
-            col2DHit.gameObject.SetActive(true);
+            Onewaying = false;
+            currentOneWayPlatform = null;
+            col2DHit = null;
+            //Debug.Log($"col2DHit from inside LAST part is COLLider {col2DHit}.");
+            //col2DHit.gameObject.SetActive(true);
         }
         void Jumploop()
         {
