@@ -767,6 +767,12 @@ MonoBehaviour:
   badEnding: {fileID: 1585993108}
   goodEnding: {fileID: 1169691363}
   restartDelay: 1
+  objects:
+  - {fileID: 825145279}
+  - {fileID: 1784328653}
+  - {fileID: 2028961323}
+  - {fileID: 521488337}
+  - {fileID: 309292887}
 --- !u!4 &497408461
 Transform:
   m_ObjectHideFlags: 0

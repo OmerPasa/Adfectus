@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private void Start() {
         gameHasEndedBadWay= false;
         gameHasEndedGoodWay= false;
+        StartCoroutine(CheckAndActivate());
     }
 
     public void EndGame ()
@@ -51,4 +52,25 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("MEnu");
     }
+    public GameObject[] objects;
+
+
+
+    IEnumerator CheckAndActivate()
+    {
+        while (true)
+        {
+            foreach (GameObject obj in objects)
+            {
+                if (!obj.activeSelf)
+                {
+                    yield return new WaitForSeconds(1.5f);
+                    obj.SetActive(true);
+                }
+            }
+            yield return null;
+        }
+    }
+
+
 }
