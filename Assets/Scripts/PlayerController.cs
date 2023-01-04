@@ -23,14 +23,13 @@ namespace TarodevController
     public class PlayerController : MonoBehaviour, IPlayerController
     {
         // Public for external hooks
-        public GameObject CurrentOneWayPlatform;
+        public GameObject currentOneWayPlatform;
         [SerializeField] private BoxCollider2D playerCollider;
         [SerializeField] private BoxCollider2D bCol2d;
-        [SerializeField] public Collider2D Col2DHit = null;
-        public float AttackRange;
-
-        public Transform AttackPos;
-        public LayerMask WhatIsEnemies;
+        [SerializeField] public Collider2D col2DHit = null;
+        public float attackRange;
+        public Transform attackPos;
+        public LayerMask whatIsEnemies;
         public Vector3 Velocity { get; private set; }
         public FrameInput Input { get; private set; }
         public bool JumpingThisFrame { get; private set; }
@@ -38,14 +37,14 @@ namespace TarodevController
         public Vector3 RawMovement { get; private set; }
         public Vector2 GetAxisRaw;
         public bool Grounded => _colDown;
-        public bool HasDashed;
+        public bool _hasDashed;
         private bool isAttacking;
-        public float DashSpeed;
+        public float dashSpeed;
         private float dashTime;
-        public float StartDashTime;
+        public float startDashTime;
         private int direction;
-        public int DamageBoss = 1;
-        public bool IsFacingLeft;
+        public int damageBoss = 1;
+        public bool isFacingLeft;
         private InputManager inputManager;
 
         //Animation States
@@ -57,35 +56,32 @@ namespace TarodevController
         const string PLAYER_DEATH = "Player_Death";
         const string PLAYER_TAKEDAMAGE = "Player_TakeDamage";
 
-        private bool playerRunning, playerJumping, playerAttaking, playerTakingDamage, playerDying, oneWaying;
+        bool playerRunning, playerJumping, playerAttaking, playerTakingDamage, playerDying, Onewaying;
 
         private Animator animator;
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
         public GameObject GameManager_;
-        public SpriteRenderer HealthSprite;
+        public SpriteRenderer sprite;
         public SpriteRenderer RangeImage;
-        public ParticleSystem DashEffect;
+        public ParticleSystem dashEffect;
         private string currentAnimaton;
 
 
         [SerializeField]
         private float attackDelay;
         private float jumpDelay = 0.2f;
-        public float damageDelay ;
+        private float damageDelay = 2f;
         private float maxHealth = 1;
-        private float gizmoScale = 0;
-        public float Scale;
-        public float DamageToPlayer;
-        public float RightRay;
-        public float LeftRay;
-        
+        public float damageToPlayer;
+        public float rightRay;
+        public float leftRay;
         [SerializeField]
-        public float Playerhealth;
-        private Vector3 idleVelocity = new Vector3(0, 0, 0);
-        private Vector3 lastPosition;
-        private float currentHorizontalSpeed, currentVerticalSpeed;
+        public static float Playerhealth = 1;
+        private Vector3 IdleVelocity = new Vector3(0, 0, 0);
+        private Vector3 _lastPosition;
+        private float _currentHorizontalSpeed, _currentVerticalSpeed;
         protected RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
         protected List<RaycastHit2D> hitBufferList = new List<RaycastHit2D>(16);
 
@@ -97,17 +93,17 @@ namespace TarodevController
             animator = GetComponent<Animator>();
             AfterFiringMusic = GetComponent<AudioSource>();
             BackGroundM = GetComponent<AudioSource>();
-            HealthSprite = GetComponent<SpriteRenderer>();
+            sprite = GetComponent<SpriteRenderer>();
             Playerhealth = maxHealth;
-            dashTime = StartDashTime;
+            dashTime = startDashTime;
             hitBufferList.Clear();
             bCol2d = GetComponent<BoxCollider2D>();
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
         void Awake(){
-            DamageToPlayer = PlayerPrefs.GetFloat("damageToPlayer");
-            Debug.Log("damagetoplayerin game is " + DamageToPlayer);
+            damageToPlayer = PlayerPrefs.GetFloat("damageToPlayer");
+            Debug.Log("damagetoplayerin game is " + damageToPlayer);
             Invoke(nameof(Activate), 0.5f);
 
             inputManager = new InputManager();
@@ -118,11 +114,10 @@ namespace TarodevController
             //inputManager.Player.Move.performed += Movement_performed;
         }
         void Activate() => _active = true;
- 
+
         private void Update()
         {
-            RangeImage.color = new Color(0, 0, 0, 0);
-            
+            RangeImage.color = new Color(0, 0, 0, 0.2f);
             if (Playerhealth <= 0)
             {
                 playerDying = true;
@@ -130,7 +125,7 @@ namespace TarodevController
                 Debug.Log("game resetting");
 
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                changeAnimationState(PLAYER_DEATH);
+                ChangeAnimationState(PLAYER_DEATH);
                 Invoke("Die", 2f);
             }
             if (transform.position.y <= -4)
@@ -139,35 +134,31 @@ namespace TarodevController
             }
             if (!_active) return;
             // Calculate velocity
-            Velocity = (transform.position - lastPosition) / Time.deltaTime;
-            lastPosition = transform.position;
+            Velocity = (transform.position - _lastPosition) / Time.deltaTime;
+            _lastPosition = transform.position;
 
-            gizmoScale = 0;
-
-            gatherInput();
+            GatherInput();
             RunCollisionChecks();
 
             CalculateWalk(); // Horizontal movement
-            calculateJumpApex(); // Affects fall speed, so calculate before gravity
-            calculateGravity(); // Vertical movement
-            calculateJump(); // Possibly overrides vertical
+            CalculateJumpApex(); // Affects fall speed, so calculate before gravity
+            CalculateGravity(); // Vertical movement
+            CalculateJump(); // Possibly overrides vertical
 
             HandleDashing();//Checks dash movement codes.
-            moveCharacter(); // Actually perform the axis movement
-
+            MoveCharacter(); // Actually perform the axis movement
         }
 
 
         #region Gather Input
-        private void gatherInput()
+        private void GatherInput()
         {
             GetAxisRaw = inputManager.Player.Move.ReadValue<Vector2>();
             if (inputManager.Player.Onewayplatform.triggered)
             {
-                Debug.Log(" Oneway triggered");
-                if (Col2DHit != null)
+                if (currentOneWayPlatform != null)
                 {
-                    StartCoroutine(disableCollusion(Col2DHit));
+                    StartCoroutine(DisableCollusion());
                 }
             }
 
@@ -184,13 +175,13 @@ namespace TarodevController
                 //Debug.Log("PlayerisJumping");
             }
 
-            if (Input.X < 0 && IsFacingLeft)
+            if (Input.X < 0 && isFacingLeft)
             {
-                flip();
+                Flip();
             }
-            else if (Input.X > 0 && !IsFacingLeft)
+            else if (Input.X > 0 && !isFacingLeft)
             {
-                flip();
+                Flip();
             }
 
 
@@ -204,17 +195,16 @@ namespace TarodevController
         {
             Debug.Log("Attacking");
             isAttacking = true;
-
         }
         #endregion
 
-        #region flip
-        private void flip()
+        #region Flip
+        private void Flip()
         {
             Vector3 currentScale = gameObject.transform.localScale;
             currentScale.x *= -1;
             gameObject.transform.localScale = currentScale;
-            IsFacingLeft = !IsFacingLeft;
+            isFacingLeft = !isFacingLeft;
         }
         #endregion
 
@@ -224,12 +214,12 @@ namespace TarodevController
         [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
 
 
-        private void onTriggerEnter2D(Collider2D laser)
+        private void OnTriggerEnter2D(Collider2D laser)
         {
             if (laser.gameObject.tag == "Laser")
             {
-                PlayerTakeDamage(DamageToPlayer);
-                Debug.Log("amount of damage " + DamageToPlayer);
+                PlayerTakeDamage(damageToPlayer);
+                Debug.Log("amount of damage " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
             }
         }
@@ -252,11 +242,11 @@ namespace TarodevController
         // We use these raycast checks for pre-collision information
         private void RunCollisionChecks()
         {
-            LeftRay = transform.position.x - (bCol2d.size.x * transform.localScale.x / 2.0f) + (bCol2d.offset.x * transform.localScale.x) + 0.1f;
-            RightRay = transform.position.x + (bCol2d.size.x * transform.localScale.x / 2.0f) + (bCol2d.offset.x * transform.localScale.x) - 0.1f;
+            leftRay = transform.position.x - (bCol2d.size.x * transform.localScale.x / 2.0f) + (bCol2d.offset.x * transform.localScale.x) + 0.1f;
+            rightRay = transform.position.x + (bCol2d.size.x * transform.localScale.x / 2.0f) + (bCol2d.offset.x * transform.localScale.x) - 0.1f;
 
-            Vector2 startPositionLeft = new Vector2(LeftRay, transform.position.y + (bCol2d.bounds.extents.y - 0.1f));
-            Vector2 startPositionRight = new Vector2(RightRay, transform.position.y + (bCol2d.bounds.extents.y - 0.1f));
+            Vector2 startPositionLeft = new Vector2(leftRay, transform.position.y + (bCol2d.bounds.extents.y - 0.1f));
+            Vector2 startPositionRight = new Vector2(rightRay, transform.position.y + (bCol2d.bounds.extents.y - 0.1f));
 
 
 
@@ -292,30 +282,28 @@ namespace TarodevController
             
             if (hitL.collider != null || hitR.collider != null && playerJumping)
             {
-                Col2DHit = hitL.collider != null ? hitL.collider : hitR.collider;
-                if (Col2DHit.gameObject.CompareTag("OneWayPlatform") && playerJumping && !oneWaying)
+                col2DHit = hitL.collider != null ? hitL.collider : hitR.collider;
+                if (col2DHit.gameObject.CompareTag("OneWayPlatform") && playerJumping && !Onewaying)
                 {
                     //Debug.Log($"Raycast called.tag was {col2DHit}.");
-                    CurrentOneWayPlatform = Col2DHit.gameObject;
+                    currentOneWayPlatform = col2DHit.gameObject;
                     //Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
-                    CurrentOneWayPlatform.SetActive(false);
-                    oneWaying = true;
+                    currentOneWayPlatform.SetActive(false);
+                    Onewaying = true;
                     playerJumping = false;
                     //Debug.Log($"Raycast called.tag was {col2DHit.tag}.");
-                    Debug.Log($"Currentonewayplatform is {CurrentOneWayPlatform}.");
-                    Invoke("oneWayPlatform", 0.3f);
+                    Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
+                    Invoke("OneWayPlatform", 0.3f);
                 }
             }    
                 //Raycast2D hit = Physics2D.Raycast(transform.position, out transform.TransformDirection(Vector2.up) hit, 4f, _groundLayer);
 
 
 
-            Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(AttackPos.position, AttackRange, WhatIsEnemies);
+            Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
             if (isAttacking)
             {
-                RangeImage.color = new Color(0, 0, 0, 1);
-                CinemachineShake.Instance.ShakeCamera(6f, .1f);
 
                 if (enemiesInRange.Length >= 1)
                 {
@@ -323,15 +311,16 @@ namespace TarodevController
                     for (int i = 0; i < enemiesInRange.Length; i++)
                     {
                         RangeImage.color = new Color(0, 0, 0, 1);
+                        CinemachineShake.Instance.ShakeCamera(6f, .1f);
                         LoopController.isObjectiveCompleted = true;
                         isAttacking = true;
-                        changeAnimationState(PLAYER_ATTACK);
+                        ChangeAnimationState(PLAYER_ATTACK);
                         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                        Invoke("attackComplete", damageDelay);
-                        enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(DamageBoss);
+                        enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
                     }
                 }
-                Invoke("attackComplete", damageDelay);
+                Invoke("AttackComplete", damageDelay);
+
             }
         }
 
@@ -380,7 +369,7 @@ namespace TarodevController
 
             // Draw the future position. Handy for visualizing gravity
             Gizmos.color = Color.red;
-            var move = new Vector3(currentHorizontalSpeed, currentVerticalSpeed) * Time.deltaTime;
+            var move = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed) * Time.deltaTime;
             Gizmos.DrawWireCube(transform.position + move, _characterBounds.size);
         }
 
@@ -399,35 +388,35 @@ namespace TarodevController
             if (Input.X != 0)
             {
                 // Set horizontal move speed
-                currentHorizontalSpeed += Input.X * _acceleration * Time.deltaTime;
+                _currentHorizontalSpeed += Input.X * _acceleration * Time.deltaTime;
 
                 // clamped by max frame movement
-                currentHorizontalSpeed = Mathf.Clamp(currentHorizontalSpeed, -_moveClamp, _moveClamp);
+                _currentHorizontalSpeed = Mathf.Clamp(_currentHorizontalSpeed, -_moveClamp, _moveClamp);
 
                 // Apply bonus at the apex of a jump
                 var apexBonus = Mathf.Sign(Input.X) * _apexBonus * _apexPoint;
-                currentHorizontalSpeed += apexBonus * Time.deltaTime;
+                _currentHorizontalSpeed += apexBonus * Time.deltaTime;
             }
             else
             {
                 // No input. Let's slow the character down
-                currentHorizontalSpeed = Mathf.MoveTowards(currentHorizontalSpeed, 0, _deAcceleration * Time.deltaTime);
+                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0, _deAcceleration * Time.deltaTime);
             }
 
-            if (currentHorizontalSpeed > 0 && _colRight || currentHorizontalSpeed < 0 && _colLeft)
+            if (_currentHorizontalSpeed > 0 && _colRight || _currentHorizontalSpeed < 0 && _colLeft)
             {
                 // Don't walk through walls
-                currentHorizontalSpeed = 0;
+                _currentHorizontalSpeed = 0;
             }
             if (!playerAttaking && !playerDying && !playerJumping)
             {
-                if (currentHorizontalSpeed != 0.0f)
+                if (_currentHorizontalSpeed != 0.0f)
                 {
-                    changeAnimationState(PLAYER_RUN);
+                    ChangeAnimationState(PLAYER_RUN);
                 }
-                else if (currentHorizontalSpeed == 0.0f)
+                else if (_currentHorizontalSpeed == 0.0f)
                 {
-                    changeAnimationState(PLAYER_IDLE);
+                    ChangeAnimationState(PLAYER_IDLE);
                 }
             }
         }
@@ -436,28 +425,28 @@ namespace TarodevController
 
         #region Gravity
 
-        [Header("GRAVITY")][SerializeField] private float fallClamp = -40f;
-        [SerializeField] private float minFallSpeed = 80f;
-        [SerializeField] private float maxFallSpeed = 120f;
+        [Header("GRAVITY")][SerializeField] private float _fallClamp = -40f;
+        [SerializeField] private float _minFallSpeed = 80f;
+        [SerializeField] private float _maxFallSpeed = 120f;
         private float _fallSpeed;
 
-        private void calculateGravity()
+        private void CalculateGravity()
         {
             if (_colDown)
             {
                 // Move out of the ground
-                if (currentVerticalSpeed < 0) currentVerticalSpeed = 0;
+                if (_currentVerticalSpeed < 0) _currentVerticalSpeed = 0;
             }
             else
             {
                 // Add downward force while ascending if we ended the jump early
-                var fallSpeed = _endedJumpEarly && currentVerticalSpeed > 0 ? _fallSpeed * _jumpEndEarlyGravityModifier : _fallSpeed;
+                var fallSpeed = _endedJumpEarly && _currentVerticalSpeed > 0 ? _fallSpeed * _jumpEndEarlyGravityModifier : _fallSpeed;
 
                 // Fall
-                currentVerticalSpeed -= fallSpeed * Time.deltaTime;
+                _currentVerticalSpeed -= fallSpeed * Time.deltaTime;
 
                 // Clamp
-                if (currentVerticalSpeed < fallClamp) currentVerticalSpeed = fallClamp;
+                if (_currentVerticalSpeed < _fallClamp) _currentVerticalSpeed = _fallClamp;
             }
         }
 
@@ -477,13 +466,13 @@ namespace TarodevController
         private bool CanUseCoyote => _coyoteUsable && !_colDown && _timeLeftGrounded + _coyoteTimeThreshold > Time.time;
         private bool HasBufferedJump => _colDown && _lastJumpPressed + _jumpBuffer > Time.time;
 
-        private void calculateJumpApex()
+        private void CalculateJumpApex()
         {
             if (!_colDown)
             {
                 // Gets stronger the closer to the top of the jump
                 _apexPoint = Mathf.InverseLerp(_jumpApexThreshold, 0, Mathf.Abs(Velocity.y));
-                _fallSpeed = Mathf.Lerp(minFallSpeed, maxFallSpeed, _apexPoint);
+                _fallSpeed = Mathf.Lerp(_minFallSpeed, _maxFallSpeed, _apexPoint);
             }
             else
             {
@@ -491,18 +480,18 @@ namespace TarodevController
             }
         }
 
-        private void calculateJump()
+        private void CalculateJump()
         {
             // Jump if: grounded or within coyote threshold || sufficient jump buffer
             if (Input.JumpDown && CanUseCoyote && playerJumping || HasBufferedJump)
             {
-                currentVerticalSpeed = _jumpHeight;
+                _currentVerticalSpeed = _jumpHeight;
                 _endedJumpEarly = false;
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
-                changeAnimationState(PLAYER_JUMP);
-                Invoke("jumploop", jumpDelay);
+                ChangeAnimationState(PLAYER_JUMP);
+                Invoke("Jumploop", jumpDelay);
             }
             else
             {
@@ -512,15 +501,15 @@ namespace TarodevController
             // End the jump early if button released
             if (!_colDown && Input.JumpUp && !_endedJumpEarly && playerJumping && Velocity.y > 0)
             {
-                // currentVerticalSpeed = 0;
+                // _currentVerticalSpeed = 0;
                 _endedJumpEarly = true;
-                changeAnimationState(PLAYER_JUMP);
-                Invoke("jumploop", jumpDelay);
+                ChangeAnimationState(PLAYER_JUMP);
+                Invoke("Jumploop", jumpDelay);
             }
 
             if (_colUp)
             {
-                if (currentVerticalSpeed > 0) currentVerticalSpeed = 0;
+                if (_currentVerticalSpeed > 0) _currentVerticalSpeed = 0;
             }
         }
 
@@ -532,14 +521,14 @@ namespace TarodevController
         {
             if (direction == 0)
             {
-                if (inputManager.Player.DashLeft.triggered && !HasDashed)
+                if (inputManager.Player.DashLeft.triggered && !_hasDashed)
                 {
-                    createDust();
+                    CreateDust();
                     direction = 1;
                 }
-                else if (inputManager.Player.DashRight.triggered && !HasDashed)
+                else if (inputManager.Player.DashRight.triggered && !_hasDashed)
                 {
-                    createDust();
+                    CreateDust();
                     direction = 2;
                 }
             }
@@ -548,7 +537,7 @@ namespace TarodevController
                 if (dashTime <= 0)
                 {
                     direction = 0;
-                    dashTime = StartDashTime;
+                    dashTime = startDashTime;
                     rb2d.velocity = Vector2.zero;
                 }
                 else
@@ -557,13 +546,13 @@ namespace TarodevController
 
                     if (direction == 1)
                     {
-                        rb2d.velocity = Vector2.left * DashSpeed;
+                        rb2d.velocity = Vector2.left * dashSpeed;
                         Physics.IgnoreLayerCollision(8, 9, true);
                         Invoke("dashRecovery", 2f);
                     }
                     else if (direction == 2)
                     {
-                        rb2d.velocity = Vector2.right * DashSpeed;
+                        rb2d.velocity = Vector2.right * dashSpeed;
                         Physics2D.IgnoreLayerCollision(8, 9, true);
                         Invoke("dashRecovery", 2f);
                     }
@@ -578,15 +567,15 @@ namespace TarodevController
 
         [Header("MOVE")]
         [SerializeField, Tooltip("Raising this value increases collision accuracy at the cost of performance.")]
-        private int freeColliderIterations;
+        private int _freeColliderIterations = 10;
 
         // We cast our bounds before moving to avoid future collisions
 
-        private void moveCharacter()
+        private void MoveCharacter()
         {
             playerRunning = true;
             var pos = transform.position;
-            RawMovement = new Vector3(currentHorizontalSpeed, currentVerticalSpeed); // Used externally
+            RawMovement = new Vector3(_currentHorizontalSpeed, _currentVerticalSpeed); // Used externally
 
             var move = RawMovement * Time.deltaTime;
             var furthestPoint = pos + move;
@@ -601,10 +590,10 @@ namespace TarodevController
 
             // otherwise increment away from current pos; see what closest position we can move to
             var positionToMoveTo = transform.position;
-            for (int i = 1; i < freeColliderIterations; i++)
+            for (int i = 1; i < _freeColliderIterations; i++)
             {
                 // increment to check all but furthestPoint - we did that already
-                var t = (float)i / freeColliderIterations;
+                var t = (float)i / _freeColliderIterations;
                 var posToTry = Vector2.Lerp(pos, furthestPoint, t);
 
                 if (Physics2D.OverlapBox(posToTry, _characterBounds.size, 0, _groundLayer))
@@ -614,7 +603,7 @@ namespace TarodevController
                     // We've landed on a corner or hit our head on a ledge. Nudge the player gently
                     if (i == 1)
                     {
-                        if (currentVerticalSpeed < 0) currentVerticalSpeed = 0;
+                        if (_currentVerticalSpeed < 0) _currentVerticalSpeed = 0;
                         var dir = transform.position - hit.transform.position;
                         transform.position += dir.normalized * move.magnitude;
                     }
@@ -631,7 +620,7 @@ namespace TarodevController
         #region Health
 
         //on trigger () Will trigger the player take damage and it will done most of the other work
-        //then set_Health will give the color of current health.
+        //then Set_Health will give the color of current health.
         public void Die()
         {
             Destroy(gameObject);
@@ -640,83 +629,81 @@ namespace TarodevController
         {
             playerTakingDamage = true;
             Playerhealth -= damage;
-            set_Health(Playerhealth);
-            Debug.Log("Player_Taken_Damage");
-            changeAnimationState(PLAYER_TAKEDAMAGE);
+            Set_Health(Playerhealth);
+            ChangeAnimationState(PLAYER_TAKEDAMAGE);
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-            Invoke("damageDelayComplete", damageDelay);
+            Invoke("DamageDelayComplete", damageDelay);
         }
 
         // set new health to the sprite filter as a new color.
-        void set_Health(float Playerhealth)
+        void Set_Health(float Playerhealth)
         {
-            HealthSprite.color = new Color(Playerhealth, Playerhealth, Playerhealth, 1);
+            sprite.color = new Color(Playerhealth, Playerhealth, Playerhealth, 1);
         }
-        void damageDelayComplete()
+        void DamageDelayComplete()
         {
             playerTakingDamage = false;
         }
         #endregion
 
-        private void onCollisionEnter2D(Collision2D collision)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.gameObject.CompareTag("OneWayPlatform"))
             {
-                CurrentOneWayPlatform = collision.gameObject;
+                currentOneWayPlatform = collision.gameObject;
 
             }
         }
 
-        private void onCollisionExit2D(Collision2D collision)
+        private void OnCollisionExit2D(Collision2D collision)
         {
             if (collision.gameObject.CompareTag("OneWayPlatform"))
             {
-                CurrentOneWayPlatform = null;
+                currentOneWayPlatform = null;
             }
         }
-        private IEnumerator disableCollusion(Collider2D platformCollider)
+        private IEnumerator DisableCollusion()
         {
-            //BoxCollider2D platformCollider = CurrentOneWayPlatform.GetComponent<BoxCollider2D>();
+            BoxCollider2D platformCollider = currentOneWayPlatform.GetComponent<BoxCollider2D>();
             Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
             Physics2D.IgnoreCollision(playerCollider, platformCollider);
             yield return new WaitForSeconds(0.6f);
             Physics2D.IgnoreCollision(playerCollider, platformCollider, false);
         }
-        private void oneWayPlatform()
+        private void OneWayPlatform()
         {
-            CurrentOneWayPlatform?.gameObject.SetActive(true);
-            Debug.Log($"currentonewayplatform from inside LAST part is {CurrentOneWayPlatform}.");
-            oneWaying = false;
-            CurrentOneWayPlatform = null;
-            Col2DHit = null;
+            currentOneWayPlatform?.gameObject.SetActive(true);
+            Debug.Log($"currentonewayplatform from inside LAST part is {currentOneWayPlatform}.");
+            Onewaying = false;
+            currentOneWayPlatform = null;
+            col2DHit = null;
             //Debug.Log($"col2DHit from inside LAST part is COLLider {col2DHit}.");
             //col2DHit.gameObject.SetActive(true);
         }
-        void jumploop()
+        void Jumploop()
         {
             playerJumping = false;
         }
 
-        void attackComplete()
+        void AttackComplete()
         {
             isAttacking = false;
             RangeImage.color = new Color(0, 0, 0, 0);
-            Debug.Log("aTTACKCOMPLETEBOSS");
+            Debug.Log("ATTACKCOMPLETEBOSS");
         }
         void dashRecovery()
         {
             Physics2D.IgnoreLayerCollision(8, 9, false);
         }
-        void createDust()
+        void CreateDust()
         {
-            DashEffect.Play();
+            dashEffect.Play();
         }
-
 
         //=====================================================
         // mini animation manager
         //=====================================================
-        private void changeAnimationState(string newAnimation)
+        void ChangeAnimationState(string newAnimation)
         {
             if (currentAnimaton == newAnimation) return;
 

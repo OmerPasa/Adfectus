@@ -289,7 +289,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &36421026
 Transform:
   m_ObjectHideFlags: 0
@@ -4099,33 +4099,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbfb23717f7dee14688bccda60b77b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentOneWayPlatform: {fileID: 0}
+  currentOneWayPlatform: {fileID: 0}
   playerCollider: {fileID: 1982680930}
   bCol2d: {fileID: 0}
-  Col2DHit: {fileID: 1982680930}
-  AttackRange: 1
-  AttackPos: {fileID: 534670394}
-  WhatIsEnemies:
+  col2DHit: {fileID: 0}
+  attackRange: 2
+  attackPos: {fileID: 534670394}
+  whatIsEnemies:
     serializedVersion: 2
     m_Bits: 128
   GetAxisRaw: {x: 0, y: 0}
-  HasDashed: 0
-  DashSpeed: 34
-  StartDashTime: 0.1
-  DamageBoss: 1
-  IsFacingLeft: 1
+  _hasDashed: 0
+  dashSpeed: 2
+  startDashTime: 0.1
+  damageBoss: 1
+  isFacingLeft: 1
   BackGroundM: {fileID: 0}
   GameManager_: {fileID: 497408459}
-  HealthSprite: {fileID: 1982680926}
+  sprite: {fileID: 1982680926}
   RangeImage: {fileID: 741823959}
-  DashEffect: {fileID: 1218278508}
+  dashEffect: {fileID: 1218278508}
   attackDelay: 1
-  damageDelay: 0.1
-  Scale: 1
-  DamageToPlayer: 1
-  RightRay: 1
-  LeftRay: -1
-  Playerhealth: 0
+  damageToPlayer: 1
+  rightRay: 1
+  leftRay: 1
   _characterBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -4139,15 +4136,15 @@ MonoBehaviour:
   _moveClamp: 13
   _deAcceleration: 60
   _apexBonus: 2
-  fallClamp: -40
-  minFallSpeed: 80
-  maxFallSpeed: 120
+  _fallClamp: -40
+  _minFallSpeed: 80
+  _maxFallSpeed: 120
   _jumpHeight: 25
   _jumpApexThreshold: 10
   _coyoteTimeThreshold: 0.2
   _jumpBuffer: 0.1
   _jumpEndEarlyGravityModifier: 3
-  freeColliderIterations: 2
+  _freeColliderIterations: 10
 --- !u!95 &1982680932
 Animator:
   serializedVersion: 4
