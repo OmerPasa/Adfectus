@@ -4110,7 +4110,7 @@ MonoBehaviour:
     m_Bits: 128
   GetAxisRaw: {x: 0, y: 0}
   _hasDashed: 0
-  dashSpeed: 2
+  dashSpeed: 40
   startDashTime: 0.1
   damageBoss: 1
   isFacingLeft: 1

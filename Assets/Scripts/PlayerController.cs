@@ -303,24 +303,22 @@ namespace TarodevController
             Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
             if (isAttacking)
-            {
-
-                if (enemiesInRange.Length >= 1)
+            {          
+                if ( enemiesInRange.Length >= 1)
                 {
+                    RangeImage.color = new Color(0, 0, 0, 1);
+                    CinemachineShake.Instance.ShakeCamera(6f, .1f);
                     //for giving every one of enemies damage.
                     for (int i = 0; i < enemiesInRange.Length; i++)
                     {
-                        RangeImage.color = new Color(0, 0, 0, 1);
-                        CinemachineShake.Instance.ShakeCamera(6f, .1f);
                         LoopController.isObjectiveCompleted = true;
                         isAttacking = true;
                         ChangeAnimationState(PLAYER_ATTACK);
                         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
                         enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
                     }
-                }
+                }              
                 Invoke("AttackComplete", damageDelay);
-
             }
         }
 
