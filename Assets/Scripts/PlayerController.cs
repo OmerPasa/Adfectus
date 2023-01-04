@@ -80,10 +80,10 @@ namespace TarodevController
         public float DamageToPlayer;
         public float RightRay;
         public float LeftRay;
+        
         [SerializeField]
-        public static float Playerhealth = 1;
+        public float Playerhealth;
         private Vector3 idleVelocity = new Vector3(0, 0, 0);
-        public MainMenu MainMenu;
         private Vector3 lastPosition;
         private float currentHorizontalSpeed, currentVerticalSpeed;
         protected RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
@@ -92,7 +92,6 @@ namespace TarodevController
         void Start()
         {
             RangeImage.color = new Color(0, 0, 0, 0);
-            //Circle = gameObject.AddComponent<LineRenderer>();
             playerDying = false;
             rb2d = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
@@ -165,9 +164,10 @@ namespace TarodevController
             GetAxisRaw = inputManager.Player.Move.ReadValue<Vector2>();
             if (inputManager.Player.Onewayplatform.triggered)
             {
-                if (CurrentOneWayPlatform != null)
+                Debug.Log(" Oneway triggered");
+                if (Col2DHit != null)
                 {
-                    StartCoroutine(disableCollusion());
+                    StartCoroutine(disableCollusion(Col2DHit));
                 }
             }
 
@@ -641,6 +641,7 @@ namespace TarodevController
             playerTakingDamage = true;
             Playerhealth -= damage;
             set_Health(Playerhealth);
+            Debug.Log("Player_Taken_Damage");
             changeAnimationState(PLAYER_TAKEDAMAGE);
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
             Invoke("damageDelayComplete", damageDelay);
@@ -673,9 +674,9 @@ namespace TarodevController
                 CurrentOneWayPlatform = null;
             }
         }
-        private IEnumerator disableCollusion()
+        private IEnumerator disableCollusion(Collider2D platformCollider)
         {
-            BoxCollider2D platformCollider = CurrentOneWayPlatform.GetComponent<BoxCollider2D>();
+            //BoxCollider2D platformCollider = CurrentOneWayPlatform.GetComponent<BoxCollider2D>();
             Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
             Physics2D.IgnoreCollision(playerCollider, platformCollider);
             yield return new WaitForSeconds(0.6f);

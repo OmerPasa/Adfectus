@@ -1918,7 +1918,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -4
   m_Sprite: {fileID: 21300000, guid: 82a0470548c0e704aba22d786d9134b3, type: 3}
-  m_Color: {r: 0.9150943, g: 0.27970806, b: 0.27970806, a: 0.6666667}
+  m_Color: {r: 0.9150943, g: 0.27970806, b: 0.27970806, a: 0.68235296}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1935,13 +1935,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 767573835}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_Father: {fileID: 782371502}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &782371500
 GameObject:
@@ -2000,7 +2000,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: -2
   m_Sprite: {fileID: 21300000, guid: 8bb86a7965c5f904aa6cc7c09d658cfa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.4745098}
   m_FlipX: 0
@@ -2023,7 +2023,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 1696433894}
+  - {fileID: 767573837}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3575,9 +3577,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -4
+  m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 08c562f6cd38ba9468fb22ae54fe8a0f, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.34901962}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3594,13 +3596,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1696433892}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_Father: {fileID: 782371502}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1784328653
 GameObject:
@@ -4108,13 +4110,13 @@ MonoBehaviour:
     m_Bits: 128
   GetAxisRaw: {x: 0, y: 0}
   HasDashed: 0
-  DashSpeed: 2.05
-  StartDashTime: 2.29
+  DashSpeed: 34
+  StartDashTime: 0.1
   DamageBoss: 1
   IsFacingLeft: 1
   BackGroundM: {fileID: 0}
   GameManager_: {fileID: 497408459}
-  HealthSprite: {fileID: 0}
+  HealthSprite: {fileID: 1982680926}
   RangeImage: {fileID: 741823959}
   DashEffect: {fileID: 1218278508}
   attackDelay: 1
@@ -4123,7 +4125,7 @@ MonoBehaviour:
   DamageToPlayer: 1
   RightRay: 1
   LeftRay: -1
-  MainMenu: {fileID: 0}
+  Playerhealth: 0
   _characterBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -4349,7 +4351,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.7906137, y: 1}
+    m_SensorSize: {x: 2.7797835, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
