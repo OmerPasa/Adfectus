@@ -4132,8 +4132,8 @@ MonoBehaviour:
   _detectorCount: 3
   _detectionRayLength: 0.44
   _rayBuffer: 0.3
-  _acceleration: 54.46
-  _moveClamp: 13
+  _acceleration: 23
+  _moveClamp: 6
   _deAcceleration: 60
   _apexBonus: 2
   _fallClamp: -40
