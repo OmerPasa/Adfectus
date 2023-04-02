@@ -101,7 +101,8 @@ namespace TarodevController
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
-        void Awake(){
+        void Awake()
+        {
             damageToPlayer = PlayerPrefs.GetFloat("damageToPlayer");
             Debug.Log("damagetoplayerin game is " + damageToPlayer);
             Invoke(nameof(Activate), 0.5f);
@@ -235,7 +236,7 @@ namespace TarodevController
 
         private float _timeLeftGrounded;
 
-        
+
         RaycastHit2D hitL;
         RaycastHit2D hitR;
 
@@ -265,7 +266,7 @@ namespace TarodevController
             }
 
             _colDown = groundedCheck;
-            
+
             // The rest
             _colUp = RunDetection(_raysUp);
             _colLeft = RunDetection(_raysLeft);
@@ -279,7 +280,7 @@ namespace TarodevController
             Debug.DrawRay(startPositionRight, transform.TransformDirection(Vector2.up), Color.green, 1f);
             hitL = Physics2D.Raycast(startPositionLeft, transform.TransformDirection(Vector2.up), 1f, _groundLayer);   //  a function that slightly changes x value and applies it to array.
             hitR = Physics2D.Raycast(startPositionRight, transform.TransformDirection(Vector2.up), 1f, _groundLayer);
-            
+
             if (hitL.collider != null || hitR.collider != null && playerJumping)
             {
                 col2DHit = hitL.collider != null ? hitL.collider : hitR.collider;
@@ -295,16 +296,16 @@ namespace TarodevController
                     Debug.Log($"currentonewayplatform is {currentOneWayPlatform}.");
                     Invoke("OneWayPlatform", 0.3f);
                 }
-            }    
-                //Raycast2D hit = Physics2D.Raycast(transform.position, out transform.TransformDirection(Vector2.up) hit, 4f, _groundLayer);
+            }
+            //Raycast2D hit = Physics2D.Raycast(transform.position, out transform.TransformDirection(Vector2.up) hit, 4f, _groundLayer);
 
 
 
             Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
             if (isAttacking)
-            {          
-                if ( enemiesInRange.Length >= 1)
+            {
+                if (enemiesInRange.Length >= 1)
                 {
                     RangeImage.color = new Color(0, 0, 0, 1);
                     CinemachineShake.Instance.ShakeCamera(6f, .1f);
@@ -317,9 +318,16 @@ namespace TarodevController
                         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
                         enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
                     }
-                }              
+                }
                 Invoke("AttackComplete", damageDelay);
             }
+        }
+        public void setExactHitTime(int counterQ)
+        {
+            float exactHitTime = (float)counterQ * TimeB.quarterBeatDuration;
+            //TimeB.timePassed
+            //Debug.Log("exactHitTime: " + exactHitTime);
+            //Debug.Log("TimeB.timePassed: " + TimeB.timePassed);
         }
 
         private void CalculateRayRanged()

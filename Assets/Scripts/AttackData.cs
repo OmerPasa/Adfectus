@@ -53,19 +53,19 @@ public class AttackData
 
     }
 
-    public void action(Vector3 pos, int Counter_Q)
+    public void action(Vector3 pos, int counter_Q)
     {
         if (type == 0)
         {
             return;
         }
 
-        int[] wAndQ = Duration.durToTime(Counter_Q);
+        int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
 
         if (type > 0)
         {
-            create(clone, pos, Counter_Q);
+            create(clone, pos, counter_Q);
             return;
         }
 
@@ -90,12 +90,24 @@ public class AttackData
             case -5:
                 LoopData.boss.GetComponent<BossMainScript>().fadeOut(clone);
                 break;
+            case -16:
+                LoopData.player.GetComponent<TarodevController.PlayerController>().setExactHitTime(counter_Q + duration.duration);
+                //bundan emin deilim
+                break;
         }
+
+    }
+
+    void denemekIcinKod(AttackData clone)
+    {
+        LoopData.player.GetComponent<TarodevController.PlayerController>().setExactHitTime(clone.duration.CounterEQ);
 
     }
 
     public void create(AttackData clone, Vector3 position, int startBeatQ)
     {
+        denemekIcinKod(clone); //sonradan silinmeli, gerçeği yansıtmamaktadır
+
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
