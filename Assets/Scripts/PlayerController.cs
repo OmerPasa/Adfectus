@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 namespace TarodevController
 {
@@ -29,6 +30,15 @@ namespace TarodevController
         [SerializeField] public Collider2D col2DHit = null;
         public float attackRange;
         public Transform attackPos;
+
+
+        [Header("Squash & Stretch")]
+        [SerializeField] private Transform visualJump;
+        [SerializeField] private float jumpingScaleAmount;
+        [SerializeField] private float jumpAnimationDur;
+        [SerializeField] private float landingScaleAmount;
+        [SerializeField] private float landAnimationDur;
+        [Space]
         public LayerMask whatIsEnemies;
         public Vector3 Velocity { get; private set; }
         public FrameInput Input { get; private set; }
@@ -37,6 +47,7 @@ namespace TarodevController
         public Vector3 RawMovement { get; private set; }
         public Vector2 GetAxisRaw;
         public bool Grounded => _colDown;
+        private bool wasGrounded;
         public bool _hasDashed;
         private bool isAttacking;
         public float dashSpeed;
@@ -47,7 +58,12 @@ namespace TarodevController
         public bool isFacingLeft;
         private InputManager inputManager;
 
+
+        [Header("Animations")]
         //Animation States
+        [SerializeField] private string currentAnimaton;
+        [SerializeField] private Animator animator;
+
         const string PLAYER_IDLE = "Player_Idle";
         const string PLAYER_RUN = "Player_Run";
         const string PLAYER_JUMP = "Player_Jump";
@@ -58,15 +74,13 @@ namespace TarodevController
 
         bool playerRunning, playerJumping, playerAttaking, playerTakingDamage, playerDying, Onewaying;
 
-        private Animator animator;
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
         public GameObject GameManager_;
-        public SpriteRenderer sprite;
+        public SpriteRenderer Healthsprite;
         public SpriteRenderer RangeImage;
         public ParticleSystem dashEffect;
-        private string currentAnimaton;
 
 
         [SerializeField]
@@ -90,10 +104,10 @@ namespace TarodevController
             RangeImage.color = new Color(0, 0, 0, 0);
             playerDying = false;
             rb2d = GetComponent<Rigidbody2D>();
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
             AfterFiringMusic = GetComponent<AudioSource>();
             BackGroundM = GetComponent<AudioSource>();
-            sprite = GetComponent<SpriteRenderer>();
+            Healthsprite = GetComponentInChildren<SpriteRenderer>();
             Playerhealth = maxHealth;
             dashTime = startDashTime;
             hitBufferList.Clear();
@@ -148,6 +162,10 @@ namespace TarodevController
 
             HandleDashing();//Checks dash movement codes.
             MoveCharacter(); // Actually perform the axis movement
+            if (!wasGrounded && Grounded)
+                ApplyLandingAnimation();
+
+            wasGrounded = Grounded;
         }
 
 
@@ -173,6 +191,8 @@ namespace TarodevController
             if (Input.JumpDown || Input.JumpUp)
             {
                 playerJumping = true;
+                ApplyJumpAnimation();
+                //FlipBool(ref isFacingLeft);
                 //Debug.Log("PlayerisJumping");
             }
 
@@ -190,6 +210,11 @@ namespace TarodevController
             {
                 _lastJumpPressed = Time.time;
             }
+        }
+        public bool FlipBool(ref bool value)
+        {
+            value = !value;
+            return value;
         }
 
         public void Attack_performed(InputAction.CallbackContext context)
@@ -496,6 +521,7 @@ namespace TarodevController
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
+                
                 ChangeAnimationState(PLAYER_JUMP);
                 Invoke("Jumploop", jumpDelay);
             }
@@ -517,6 +543,19 @@ namespace TarodevController
             {
                 if (_currentVerticalSpeed > 0) _currentVerticalSpeed = 0;
             }
+        }
+        private void ApplyJumpAnimation()
+        {
+                visualJump.DOScale(new Vector3(1 - jumpingScaleAmount, 1 + jumpingScaleAmount, 1f), jumpAnimationDur * 0.5f).OnComplete(
+                    () => visualJump.DOScale(new Vector3(1f, 1f, 1f), jumpAnimationDur * 0.5f)
+                );
+        }
+
+        private void ApplyLandingAnimation()
+        {
+                visualJump.DOScale(new Vector3(1 - landingScaleAmount, 1 + landingScaleAmount, 1f), landAnimationDur * 0.5f).OnComplete(
+                  () => visualJump.DOScale(new Vector3(1f, 1f, 1f), landAnimationDur * 0.5f)
+                );
         }
 
         #endregion
@@ -644,7 +683,7 @@ namespace TarodevController
         // set new health to the sprite filter as a new color.
         void Set_Health(float Playerhealth)
         {
-            sprite.color = new Color(Playerhealth, Playerhealth, Playerhealth, 1);
+            Healthsprite.color = new Color(Playerhealth, Playerhealth, Playerhealth, 1);
         }
         void DamageDelayComplete()
         {
@@ -690,6 +729,8 @@ namespace TarodevController
         {
             playerJumping = false;
         }
+
+
 
         void AttackComplete()
         {
