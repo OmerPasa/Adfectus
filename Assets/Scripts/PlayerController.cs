@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
 
 namespace TarodevController
 {
@@ -25,9 +24,6 @@ namespace TarodevController
     {
         // Public for external hooks
         public GameObject currentOneWayPlatform;
-        [Space]
-        [SerializeField] private Transform visualsJumps;
-        [Space]
         [SerializeField] private BoxCollider2D playerCollider;
         [SerializeField] private BoxCollider2D bCol2d;
         [SerializeField] public Collider2D col2DHit = null;
@@ -177,7 +173,6 @@ namespace TarodevController
             if (Input.JumpDown || Input.JumpUp)
             {
                 playerJumping = true;
-                ApplyJumpAnimation();
                 //Debug.Log("PlayerisJumping");
             }
 
@@ -523,15 +518,12 @@ namespace TarodevController
                 if (_currentVerticalSpeed > 0) _currentVerticalSpeed = 0;
             }
         }
-        private void ApplyJumpAnimation()
-        {
-            visualsJumps.DOScale(new Vector3(.8f, 1.2f, 1f), 0.1f);
-        }
-            #endregion
 
-            #region Dash
+        #endregion
 
-            private void HandleDashing()
+        #region Dash
+
+        private void HandleDashing()
         {
             if (direction == 0)
             {
