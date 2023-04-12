@@ -4100,6 +4100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentOneWayPlatform: {fileID: 0}
+  visualsJumps: {fileID: 1982680927}
   playerCollider: {fileID: 1982680930}
   bCol2d: {fileID: 0}
   col2DHit: {fileID: 0}
@@ -4348,7 +4349,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.7797835, y: 1}
+    m_SensorSize: {x: 2.0865922, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
