@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using Pathfinding;
 
 public class HumanBossController : MonoBehaviour
 {
-    //public GameObject character;
+    public GameObject character;
     public GameObject GM;
     public Transform Character;
     public Transform EyeRay;
@@ -15,6 +14,12 @@ public class HumanBossController : MonoBehaviour
     public Rigidbody2D Rigidbody2D;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
+
+    HumanBossBaseState currentState;
+    HumanBossRunState RunningState = new HumanBossRunState();
+    HumanBossMeleeState MeleeState = new HumanBossMeleeState();
+    HumanBossMediumState MediumState = new HumanBossMediumState();
+    HumanBossLongState LongState = new HumanBossLongState();
 
     #region Ranges
     [Range(0f, 10f)]
@@ -48,6 +53,7 @@ public class HumanBossController : MonoBehaviour
     bool pathBlocked_ButCANJump;
     bool StopMoving;
     bool IsFacing_Left;
+    #region Animations
     private bool isAttacking;
     private bool isTakingDamage;
     private bool isDying;
@@ -62,27 +68,18 @@ public class HumanBossController : MonoBehaviour
     const string ENEMY_JUMP = "Mole_Jump";
     const string ENEMY_JUMPATTACK = "Mole_JumpAttack";
     const string ENEMY_MOVEMENT = "Mole_Movement";
+    #endregion
     private void Start()
     {
         animator = GetComponent<Animator>();
         Rigidbody2D = GetComponent<Rigidbody2D>();
         GM = GameObject.Find("GameManager");
         Character = GameObject.Find("Player").transform;
-        //Rigidbody2D.constraints = RigidbodyConstraints.FreezePositionZ;
     }
     void Update()
     {
-        if (Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground")))
-        {
-            grounded = true;
-            Debug.Log("isGROUNDED_EnemyBoss");
-        }
-        else
-        {
-            grounded = false;
-        }
-        //===================================================
-        //flipping code
+
+        #region Flipping
         if (Character != null)
         {
             if (transform.position.x < Character.position.x)
@@ -98,8 +95,19 @@ public class HumanBossController : MonoBehaviour
                 IsFacing_Left = false;
             }
         }
-        //=====================================================================
-        //Raycast 
+        #endregion
+
+        #region Raycast
+        if (Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground")))
+        {
+            grounded = true;
+            Debug.Log("isGROUNDED_EnemyBoss");
+        }
+        else
+        {
+            grounded = false;
+        }
+
         var castDist = distance;
         if (IsFacing_Left)
         {
@@ -121,7 +129,9 @@ public class HumanBossController : MonoBehaviour
         {
             pathBlocked_ButCANJump = false;
         }
-        //Drawing line
+        #endregion
+
+        #region DrawingLines
         Debug.DrawLine(MidRay.position, endPos, Color.green, Time.deltaTime * 10);
 
         Vector2 endPos1 = EyeRay.position + Vector3.left * castDist;
@@ -136,8 +146,10 @@ public class HumanBossController : MonoBehaviour
         }
         //drawing line
         Debug.DrawLine(EyeRay.position, endPos1, Color.green, Time.deltaTime * 10);
-        //================================================================
-        //MOVİNG SCRİPTS
+
+        #endregion
+
+        #region Moving Scripts
         if (Character != null)
         {
             if (this.animator.GetCurrentAnimatorStateInfo(0).IsName("ENEMY_ATTACK"))
@@ -154,7 +166,20 @@ public class HumanBossController : MonoBehaviour
             {
                 if (!StopMoving)
                 {
-                    MoveTowardCharacter(karPos, pos);
+                    // Move towards character
+                    if (Mathf.Abs(karPos.x - pos.x) > minRange && !(pathBlocked && grounded))
+                    {
+                        float direction = Mathf.Sign(karPos.x - pos.x);
+                        Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
+                        rb2d.velocity = new Vector2(direction * movementSpeed, rb2d.velocity.y);
+                    }
+
+                    // Jump if path is blocked but can jump
+                    if (pathBlocked_ButCANJump && grounded && !Is_jumping)
+                    {
+                        jump();
+                        Is_jumping = true;
+                    }
                 }
 
             }
@@ -168,8 +193,9 @@ public class HumanBossController : MonoBehaviour
                 // shoot(karPos, pos);
             }
         }
+        #endregion
 
-
+        #region IdleorMove animations
         //if (pos.y != tempY) { grounded = false; } 
         //else { grounded = true; }
         // animation  part for idle or movement
@@ -184,6 +210,9 @@ public class HumanBossController : MonoBehaviour
                 ChangeAnimationState(ENEMY_IDLE);
             }
         }
+        #endregion
+
+        #region MeleeAttack
         /// DETECTİNG POSSİBLE DAMAGE DEALABLE OBJECTS
         Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
@@ -207,27 +236,16 @@ public class HumanBossController : MonoBehaviour
         {
             timeBtwAttack -= Time.deltaTime;
         }
-        Debug.Log("pathBlocked_ButCANJump" + pathBlocked_ButCANJump);
-
+        #endregion
     }
-    void MoveTowardCharacter(Vector3 karPos, Vector3 pos)
+
+
+    public abstract class HumanBossBaseState
     {
-        // Move towards character
-        if (Mathf.Abs(karPos.x - pos.x) > minRange && !(pathBlocked && grounded))
-        {
-            float direction = Mathf.Sign(karPos.x - pos.x);
-            Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
-            rb2d.velocity = new Vector2(direction * movementSpeed, rb2d.velocity.y);
-        }
-
-        // Jump if path is blocked but can jump
-        if (pathBlocked_ButCANJump && grounded && !Is_jumping)
-        {
-            jump();
-            Is_jumping = true;
-        }
+        abstract void EnterState(HumanBossController Boss);
+        abstract void UpdateState(HumanBossController Boss);
+        abstract void onCollisionEnter(HumanBossController Boss);
     }
-
 
     void AttackComplete()
     {
