@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HumanBossController : MonoBehaviour
 {
+    #region outside_connections
     public GameObject character;
     public GameObject GM;
     public Transform Character;
@@ -14,12 +15,7 @@ public class HumanBossController : MonoBehaviour
     public Rigidbody2D Rigidbody2D;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
-
-    HumanBossBaseState currentState;
-    HumanBossRunState RunningState = new HumanBossRunState();
-    HumanBossMeleeState MeleeState = new HumanBossMeleeState();
-    HumanBossMediumState MediumState = new HumanBossMediumState();
-    HumanBossLongState LongState = new HumanBossLongState();
+    #endregion
 
     #region Ranges
     [Range(0f, 10f)]
@@ -38,6 +34,8 @@ public class HumanBossController : MonoBehaviour
     public float jumpPower;
     public float jumpTime;
     #endregion
+
+    #region variables
     float closeATime2 = 0;
     float bulletTime2 = 0;
     float jumpTime2 = 0;
@@ -53,6 +51,16 @@ public class HumanBossController : MonoBehaviour
     bool pathBlocked_ButCANJump;
     bool StopMoving;
     bool IsFacing_Left;
+    #endregion
+
+    #region State_Machine States
+    public HumanBossBaseState currentState;
+    public HumanBossRunState RunningState = new HumanBossRunState();
+    public HumanBossMeleeState MeleeState = new HumanBossMeleeState();
+    public HumanBossMediumState MediumState = new HumanBossMediumState();
+    public HumanBossLongState LongState = new HumanBossLongState();
+    #endregion
+
     #region Animations
     private bool isAttacking;
     private bool isTakingDamage;
@@ -69,8 +77,11 @@ public class HumanBossController : MonoBehaviour
     const string ENEMY_JUMPATTACK = "Mole_JumpAttack";
     const string ENEMY_MOVEMENT = "Mole_Movement";
     #endregion
+
     private void Start()
     {
+        currentState = RunningState;
+        currentState.EnterState(this);
         animator = GetComponent<Animator>();
         Rigidbody2D = GetComponent<Rigidbody2D>();
         GM = GameObject.Find("GameManager");
@@ -78,6 +89,7 @@ public class HumanBossController : MonoBehaviour
     }
     void Update()
     {
+        currentState.UpdateState(this);
 
         #region Flipping
         if (Character != null)
@@ -101,7 +113,7 @@ public class HumanBossController : MonoBehaviour
         if (Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground")))
         {
             grounded = true;
-            Debug.Log("isGROUNDED_EnemyBoss");
+            //Debug.Log("isGROUNDED_EnemyBoss");
         }
         else
         {
@@ -240,12 +252,7 @@ public class HumanBossController : MonoBehaviour
     }
 
 
-    public abstract class HumanBossBaseState
-    {
-        abstract void EnterState(HumanBossController Boss);
-        abstract void UpdateState(HumanBossController Boss);
-        abstract void onCollisionEnter(HumanBossController Boss);
-    }
+
 
     void AttackComplete()
     {
@@ -357,5 +364,86 @@ public class HumanBossController : MonoBehaviour
         {
             pathBlocked = false;
         }
+    }
+
+    public void SwitchState(HumanBossBaseState state)
+    {
+        currentState = state;
+        state.EnterState(this);
+    }
+}
+
+public abstract class HumanBossBaseState
+{
+    public abstract void EnterState(HumanBossController Boss);
+    public abstract void UpdateState(HumanBossController Boss);
+    public abstract void onCollisionEnter(HumanBossController Boss);
+}
+
+public class HumanBossRunState : HumanBossBaseState
+{
+    public override void EnterState(HumanBossController Boss)
+    {
+        Debug.Log("Running State Human Boss");
+    }
+
+    public override void UpdateState(HumanBossController Boss)
+    {
+        //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
+    }
+    public override void onCollisionEnter(HumanBossController Boss)
+    {
+
+    }
+}
+
+public class HumanBossMeleeState : HumanBossBaseState
+{
+    public override void EnterState(HumanBossController Boss)
+    {
+
+    }
+
+    public override void UpdateState(HumanBossController Boss)
+    {
+
+    }
+    public override void onCollisionEnter(HumanBossController Boss)
+    {
+
+    }
+}
+
+public class HumanBossMediumState : HumanBossBaseState
+{
+    public override void EnterState(HumanBossController Boss)
+    {
+
+    }
+
+    public override void UpdateState(HumanBossController Boss)
+    {
+
+    }
+    public override void onCollisionEnter(HumanBossController Boss)
+    {
+
+    }
+}
+
+public class HumanBossLongState : HumanBossBaseState
+{
+    public override void EnterState(HumanBossController Boss)
+    {
+
+    }
+
+    public override void UpdateState(HumanBossController Boss)
+    {
+
+    }
+    public override void onCollisionEnter(HumanBossController Boss)
+    {
+
     }
 }
