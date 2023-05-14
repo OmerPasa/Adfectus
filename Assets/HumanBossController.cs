@@ -84,7 +84,7 @@ public class HumanBossController : MonoBehaviour
         animator = GetComponent<Animator>();
         rigidbody2D = GetComponent<Rigidbody2D>();
         gM = GameObject.Find("GameManager");
-        character = GameObject.Find("Player").transform;
+        character = GameObject.Find("Player");
     }
     void Update()
     {
@@ -406,10 +406,10 @@ public class HumanBossMeleeState : HumanBossBaseState
                         boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
                         boss.Invoke("AttackComplete", boss.damageDelay);
                         // Apply damage to the player
-                        PlayerController playerController = boss.character.GetComponent<PlayerController>();
+                        TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
                         if (playerController != null)
                         {
-                            playerController.PlayerTakeDamage();
+                            playerController.PlayerTakeDamage(boss.damage);
                         }
                     }
                     boss.timeBtwAttack = boss.startTimeBtwAttack;
@@ -423,7 +423,7 @@ public class HumanBossMeleeState : HumanBossBaseState
             {
                 // Move towards the player
                 Vector3 moveDirection = (boss.character.transform.position - boss.transform.position).normalized;
-                boss.transform.Translate(moveDirection * boss.moveSpeed * Time.deltaTime, Space.World);
+                boss.transform.Translate(moveDirection * boss.movementSpeed * Time.deltaTime, Space.World);
             }
         }
     }

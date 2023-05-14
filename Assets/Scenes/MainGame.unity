@@ -2368,6 +2368,7 @@ MonoBehaviour:
   movementSpeed: 2
   jumpPower: 10
   jumpTime: 1
+  damageDelay: 0
   health: 4
   damage: 3
   timeBtwAttack: 2
@@ -2376,6 +2377,7 @@ MonoBehaviour:
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
   stopMoving: 0
+  isAttacking: 0
   is_jumping: 0
   animator: {fileID: 895456631}
 --- !u!4 &895456628
@@ -2997,11 +2999,6 @@ MonoBehaviour:
 --- !u!4 &1218278506 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1959430950456188162, guid: 3b022fba314310d48a3da40ba4938be5, type: 3}
-  m_PrefabInstance: {fileID: 992014891}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &1218278508 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 1959430950456188163, guid: 3b022fba314310d48a3da40ba4938be5, type: 3}
   m_PrefabInstance: {fileID: 992014891}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1235092838
@@ -4538,59 +4535,59 @@ MonoBehaviour:
   m_GameObject: {fileID: 1982680925}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbfb23717f7dee14688bccda60b77b9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c7bfdb9358d7aa4a85e8746ea4d7da0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   currentOneWayPlatform: {fileID: 0}
-  playerCollider: {fileID: 1982680930}
+  playerCollider: {fileID: 0}
   bCol2d: {fileID: 0}
   col2DHit: {fileID: 0}
-  attackRange: 2
-  attackPos: {fileID: 534670394}
-  visualJump: {fileID: 1751486517}
-  jumpingScaleAmount: 0.3
-  jumpAnimationDur: 0.1
-  landingScaleAmount: 0.2
-  landAnimationDur: 0.1
+  attackRange: 0
+  attackPos: {fileID: 0}
+  visualJump: {fileID: 0}
+  jumpingScaleAmount: 0
+  jumpAnimationDur: 0
+  landingScaleAmount: 0
+  landAnimationDur: 0
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   GetAxisRaw: {x: 0, y: 0}
-  _hasDashed: 1
-  dashSpeed: 40
-  startDashTime: 0.1
+  _hasDashed: 0
+  dashSpeed: 0
+  startDashTime: 0
   damageBoss: 1
-  isFacingLeft: 1
+  isFacingLeft: 0
   currentAnimaton: 
   animator: {fileID: 0}
   BackGroundM: {fileID: 0}
-  GameManager_: {fileID: 497408459}
+  GameManager_: {fileID: 0}
   Healthsprite: {fileID: 0}
-  RangeImage: {fileID: 741823959}
-  dashEffect: {fileID: 1218278508}
-  attackDelay: 1
-  damageToPlayer: 1
-  rightRay: 1
-  leftRay: 1
+  RangeImage: {fileID: 0}
+  dashEffect: {fileID: 0}
+  attackDelay: 0
+  damageToPlayer: 0
+  rightRay: 0
+  leftRay: 0
   _characterBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   _detectorCount: 3
-  _detectionRayLength: 0.44
-  _rayBuffer: 0.3
-  _acceleration: 23
-  _moveClamp: 6
+  _detectionRayLength: 0.1
+  _rayBuffer: 0.1
+  _acceleration: 90
+  _moveClamp: 13
   _deAcceleration: 60
   _apexBonus: 2
   _fallClamp: -40
   _minFallSpeed: 80
   _maxFallSpeed: 120
-  _jumpHeight: 25
+  _jumpHeight: 30
   _jumpApexThreshold: 10
-  _coyoteTimeThreshold: 0.2
+  _coyoteTimeThreshold: 0.1
   _jumpBuffer: 0.1
   _jumpEndEarlyGravityModifier: 3
   _freeColliderIterations: 10

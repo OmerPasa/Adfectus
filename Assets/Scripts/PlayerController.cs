@@ -17,10 +17,10 @@ namespace TarodevController
     /// </summary>
     /// 
     /// 
-    /// OUR NAMÄ°NG CONVENTÄ°ON !!!!    
+    /// OUR NAMÝNG CONVENTÝON !!!!    
     /// 
-    /// PUBLÄ°C  GameDeveloper
-    /// PRÄ°VATE gameDeveloper
+    /// PUBLÝC  GameDeveloper
+    /// PRÝVATE gameDeveloper
     public class PlayerController : MonoBehaviour, IPlayerController
     {
         // Public for external hooks
@@ -237,7 +237,7 @@ namespace TarodevController
         #region Collisions
 
 
-        [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
+        [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
 
 
         private void OnTriggerEnter2D(Collider2D laser)
@@ -254,7 +254,7 @@ namespace TarodevController
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;
-        [SerializeField][Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
+        [SerializeField] [Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
 
         private RayRange _raysUp, _raysRight, _raysDown, _raysLeft;
         private bool _colUp, _colRight, _colDown, _colLeft;
@@ -409,7 +409,7 @@ namespace TarodevController
 
         #region Walk
 
-        [Header("WALKING")][SerializeField] private float _acceleration = 90;
+        [Header("WALKING")] [SerializeField] private float _acceleration = 90;
         [SerializeField] private float _moveClamp = 13;
         [SerializeField] private float _deAcceleration = 60f;
         [SerializeField] private float _apexBonus = 2;
@@ -456,7 +456,7 @@ namespace TarodevController
 
         #region Gravity
 
-        [Header("GRAVITY")][SerializeField] private float _fallClamp = -40f;
+        [Header("GRAVITY")] [SerializeField] private float _fallClamp = -40f;
         [SerializeField] private float _minFallSpeed = 80f;
         [SerializeField] private float _maxFallSpeed = 120f;
         private float _fallSpeed;
@@ -485,7 +485,7 @@ namespace TarodevController
 
         #region Jump
 
-        [Header("JUMPING")][SerializeField] private float _jumpHeight = 30;
+        [Header("JUMPING")] [SerializeField] private float _jumpHeight = 30;
         [SerializeField] private float _jumpApexThreshold = 10f;
         [SerializeField] private float _coyoteTimeThreshold = 0.1f;
         [SerializeField] private float _jumpBuffer = 0.1f;
@@ -521,7 +521,7 @@ namespace TarodevController
                 _coyoteUsable = false;
                 _timeLeftGrounded = float.MinValue;
                 JumpingThisFrame = true;
-                
+
                 ChangeAnimationState(PLAYER_JUMP);
                 Invoke("Jumploop", jumpDelay);
             }
@@ -546,16 +546,16 @@ namespace TarodevController
         }
         private void ApplyJumpAnimation()
         {
-                visualJump.DOScale(new Vector3(1 - jumpingScaleAmount, 1 + jumpingScaleAmount, 1f), jumpAnimationDur * 0.5f).OnComplete(
-                    () => visualJump.DOScale(new Vector3(1f, 1f, 1f), jumpAnimationDur * 0.5f)
-                );
+            visualJump.DOScale(new Vector3(1 - jumpingScaleAmount, 1 + jumpingScaleAmount, 1f), jumpAnimationDur * 0.5f).OnComplete(
+                () => visualJump.DOScale(new Vector3(1f, 1f, 1f), jumpAnimationDur * 0.5f)
+            );
         }
 
         private void ApplyLandingAnimation()
         {
-                visualJump.DOScale(new Vector3(1 - landingScaleAmount, 1 + landingScaleAmount, 1f), landAnimationDur * 0.5f).OnComplete(
-                  () => visualJump.DOScale(new Vector3(1f, 1f, 1f), landAnimationDur * 0.5f)
-                );
+            visualJump.DOScale(new Vector3(1 - landingScaleAmount, 1 + landingScaleAmount, 1f), landAnimationDur * 0.5f).OnComplete(
+              () => visualJump.DOScale(new Vector3(1f, 1f, 1f), landAnimationDur * 0.5f)
+            );
         }
 
         #endregion
