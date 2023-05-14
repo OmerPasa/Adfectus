@@ -2347,31 +2347,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15d3f30934ccdb478da0db9bee120ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GM: {fileID: 497408459}
-  Character: {fileID: 1982680927}
-  EyeRay: {fileID: 1915011952}
-  MidRay: {fileID: 1445627658}
+  gM: {fileID: 497408459}
+  character: {fileID: 1982680927}
+  eyeRay: {fileID: 1915011952}
+  midRay: {fileID: 1445627658}
   groundCheck: {fileID: 1960712268}
-  bullet: {fileID: 0}
-  Rigidbody2D: {fileID: 895456629}
+  bullet: {fileID: 1696433892}
+  rigidbody2D: {fileID: 895456629}
   attackPos: {fileID: 469733505}
   whatIsEnemies:
     serializedVersion: 2
     m_Bits: 256
-  attackRange: 2.9
-  viewRange: 2.7
+  attackRange: 2.5
+  viewRange: 10
   minRange: 0.33
-  closeAttackRange: 0.27
+  closeAttackRange: 1.4
   closeAttackTime: 0.24
   bulletRange: 2.14
   bulletTime: 0.4
-  movementSpeed: 1
+  movementSpeed: 2
   jumpPower: 10
   jumpTime: 1
   health: 4
   damage: 3
   timeBtwAttack: 2
   startTimeBtwAttack: 2
+  grounded: 1
+  pathBlocked: 0
+  pathBlocked_ButCANJump: 0
+  stopMoving: 0
+  is_jumping: 0
+  animator: {fileID: 895456631}
 --- !u!4 &895456628
 Transform:
   m_ObjectHideFlags: 0

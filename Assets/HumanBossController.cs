@@ -5,14 +5,13 @@ using UnityEngine;
 public class HumanBossController : MonoBehaviour
 {
     #region outside_connections
+    public GameObject gM;
     public GameObject character;
-    public GameObject GM;
-    public Transform Character;
-    public Transform EyeRay;
-    public Transform MidRay;
+    public Transform eyeRay;
+    public Transform midRay;
     public Transform groundCheck;
     public GameObject bullet;
-    public Rigidbody2D Rigidbody2D;
+    public Rigidbody2D rigidbody2D;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
     #endregion
@@ -40,33 +39,33 @@ public class HumanBossController : MonoBehaviour
     float bulletTime2 = 0;
     float jumpTime2 = 0;
     float distance = 1;
-    private float damageDelay;
+    public float damageDelay;
     public int health = 4;
     public int damage = 3;
     int Count;
-    [SerializeField] private float timeBtwAttack;
+    [SerializeField] public float timeBtwAttack;
     [SerializeField] public float startTimeBtwAttack;
-    bool grounded = true;
-    bool pathBlocked = false;
-    bool pathBlocked_ButCANJump;
-    bool StopMoving;
-    bool IsFacing_Left;
+    public bool grounded = true;
+    public bool pathBlocked = false;
+    public bool pathBlocked_ButCANJump;
+    public bool stopMoving;
+    bool isFacing_Left;
     #endregion
 
     #region State_Machine States
     public HumanBossBaseState currentState;
-    public HumanBossRunState RunningState = new HumanBossRunState();
-    public HumanBossMeleeState MeleeState = new HumanBossMeleeState();
-    public HumanBossMediumState MediumState = new HumanBossMediumState();
-    public HumanBossLongState LongState = new HumanBossLongState();
+    public HumanBossRunState runningState = new HumanBossRunState();
+    public HumanBossMeleeState meleeState = new HumanBossMeleeState();
+    public HumanBossMediumState mediumState = new HumanBossMediumState();
+    public HumanBossLongState longState = new HumanBossLongState();
     #endregion
 
     #region Animations
-    private bool isAttacking;
+    public bool isAttacking;
     private bool isTakingDamage;
     private bool isDying;
-    private bool Is_jumping;
-    private Animator animator;
+    public bool is_jumping;
+    public Animator animator;
     private string currentAnimaton;
 
     const string ENEMY_IDLE = "Mole_Idle";
@@ -80,31 +79,31 @@ public class HumanBossController : MonoBehaviour
 
     private void Start()
     {
-        currentState = RunningState;
+        currentState = runningState;
         currentState.EnterState(this);
         animator = GetComponent<Animator>();
-        Rigidbody2D = GetComponent<Rigidbody2D>();
-        GM = GameObject.Find("GameManager");
-        Character = GameObject.Find("Player").transform;
+        rigidbody2D = GetComponent<Rigidbody2D>();
+        gM = GameObject.Find("GameManager");
+        character = GameObject.Find("Player").transform;
     }
     void Update()
     {
         currentState.UpdateState(this);
 
         #region Flipping
-        if (Character != null)
+        if (character != null)
         {
-            if (transform.position.x < Character.position.x)
+            if (transform.position.x < character.transform.position.x)
             {
                 //turn object
                 transform.localScale = new Vector3(-1f, 1f, 1f);
-                IsFacing_Left = true;
+                isFacing_Left = true;
             }
-            else if (transform.position.x > Character.position.x)
+            else if (transform.position.x > character.transform.position.x)
             {
                 //turn object ro other side
                 transform.localScale = new Vector3(1f, 1f, 1f);
-                IsFacing_Left = false;
+                isFacing_Left = false;
             }
         }
         #endregion
@@ -121,13 +120,13 @@ public class HumanBossController : MonoBehaviour
         }
 
         var castDist = distance;
-        if (IsFacing_Left)
+        if (isFacing_Left)
         {
             castDist = -distance;
         }
 
-        Vector2 endPos = MidRay.position + Vector3.left * castDist;
-        RaycastHit2D Midray = Physics2D.Linecast(MidRay.position, endPos, 1 << LayerMask.NameToLayer("Ground"));
+        Vector2 endPos = midRay.position + Vector3.left * castDist;
+        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Ground"));
 
         if (Midray.collider != null)
         {
@@ -144,10 +143,10 @@ public class HumanBossController : MonoBehaviour
         #endregion
 
         #region DrawingLines
-        Debug.DrawLine(MidRay.position, endPos, Color.green, Time.deltaTime * 10);
+        Debug.DrawLine(midRay.position, endPos, Color.green, Time.deltaTime * 10);
 
-        Vector2 endPos1 = EyeRay.position + Vector3.left * castDist;
-        RaycastHit2D Eyeray = Physics2D.Linecast(EyeRay.position, endPos1, 1 << LayerMask.NameToLayer("Ground"));
+        Vector2 endPos1 = eyeRay.position + Vector3.left * castDist;
+        RaycastHit2D Eyeray = Physics2D.Linecast(eyeRay.position, endPos1, 1 << LayerMask.NameToLayer("Ground"));
 
         if (Eyeray.collider != null)
         {
@@ -157,55 +156,10 @@ public class HumanBossController : MonoBehaviour
             }
         }
         //drawing line
-        Debug.DrawLine(EyeRay.position, endPos1, Color.green, Time.deltaTime * 10);
+        Debug.DrawLine(eyeRay.position, endPos1, Color.green, Time.deltaTime * 10);
 
         #endregion
 
-        #region Moving Scripts
-        if (Character != null)
-        {
-            if (this.animator.GetCurrentAnimatorStateInfo(0).IsName("ENEMY_ATTACK"))
-            {
-                StopMoving = true;
-            }
-            else
-            {
-                StopMoving = false;
-            }
-            Vector3 karPos = Character.transform.position;
-            Vector3 pos = transform.position;
-            if (Mathf.Abs(karPos.x - pos.x) < viewRange)
-            {
-                if (!StopMoving)
-                {
-                    // Move towards character
-                    if (Mathf.Abs(karPos.x - pos.x) > minRange && !(pathBlocked && grounded))
-                    {
-                        float direction = Mathf.Sign(karPos.x - pos.x);
-                        Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
-                        rb2d.velocity = new Vector2(direction * movementSpeed, rb2d.velocity.y);
-                    }
-
-                    // Jump if path is blocked but can jump
-                    if (pathBlocked_ButCANJump && grounded && !Is_jumping)
-                    {
-                        jump();
-                        Is_jumping = true;
-                    }
-                }
-
-            }
-            if (Mathf.Abs(karPos.x - pos.x) < closeAttackRange)
-            {
-                StopMoving = true;
-                closeAttack();
-            }
-            else if (Mathf.Abs(karPos.x - pos.x) < bulletRange)
-            {
-                // shoot(karPos, pos);
-            }
-        }
-        #endregion
 
         #region IdleorMove animations
         //if (pos.y != tempY) { grounded = false; } 
@@ -213,7 +167,7 @@ public class HumanBossController : MonoBehaviour
         // animation  part for idle or movement
         if (!isAttacking && !isTakingDamage && !isDying)
         {
-            if (Rigidbody2D.velocity.x != 0.00f)
+            if (rigidbody2D.velocity.x != 0.00f)
             {
                 ChangeAnimationState(ENEMY_MOVEMENT);
             }
@@ -305,21 +259,21 @@ public class HumanBossController : MonoBehaviour
     void DamageDelayComplete()
     {
         isTakingDamage = false;
-        Is_jumping = false;
+        is_jumping = false;
     }
     void Die()
     {
-        GM.GetComponent<GameManager>().EndGame();
+        gM.GetComponent<GameManager>().EndGame();
         Destroy(this);
     }
-    void ChangeAnimationState(string newAnimation)
+    public void ChangeAnimationState(string newAnimation)
     {
         if (currentAnimaton == newAnimation) return;
 
         animator.Play(newAnimation);
         currentAnimaton = newAnimation;
     }
-    void jump()
+    public void Jump()
     {
         Debug.Log("AI_JUMPİNG");
         if (jumpTime - (Time.realtimeSinceStartup - jumpTime2) <= 0)
@@ -375,23 +329,56 @@ public class HumanBossController : MonoBehaviour
 
 public abstract class HumanBossBaseState
 {
-    public abstract void EnterState(HumanBossController Boss);
-    public abstract void UpdateState(HumanBossController Boss);
-    public abstract void onCollisionEnter(HumanBossController Boss);
+    public abstract void EnterState(HumanBossController boss);
+    public abstract void UpdateState(HumanBossController boss);
+    public abstract void onCollisionEnter(HumanBossController boss);
 }
 
 public class HumanBossRunState : HumanBossBaseState
 {
-    public override void EnterState(HumanBossController Boss)
+    public override void EnterState(HumanBossController boss)
     {
         Debug.Log("Running State Human Boss");
     }
 
-    public override void UpdateState(HumanBossController Boss)
+    public override void UpdateState(HumanBossController boss)
     {
-        //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
+        if (boss.character != null)
+        {
+            if (boss.animator.GetCurrentAnimatorStateInfo(0).IsName("ENEMY_ATTACK"))
+            {
+                boss.stopMoving = true;
+            }
+            else
+            {
+                boss.stopMoving = false;
+            }
+            Vector3 karPos = boss.character.transform.position;
+            Vector3 pos = boss.transform.position;
+            if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
+            {
+                if (!boss.stopMoving)
+                {
+                    // Move towards character
+                    if (Mathf.Abs(karPos.x - pos.x) > boss.minRange && !(boss.pathBlocked && boss.grounded))
+                    {
+                        float direction = Mathf.Sign(karPos.x - pos.x);
+                        Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
+                        rb2d.velocity = new Vector2(direction * boss.movementSpeed, rb2d.velocity.y);
+                    }
+
+                    // Jump if path is blocked but can jump
+                    if (boss.pathBlocked_ButCANJump && boss.grounded && !boss.is_jumping)
+                    {
+                        boss.Jump();
+                        boss.is_jumping = true;
+                    }
+                }
+            }
+            //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
+        }
     }
-    public override void onCollisionEnter(HumanBossController Boss)
+    public override void onCollisionEnter(HumanBossController boss)
     {
 
     }
@@ -399,16 +386,48 @@ public class HumanBossRunState : HumanBossBaseState
 
 public class HumanBossMeleeState : HumanBossBaseState
 {
-    public override void EnterState(HumanBossController Boss)
+    public override void EnterState(HumanBossController boss)
     {
 
     }
 
-    public override void UpdateState(HumanBossController Boss)
+    public override void UpdateState(HumanBossController boss)
     {
-
+        {
+            // Check if player is within attack range
+            if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.attackRange)
+            {
+                if (boss.timeBtwAttack <= 0)
+                {
+                    if (!boss.isAttacking)
+                    {
+                        boss.isAttacking = true;
+                        boss.ChangeAnimationState("ENEMY_ATTACK");
+                        boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+                        boss.Invoke("AttackComplete", boss.damageDelay);
+                        // Apply damage to the player
+                        PlayerController playerController = boss.character.GetComponent<PlayerController>();
+                        if (playerController != null)
+                        {
+                            playerController.PlayerTakeDamage();
+                        }
+                    }
+                    boss.timeBtwAttack = boss.startTimeBtwAttack;
+                }
+                else
+                {
+                    boss.timeBtwAttack -= Time.deltaTime;
+                }
+            }
+            else
+            {
+                // Move towards the player
+                Vector3 moveDirection = (boss.character.transform.position - boss.transform.position).normalized;
+                boss.transform.Translate(moveDirection * boss.moveSpeed * Time.deltaTime, Space.World);
+            }
+        }
     }
-    public override void onCollisionEnter(HumanBossController Boss)
+    public override void onCollisionEnter(HumanBossController boss)
     {
 
     }
@@ -416,16 +435,16 @@ public class HumanBossMeleeState : HumanBossBaseState
 
 public class HumanBossMediumState : HumanBossBaseState
 {
-    public override void EnterState(HumanBossController Boss)
+    public override void EnterState(HumanBossController boss)
     {
 
     }
 
-    public override void UpdateState(HumanBossController Boss)
+    public override void UpdateState(HumanBossController boss)
     {
 
     }
-    public override void onCollisionEnter(HumanBossController Boss)
+    public override void onCollisionEnter(HumanBossController boss)
     {
 
     }
@@ -433,16 +452,16 @@ public class HumanBossMediumState : HumanBossBaseState
 
 public class HumanBossLongState : HumanBossBaseState
 {
-    public override void EnterState(HumanBossController Boss)
+    public override void EnterState(HumanBossController boss)
     {
 
     }
 
-    public override void UpdateState(HumanBossController Boss)
+    public override void UpdateState(HumanBossController boss)
     {
 
     }
-    public override void onCollisionEnter(HumanBossController Boss)
+    public override void onCollisionEnter(HumanBossController boss)
     {
 
     }
