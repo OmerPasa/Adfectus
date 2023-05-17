@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TarodevController;
 
 public class HumanBossController : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class HumanBossController : MonoBehaviour
     float distance = 1;
     public float damageDelay;
     public int health = 4;
-    public int damage = 3;
+    public float damage;
     int Count;
     [SerializeField] public float timeBtwAttack;
     [SerializeField] public float startTimeBtwAttack;
@@ -79,6 +80,7 @@ public class HumanBossController : MonoBehaviour
 
     private void Start()
     {
+        damage = PlayerPrefs.GetFloat("damageToPlayer");
         currentState = runningState;
         currentState.EnterState(this);
         animator = GetComponent<Animator>();
@@ -179,30 +181,32 @@ public class HumanBossController : MonoBehaviour
         #endregion
 
         #region MeleeAttack
-        /// DETECTİNG POSSİBLE DAMAGE DEALABLE OBJECTS
-        Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
-        if (timeBtwAttack <= 0)
-        {
-            if (enemiesInRange.Length >= 1)
+
+        /// DETECTİNG POSSİBLE DAMAGE DEALABLE OBJECTS
+            /*Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
+
+            if (timeBtwAttack <= 0)
             {
-                //for giving every one of enemies damage.
-                for (int i = 0; i < enemiesInRange.Length; i++)
+                if (enemiesInRange.Length >= 1)
                 {
-                    isAttacking = true;
-                    ChangeAnimationState(ENEMY_ATTACK);
-                    damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                    Invoke("AttackComplete", damageDelay);
-                    //enemiesInRange[i].GetComponent<PlayerController>().PlayerTakeDamage(damage); // player controller  ı görmi
+                    //for giving every one of enemies damage.
+                    for (int i = 0; i < enemiesInRange.Length; i++)
+                    {
+                        isAttacking = true;
+                        ChangeAnimationState(ENEMY_ATTACK);
+                        damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
+                        Invoke("AttackComplete", damageDelay);
+                        //enemiesInRange[i].GetComponent<PlayerController>().PlayerTakeDamage(damage); // player controller  ı görmi
+                    }
                 }
+                timeBtwAttack = startTimeBtwAttack;
             }
-            timeBtwAttack = startTimeBtwAttack;
-        }
-        else
-        {
-            timeBtwAttack -= Time.deltaTime;
-        }
-        #endregion
+            else
+            {
+                timeBtwAttack -= Time.deltaTime;
+            }*/
+            #endregion
     }
 
 
@@ -211,7 +215,7 @@ public class HumanBossController : MonoBehaviour
     void AttackComplete()
     {
         isAttacking = false;
-        Debug.Log("ATTACKCOMPLETEBOSS");
+        Debug.Log("ATTACKCOMPLETEBOSS2");
     }
     // Callback to draw gizmos only if the object is selected.
     void OnDrawGizmos()
@@ -377,6 +381,10 @@ public class HumanBossRunState : HumanBossBaseState
             }
             //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
         }
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.attackRange)
+        {
+            boss.SwitchState(boss.meleeState);
+        }
     }
     public override void onCollisionEnter(HumanBossController boss)
     {
@@ -395,35 +403,38 @@ public class HumanBossMeleeState : HumanBossBaseState
     {
         {
             // Check if player is within attack range
-            if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.attackRange)
+            
+            Debug.Log("Player taken damage1");
+            if (boss.timeBtwAttack <= 0)
             {
-                if (boss.timeBtwAttack <= 0)
+                Debug.Log("Player taken damage2");
+                if (!boss.isAttacking)
                 {
-                    if (!boss.isAttacking)
+                    Debug.Log("Player taken damage3");
+                    boss.isAttacking = true;
+                    boss.ChangeAnimationState("ENEMY_ATTACK");
+                    boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+                        
+                    // Apply damage to the player
+                    TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
+                    Debug.Log("Player taken damage");
+                    if (playerController != null)
                     {
-                        boss.isAttacking = true;
-                        boss.ChangeAnimationState("ENEMY_ATTACK");
-                        boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+                        playerController.PlayerTakeDamage(boss.damage); // is not getting called
                         boss.Invoke("AttackComplete", boss.damageDelay);
-                        // Apply damage to the player
-                        TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
-                        if (playerController != null)
-                        {
-                            playerController.PlayerTakeDamage(boss.damage);
-                        }
+                        Debug.Log("Player taken damage2");
                     }
-                    boss.timeBtwAttack = boss.startTimeBtwAttack;
+                    if (playerController = null)
+                    {
+                        Debug.Log("Player is null!");
+                    }
                 }
-                else
-                {
-                    boss.timeBtwAttack -= Time.deltaTime;
-                }
+                boss.timeBtwAttack = boss.startTimeBtwAttack;
             }
             else
             {
-                // Move towards the player
-                Vector3 moveDirection = (boss.character.transform.position - boss.transform.position).normalized;
-                boss.transform.Translate(moveDirection * boss.movementSpeed * Time.deltaTime, Space.World);
+                boss.timeBtwAttack -= Time.deltaTime;
+                boss.SwitchState(boss.runningState);
             }
         }
     }

@@ -678,6 +678,7 @@ namespace TarodevController
             ChangeAnimationState(PLAYER_TAKEDAMAGE);
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
             Invoke("DamageDelayComplete", damageDelay);
+            Debug.Log("Player has taken damage");
         }
 
         // set new health to the sprite filter as a new color.
@@ -736,7 +737,7 @@ namespace TarodevController
         {
             isAttacking = false;
             RangeImage.color = new Color(0, 0, 0, 0);
-            Debug.Log("ATTACKCOMPLETEBOSS");
+            Debug.Log("ATTACKCOMPLETEPlayer");
         }
         void dashRecovery()
         {
