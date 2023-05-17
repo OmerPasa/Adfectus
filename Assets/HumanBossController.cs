@@ -15,6 +15,7 @@ public class HumanBossController : MonoBehaviour
     public Rigidbody2D rigidbody2D;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
+    
     #endregion
 
     #region Ranges
@@ -29,6 +30,9 @@ public class HumanBossController : MonoBehaviour
     public float closeAttackTime;
     [Range(0f, 10f)]
     public float bulletRange;
+    [Range(0f, 10f)]
+    public float pushForce;
+    public float maxMovementSpeed;
     public float bulletTime;
     public float movementSpeed;
     public float jumpPower;
@@ -348,11 +352,13 @@ public class HumanBossRunState : HumanBossBaseState
 {
     public override void EnterState(HumanBossController boss)
     {
-        Debug.Log("Running State Human Boss");
+        Debug.Log("Boss2 run state entered");
+
     }
 
     public override void UpdateState(HumanBossController boss)
     {
+        Debug.Log("Boss2 run state updating");
         if (boss.character != null)
         {
             if (boss.animator.GetCurrentAnimatorStateInfo(0).IsName("ENEMY_ATTACK"))
@@ -365,6 +371,7 @@ public class HumanBossRunState : HumanBossBaseState
             }
             Vector3 karPos = boss.character.transform.position;
             Vector3 pos = boss.transform.position;
+            boss.timeBtwAttack -= Time.deltaTime;
             if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
             {
                 if (!boss.stopMoving)
@@ -387,7 +394,7 @@ public class HumanBossRunState : HumanBossBaseState
             }
             //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.attackRange)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.attackRange && boss.timeBtwAttack <= 0 )
         {
             boss.SwitchState(boss.meleeState);
         }
@@ -405,12 +412,12 @@ public class HumanBossMeleeState : HumanBossBaseState
     {
         Debug.Log("Boss2 melee state started");
         // Calculate the direction towards the player
-        Vector3 playerPosition = boss.character.transform.position;
-        Vector3 bossPosition = boss.transform.position;
+        Vector2 playerPosition = boss.character.transform.position;
+        Vector2 bossPosition = boss.transform.position;
         float direction = Mathf.Sign(playerPosition.x - bossPosition.x);
 
         // Set the boss's movement speed to a high value
-        boss.movementSpeed = boss.movementSpeed*2;
+        boss.movementSpeed = boss.maxMovementSpeed;
 
         // Move the boss towards the player until they collide
         Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
@@ -420,11 +427,12 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-        Vector3 karPos = boss.character.transform.position;
-        Vector3 pos = boss.transform.position;
-        {
 
-            // Check if player is within attack range
+        {
+            if (Vector3.Distance(boss.transform.position, boss.character.transform.position) >= boss.attackRange)
+            {
+                boss.SwitchState(boss.runningState);
+            }
 
             Debug.Log("Boss2 melee state updating");
            
@@ -432,26 +440,45 @@ public class HumanBossMeleeState : HumanBossBaseState
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
+        Vector2 karPos = boss.character.transform.position;
+        Vector2 pos = boss.transform.position;
+
         if (collision.gameObject.CompareTag("Player"))
         {
             if (boss.timeBtwAttack <= 0)
             {
-                Debug.Log("Player taken damage2");
+                // Apply push force to the player
+                Rigidbody2D playerRb2d = collision.gameObject.GetComponent<Rigidbody2D>();
+                if (playerRb2d != null)
+                {
+                    // Calculate the push direction away from the boss
+                    // Apply push force to the player
+                    playerRb2d.AddForce((karPos - pos).normalized * boss.pushForce, ForceMode2D.Impulse);
+                }
+
+                // Apply push force to the boss
+                Rigidbody2D bossRb2d = boss.GetComponent<Rigidbody2D>();
+                if (bossRb2d != null)
+                {
+                    // Calculate the push direction away from the player
+                    // Adjust the push force applied to the boss to make it move back slightly less
+                    float adjustedPushForce = boss.pushForce * 0.8f; // Adjust the factor as per your desired amount
+
+                    // Apply push force to the boss
+                    bossRb2d.AddForce((karPos - pos).normalized * adjustedPushForce, ForceMode2D.Impulse);
+                }
                 if (!boss.isAttacking)
                 {
-                    Debug.Log("Player taken damage3");
                     boss.isAttacking = true;
                     boss.ChangeAnimationState("ENEMY_ATTACK");
                     boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
 
                     // Apply damage to the player
                     TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
-                    Debug.Log("Player taken damage");
                     if (playerController != null)
                     {
                         playerController.PlayerTakeDamage(boss.damage); // is not getting called
                         boss.Invoke("AttackComplete", boss.damageDelay);
-                        Debug.Log("Player taken damage2");
                     }
                     if (playerController = null)
                     {
@@ -459,12 +486,14 @@ public class HumanBossMeleeState : HumanBossBaseState
                     }
                 }
                 boss.timeBtwAttack = boss.startTimeBtwAttack;
-            }
+                boss.SwitchState(boss.runningState);
+                }
             else
             {
                 boss.timeBtwAttack -= Time.deltaTime;
                 boss.SwitchState(boss.runningState);
             }
+            
         }
     }
 }

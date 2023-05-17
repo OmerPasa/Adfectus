@@ -56,6 +56,7 @@ namespace TarodevController
         private int direction;
         public int damageBoss = 1;
         public bool isFacingLeft;
+        public float pushForce = 10f;
         private InputManager inputManager;
 
 
@@ -689,16 +690,34 @@ namespace TarodevController
         void DamageDelayComplete()
         {
             playerTakingDamage = false;
+            ChangeAnimationState(PLAYER_IDLE);
         }
         #endregion
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            if (collision.gameObject.CompareTag("Boss2"))
+            {
+                // Apply push force to the player
+                Rigidbody rb = GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    // Calculate the push direction away from the boss
+                    Vector3 bossPosition = collision.gameObject.transform.position;
+                    Vector3 playerPosition = transform.position;
+                    Vector3 pushDirection = (playerPosition - bossPosition).normalized;
+
+                    // Apply the push force
+                    rb.AddForce(pushDirection * pushForce, ForceMode.Impulse);
+                    Debug.Log("Player has been pushed by the boss2");
+                }
+            }
             if (collision.gameObject.CompareTag("OneWayPlatform"))
             {
                 currentOneWayPlatform = collision.gameObject;
 
             }
+            
         }
 
         private void OnCollisionExit2D(Collision2D collision)

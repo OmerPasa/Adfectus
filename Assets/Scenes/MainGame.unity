@@ -2330,7 +2330,7 @@ GameObject:
   - component: {fileID: 895456632}
   m_Layer: 0
   m_Name: Boss2
-  m_TagString: Untagged
+  m_TagString: Boss2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2348,7 +2348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gM: {fileID: 497408459}
-  character: {fileID: 1982680927}
+  character: {fileID: 1982680925}
   eyeRay: {fileID: 1915011952}
   midRay: {fileID: 1445627658}
   groundCheck: {fileID: 1960712268}
@@ -2358,12 +2358,14 @@ MonoBehaviour:
   whatIsEnemies:
     serializedVersion: 2
     m_Bits: 256
-  attackRange: 2.5
-  viewRange: 10
+  attackRange: 3.6
+  viewRange: 8.4
   minRange: 0.33
   closeAttackRange: 1.4
   closeAttackTime: 0.24
   bulletRange: 2.14
+  pushForce: 1.6
+  maxMovementSpeed: 6
   bulletTime: 0.4
   movementSpeed: 2
   jumpPower: 10
@@ -2371,8 +2373,8 @@ MonoBehaviour:
   damageDelay: 0
   health: 4
   damage: 3
-  timeBtwAttack: 2
-  startTimeBtwAttack: 2
+  timeBtwAttack: 4
+  startTimeBtwAttack: 4
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
@@ -2388,7 +2390,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 895456626}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.16, y: -1.738, z: 0}
+  m_LocalPosition: {x: -3.43, y: -1.738, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4471,7 +4473,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1982680925}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5.67, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4563,6 +4565,7 @@ MonoBehaviour:
   startDashTime: 0.1
   damageBoss: 1
   isFacingLeft: 1
+  pushForce: 10
   currentAnimaton: 
   animator: {fileID: 0}
   BackGroundM: {fileID: 0}
@@ -4779,7 +4782,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.128205, y: 1}
+    m_SensorSize: {x: 8.581395, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

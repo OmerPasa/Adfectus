@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Ground
   - Laser
+  - Boss2
   layers:
   - Default
   - TransparentFX
