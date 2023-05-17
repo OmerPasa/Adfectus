@@ -81,7 +81,9 @@ public class HumanBossController : MonoBehaviour
     private void Start()
     {
         damage = PlayerPrefs.GetFloat("damageToPlayer");
+        // starting state for the state machine
         currentState = runningState;
+        // "this" is a reference to the context (this EXACT Monobehavior script)
         currentState.EnterState(this);
         animator = GetComponent<Animator>();
         rigidbody2D = GetComponent<Rigidbody2D>();
@@ -90,6 +92,7 @@ public class HumanBossController : MonoBehaviour
     }
     void Update()
     {
+        //so it can update every frame too while we are in our states
         currentState.UpdateState(this);
 
         #region Flipping
@@ -210,7 +213,10 @@ public class HumanBossController : MonoBehaviour
     }
 
 
-
+    private void OnCollisionEnter2D(Collision2D collision)
+    {//so it can do collisions when we change collision states? every frame too while we are in our states
+        currentState.OnCollisionEnter(this , collision);
+    }
 
     void AttackComplete()
     {
@@ -335,7 +341,7 @@ public abstract class HumanBossBaseState
 {
     public abstract void EnterState(HumanBossController boss);
     public abstract void UpdateState(HumanBossController boss);
-    public abstract void onCollisionEnter(HumanBossController boss);
+    public abstract void OnCollisionEnter(HumanBossController boss ,Collision2D collision);
 }
 
 public class HumanBossRunState : HumanBossBaseState
@@ -386,7 +392,7 @@ public class HumanBossRunState : HumanBossBaseState
             boss.SwitchState(boss.meleeState);
         }
     }
-    public override void onCollisionEnter(HumanBossController boss)
+    public override void OnCollisionEnter(HumanBossController boss , Collision2D collision)
     {
 
     }
@@ -394,17 +400,40 @@ public class HumanBossRunState : HumanBossBaseState
 
 public class HumanBossMeleeState : HumanBossBaseState
 {
+
     public override void EnterState(HumanBossController boss)
     {
+        Debug.Log("Boss2 melee state started");
+        // Calculate the direction towards the player
+        Vector3 playerPosition = boss.character.transform.position;
+        Vector3 bossPosition = boss.transform.position;
+        float direction = Mathf.Sign(playerPosition.x - bossPosition.x);
+
+        // Set the boss's movement speed to a high value
+        boss.movementSpeed = boss.movementSpeed*2;
+
+        // Move the boss towards the player until they collide
+        Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
+        rb2d.velocity = new Vector2(direction * boss.movementSpeed, rb2d.velocity.y);
 
     }
 
     public override void UpdateState(HumanBossController boss)
     {
+        Vector3 karPos = boss.character.transform.position;
+        Vector3 pos = boss.transform.position;
         {
+
             // Check if player is within attack range
-            
-            Debug.Log("Player taken damage1");
+
+            Debug.Log("Boss2 melee state updating");
+           
+        }
+    }
+    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
             if (boss.timeBtwAttack <= 0)
             {
                 Debug.Log("Player taken damage2");
@@ -414,7 +443,7 @@ public class HumanBossMeleeState : HumanBossBaseState
                     boss.isAttacking = true;
                     boss.ChangeAnimationState("ENEMY_ATTACK");
                     boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-                        
+
                     // Apply damage to the player
                     TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
                     Debug.Log("Player taken damage");
@@ -438,10 +467,6 @@ public class HumanBossMeleeState : HumanBossBaseState
             }
         }
     }
-    public override void onCollisionEnter(HumanBossController boss)
-    {
-
-    }
 }
 
 public class HumanBossMediumState : HumanBossBaseState
@@ -455,7 +480,7 @@ public class HumanBossMediumState : HumanBossBaseState
     {
 
     }
-    public override void onCollisionEnter(HumanBossController boss)
+    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
 
     }
@@ -472,7 +497,7 @@ public class HumanBossLongState : HumanBossBaseState
     {
 
     }
-    public override void onCollisionEnter(HumanBossController boss)
+    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
 
     }
