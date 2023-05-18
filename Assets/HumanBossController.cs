@@ -32,6 +32,7 @@ public class HumanBossController : MonoBehaviour
     public float bulletRange;
     [Range(0f, 10f)]
     public float pushForce;
+    public float pushDistance = 200f;
     public float maxMovementSpeed;
     public float bulletTime;
     public float movementSpeed;
@@ -427,16 +428,11 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-
-        {
             if (Vector3.Distance(boss.transform.position, boss.character.transform.position) >= boss.attackRange)
             {
                 boss.SwitchState(boss.runningState);
             }
-
             Debug.Log("Boss2 melee state updating");
-           
-        }
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
@@ -448,25 +444,12 @@ public class HumanBossMeleeState : HumanBossBaseState
             if (boss.timeBtwAttack <= 0)
             {
                 // Apply push force to the player
-                Rigidbody2D playerRb2d = collision.gameObject.GetComponent<Rigidbody2D>();
-                if (playerRb2d != null)
-                {
-                    // Calculate the push direction away from the boss
-                    // Apply push force to the player
-                    playerRb2d.AddForce((karPos - pos).normalized * boss.pushForce, ForceMode2D.Impulse);
-                }
+        // Apply push effect to the player
 
-                // Apply push force to the boss
-                Rigidbody2D bossRb2d = boss.GetComponent<Rigidbody2D>();
-                if (bossRb2d != null)
-                {
-                    // Calculate the push direction away from the player
-                    // Adjust the push force applied to the boss to make it move back slightly less
-                    float adjustedPushForce = boss.pushForce * 0.8f; // Adjust the factor as per your desired amount
+                var pushDirection = (karPos - pos).normalized;
+                // Apply the push force
+                boss.rigidbody2D.AddForce(pushDirection * 5f, ForceMode2D.Impulse);
 
-                    // Apply push force to the boss
-                    bossRb2d.AddForce((karPos - pos).normalized * adjustedPushForce, ForceMode2D.Impulse);
-                }
                 if (!boss.isAttacking)
                 {
                     boss.isAttacking = true;
@@ -478,16 +461,19 @@ public class HumanBossMeleeState : HumanBossBaseState
                     if (playerController != null)
                     {
                         playerController.PlayerTakeDamage(boss.damage); // is not getting called
+                        boss.timeBtwAttack = boss.startTimeBtwAttack;
+                        boss.SwitchState(boss.runningState);
+                        boss.movementSpeed = 2f;
                         boss.Invoke("AttackComplete", boss.damageDelay);
+
                     }
                     if (playerController = null)
                     {
                         Debug.Log("Player is null!");
                     }
                 }
-                boss.timeBtwAttack = boss.startTimeBtwAttack;
-                boss.SwitchState(boss.runningState);
-                }
+
+            }
             else
             {
                 boss.timeBtwAttack -= Time.deltaTime;

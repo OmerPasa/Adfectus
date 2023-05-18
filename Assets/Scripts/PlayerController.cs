@@ -38,6 +38,8 @@ namespace TarodevController
         [SerializeField] private float jumpAnimationDur;
         [SerializeField] private float landingScaleAmount;
         [SerializeField] private float landAnimationDur;
+        [SerializeField] private float dodgeScaleAmount;
+        [SerializeField] private float dodAnimationDur;
         [Space]
         public LayerMask whatIsEnemies;
         public Vector3 Velocity { get; private set; }
@@ -56,7 +58,7 @@ namespace TarodevController
         private int direction;
         public int damageBoss = 1;
         public bool isFacingLeft;
-        public float pushForce = 10f;
+        public float pushForce = 15f;
         private InputManager inputManager;
 
 
@@ -559,11 +561,17 @@ namespace TarodevController
             );
         }
 
+        private void ApplyDodgeAnimation()
+        {
+            visualJump.DOScale(new Vector3(1 + dodgeScaleAmount, 1 - dodgeScaleAmount, 1f), dodAnimationDur * 0.5f).OnComplete(
+                () => visualJump.DOScale(new Vector3(1f, 1f, 1f), dodAnimationDur * 0.5f)
+                );
+        }
         #endregion
 
-        #region Dash
+                #region Dash
 
-        private void HandleDashing()
+            private void HandleDashing()
         {
             if (direction == 0)
             {
@@ -696,21 +704,22 @@ namespace TarodevController
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            Debug.Log("collusion happned");
             if (collision.gameObject.CompareTag("Boss2"))
             {
-                // Apply push force to the player
-                Rigidbody rb = GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    // Calculate the push direction away from the boss
-                    Vector3 bossPosition = collision.gameObject.transform.position;
-                    Vector3 playerPosition = transform.position;
-                    Vector3 pushDirection = (playerPosition - bossPosition).normalized;
+                // Calculate the push direction away from the boss
+                Vector3 bossPosition = collision.gameObject.transform.position;
+                Vector3 playerPosition = transform.position;
 
-                    // Apply the push force
-                    rb.AddForce(pushDirection * pushForce, ForceMode.Impulse);
-                    Debug.Log("Player has been pushed by the boss2");
-                }
+                //Calculating the direction
+                Vector3 pushDirection = (playerPosition - bossPosition).normalized;
+
+                // Apply the push force
+                rb2d.AddForce(pushDirection * pushForce, ForceMode2D.Impulse);
+                Debug.Log("Player has been pushed by the boss2");
+                ApplyDodgeAnimation();
+
+
             }
             if (collision.gameObject.CompareTag("OneWayPlatform"))
             {
@@ -756,7 +765,7 @@ namespace TarodevController
         {
             isAttacking = false;
             RangeImage.color = new Color(0, 0, 0, 0);
-            Debug.Log("ATTACKCOMPLETEPlayer");
+            //Debug.Log("ATTACKCOMPLETEPlayer");
         }
         void dashRecovery()
         {
