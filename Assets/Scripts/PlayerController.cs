@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using Cinemachine;
 
 namespace TarodevController
 {
@@ -84,7 +85,8 @@ namespace TarodevController
         public SpriteRenderer Healthsprite;
         public SpriteRenderer RangeImage;
         public ParticleSystem dashEffect;
-
+        [SerializeField]
+        public CinemachineVirtualCamera virtualCamera;
 
         [SerializeField]
         private float attackDelay;
@@ -94,6 +96,11 @@ namespace TarodevController
         public float damageToPlayer;
         public float rightRay;
         public float leftRay;
+        public float movementSpeed = 0.1f;
+        public float offsetSpeed = 0.5f;
+
+        private float offset = 0f;
+
         [SerializeField]
         public static float Playerhealth = 1;
         private Vector3 IdleVelocity = new Vector3(0, 0, 0);
@@ -171,7 +178,23 @@ namespace TarodevController
             wasGrounded = Grounded;
         }
 
+        private void FixedUpdate()
+        {/*
+            float verticalMovement = Input.Y; // Get vertical input (upward: positive, downward: negative)
 
+            // Calculate the new offset based on the player's vertical movement
+            offset += verticalMovement * offsetSpeed;
+
+            // Clamp the offset to a certain range if desired
+            offset = Mathf.Clamp(offset, -1f, 1f);
+
+            // Set the camera's offset
+            virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY += offset;
+
+            // Update the camera's transform position
+            virtualCamera.transform.position += new Vector3(0f, verticalMovement * movementSpeed, 0f);
+            */
+        }
         #region Gather Input
         private void GatherInput()
         {
@@ -738,7 +761,7 @@ namespace TarodevController
         }
         private IEnumerator DisableCollusion()
         {
-            BoxCollider2D platformCollider = currentOneWayPlatform.GetComponent<BoxCollider2D>();
+            Collider2D platformCollider = currentOneWayPlatform.GetComponent<Collider2D>();
             Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
             Physics2D.IgnoreCollision(playerCollider, platformCollider);
             yield return new WaitForSeconds(0.6f);
