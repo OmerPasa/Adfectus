@@ -12,7 +12,7 @@ public class HumanBossController : MonoBehaviour
     public Transform midRay;
     public Transform groundCheck;
     public GameObject bullet;
-    public Rigidbody2D rigidbody2D;
+    public Rigidbody2D rg2d;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
     
@@ -91,7 +91,7 @@ public class HumanBossController : MonoBehaviour
         // "this" is a reference to the context (this EXACT Monobehavior script)
         currentState.EnterState(this);
         animator = GetComponent<Animator>();
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        rg2d = GetComponent<Rigidbody2D>();
         gM = GameObject.Find("GameManager");
         character = GameObject.Find("Player");
     }
@@ -177,7 +177,7 @@ public class HumanBossController : MonoBehaviour
         // animation  part for idle or movement
         if (!isAttacking && !isTakingDamage && !isDying)
         {
-            if (rigidbody2D.velocity.x != 0.00f)
+            if (rg2d.velocity.x != 0.00f)
             {
                 ChangeAnimationState(ENEMY_MOVEMENT);
             }
@@ -448,7 +448,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
                 var pushDirection = (karPos - pos).normalized;
                 // Apply the push force
-                boss.rigidbody2D.AddForce(pushDirection * 5f, ForceMode2D.Impulse);
+                boss.rg2d.AddForce(pushDirection * 5f, ForceMode2D.Impulse);
 
                 if (!boss.isAttacking)
                 {
