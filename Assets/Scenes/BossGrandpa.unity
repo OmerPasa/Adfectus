@@ -289,7 +289,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &36421026
 Transform:
   m_ObjectHideFlags: 0
@@ -1406,7 +1406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &582002970
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2334,7 +2334,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &895456627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2353,7 +2353,7 @@ MonoBehaviour:
   midRay: {fileID: 1445627658}
   groundCheck: {fileID: 1960712268}
   bullet: {fileID: 1696433892}
-  rigidbody2D: {fileID: 895456629}
+  rg2d: {fileID: 0}
   attackPos: {fileID: 469733505}
   whatIsEnemies:
     serializedVersion: 2
@@ -4785,7 +4785,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 10.8529415, y: 1}
+    m_SensorSize: {x: 2.3961039, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
