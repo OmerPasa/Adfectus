@@ -444,7 +444,7 @@ public class HumanBossMeleeState : HumanBossBaseState
             if (boss.timeBtwAttack <= 0)
             {
                 // Apply push force to the player
-        // Apply push effect to the player
+                // Apply push effect to the player
 
                 var pushDirection = (karPos - pos).normalized;
                 // Apply the push force
@@ -486,20 +486,55 @@ public class HumanBossMeleeState : HumanBossBaseState
 
 public class HumanBossMediumState : HumanBossBaseState
 {
+    private int currentPart = 1;  // Keep track of the current part of the attack
+
     public override void EnterState(HumanBossController boss)
     {
-
+        // Reset the current part to 1 when entering the state
+        currentPart = 1;
     }
 
     public override void UpdateState(HumanBossController boss)
     {
+        // Check if the boss has completed all three parts of the attack
+        if (currentPart > 3)
+        {
+            // Transition to a different state or perform any other actions
+            // after completing the attack
+            boss.SwitchState(boss.runningState); // Replace ... with the appropriate state
+            return;
+        }
 
+        // Perform the appropriate action for the current part of the attack
+        switch (currentPart)
+        {
+            case 1:
+                // Perform the first part of the attack
+                // e.g., play animation, apply damage, etc.
+                break;
+
+            case 2:
+                // Perform the second part of the attack
+                // e.g., play animation, apply damage, etc.
+                break;
+
+            case 3:
+                // Perform the third part of the attack
+                // e.g., play animation, apply damage, etc.
+                break;
+        }
+
+        // Increase the current part for the next update
+        currentPart++;
     }
+
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
-
+        // Handle collision events during the attack if necessary
+        // This method will be called when the boss collides with something
     }
 }
+
 
 public class HumanBossLongState : HumanBossBaseState
 {
