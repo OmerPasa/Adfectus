@@ -354,7 +354,6 @@ public class HumanBossRunState : HumanBossBaseState
     public override void EnterState(HumanBossController boss)
     {
         Debug.Log("Boss2 run state entered");
-
     }
 
     public override void UpdateState(HumanBossController boss)
@@ -487,11 +486,20 @@ public class HumanBossMeleeState : HumanBossBaseState
 public class HumanBossMediumState : HumanBossBaseState
 {
     private int currentPart = 1;  // Keep track of the current part of the attack
+    private float delayBetweenFires = 1f;  // The delay between each fire instantiation
+    private float fireDuration = 2f;  // The duration of each fire effect
+    private float fireLength = 1f; // ateşin oyuncudan uzaklığı.
+
+    private float timer = 0f;  // Timer to track the delay between fires
+    private GameObject firePrefab;  // Prefab for the fire effect
 
     public override void EnterState(HumanBossController boss)
     {
         // Reset the current part to 1 when entering the state
         currentPart = 1;
+
+        // Load the fire prefab from resources or assign it manually
+        firePrefab = Resources.Load<GameObject>("FirePrefab");
     }
 
     public override void UpdateState(HumanBossController boss)
@@ -501,31 +509,59 @@ public class HumanBossMediumState : HumanBossBaseState
         {
             // Transition to a different state or perform any other actions
             // after completing the attack
-            boss.SwitchState(boss.runningState); // Replace ... with the appropriate state
+            boss.SwitchState(boss.runningState);
             return;
         }
 
-        // Perform the appropriate action for the current part of the attack
-        switch (currentPart)
+        // Increment the timer
+        timer += Time.deltaTime;
+
+        // Check if the delay between fires has passed
+        if (timer >= delayBetweenFires)
         {
-            case 1:
-                // Perform the first part of the attack
-                // e.g., play animation, apply damage, etc.
-                break;
+            timer = 0f;  // Reset the timer
 
-            case 2:
-                // Perform the second part of the attack
-                // e.g., play animation, apply damage, etc.
-                break;
+            // Perform the appropriate action for the current part of the attack
+            switch (currentPart)
+            {
+                case 1:
+                    // Perform the first part of the attack
+                    // e.g., play animation, apply damage, etc.
+                    CreateFire(boss.transform.position);
+                    break;
 
-            case 3:
-                // Perform the third part of the attack
-                // e.g., play animation, apply damage, etc.
-                break;
+                case 2:
+                    // Perform the second part of the attack
+                    // e.g., play animation, apply damage, etc.
+                    CreateFire(boss.transform.position + boss.transform.right * fireLength);
+                    break;
+
+                case 3:
+                    // Perform the third part of the attack
+                    // e.g., play animation, apply damage, etc.
+                    CreateFire(boss.transform.position + boss.transform.right * 2 * fireLength);
+                    break;
+            }
+
+            // Increase the current part for the next update
+            currentPart++;
         }
+    }
 
-        // Increase the current part for the next update
-        currentPart++;
+    private void CreateFire(Vector3 position)
+    {
+        // Instantiate the fire effect at the specified position
+        GameObject fire = Instantiate(firePrefab, position, Quaternion.identity);
+
+        // Destroy the fire effect after the specified duration
+        Destroy(fire, fireDuration);
+
+        // Apply damage to the player or handle the collision accordingly
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            player.GetComponent<Health>().TakeDamage(1f);
+        }
     }
 
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
@@ -534,6 +570,9 @@ public class HumanBossMediumState : HumanBossBaseState
         // This method will be called when the boss collides with something
     }
 }
+
+
+
 
 
 public class HumanBossLongState : HumanBossBaseState

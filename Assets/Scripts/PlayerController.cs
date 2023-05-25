@@ -122,6 +122,7 @@ namespace TarodevController
             dashTime = startDashTime;
             hitBufferList.Clear();
             bCol2d = GetComponent<BoxCollider2D>();
+            virtualCamera = GetComponent<CinemachineVirtualCamera>();
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
@@ -179,21 +180,17 @@ namespace TarodevController
         }
 
         private void FixedUpdate()
-        {/*
-            float verticalMovement = Input.Y; // Get vertical input (upward: positive, downward: negative)
-
-            // Calculate the new offset based on the player's vertical movement
-            offset += verticalMovement * offsetSpeed;
-
-            // Clamp the offset to a certain range if desired
-            offset = Mathf.Clamp(offset, -1f, 1f);
-
-            // Set the camera's offset
-            virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY += offset;
-
-            // Update the camera's transform position
-            virtualCamera.transform.position += new Vector3(0f, verticalMovement * movementSpeed, 0f);
-            */
+        {
+            // Check if the player has gone above the threshold
+            Debug.Log("y axis of player " + transform.position.y);
+            if (transform.position.y > 0.75f)
+            {
+                virtualCamera.gameObject.SetActive(false);
+            }
+            else
+            {
+                virtualCamera.gameObject.SetActive(true);
+            }
         }
         #region Gather Input
         private void GatherInput()
