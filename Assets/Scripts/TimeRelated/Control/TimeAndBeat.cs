@@ -14,7 +14,7 @@ public class TimeAndBeat : MonoBehaviour
     public int currentAttackPos = 0;
     public int durStart = 0;
 
-    int prevBeatQC = -1;
+    public int prevBeatQC = -1;
     bool active = false;
 
 
@@ -39,7 +39,7 @@ public class TimeAndBeat : MonoBehaviour
     void Update()
     {
 
-/*        if (Input.GetKeyDown(KeyCode.C))
+        /*if (Input.GetKeyDown(KeyCode.C))
         {
             LoopController.isObjectiveCompleted = !LoopController.isObjectiveCompleted;
         }*/
