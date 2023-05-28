@@ -122,7 +122,7 @@ namespace TarodevController
             dashTime = startDashTime;
             hitBufferList.Clear();
             bCol2d = GetComponent<BoxCollider2D>();
-            virtualCamera = GetComponent<CinemachineVirtualCamera>();
+            //virtualCamera = GetComponent<CinemachineVirtualCamera>();
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
         private bool _active;
@@ -183,13 +183,13 @@ namespace TarodevController
         {
             // Check if the player has gone above the threshold
             Debug.Log("y axis of player " + transform.position.y);
-            if (transform.position.y > 0.75f)
+            if (transform.position.y > 0.75f && virtualCamera != null) 
             {
-                virtualCamera.gameObject.SetActive(false);
+                virtualCamera.gameObject.SetActive(true);
             }
             else
             {
-                virtualCamera.gameObject.SetActive(true);
+                virtualCamera.gameObject.SetActive(false);
             }
         }
         #region Gather Input

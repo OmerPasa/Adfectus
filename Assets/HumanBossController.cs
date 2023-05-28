@@ -15,18 +15,23 @@ public class HumanBossController : MonoBehaviour
     public Rigidbody2D rg2d;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
+    public GameObject fireObject;
     
     #endregion
 
     #region Ranges
     [Range(0f, 10f)]
-    public float attackRange;
-    [Range(0f, 10f)]
     public float viewRange;
+
     [Range(0f, 10f)]
-    public float minRange;
+    public float meleeRange;
+
     [Range(0f, 10f)]
-    public float closeAttackRange;
+    public float mediumRange;
+
+    [Range(0f, 10f)]
+    public float longRange;
+
     public float closeAttackTime;
     [Range(0f, 10f)]
     public float bulletRange;
@@ -51,6 +56,8 @@ public class HumanBossController : MonoBehaviour
     int Count;
     [SerializeField] public float timeBtwAttack;
     [SerializeField] public float startTimeBtwAttack;
+    [SerializeField] public float timeBtwmidAttack;
+    [SerializeField] public float startTimeBtwmidAttack;
     public bool grounded = true;
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
@@ -233,7 +240,7 @@ public class HumanBossController : MonoBehaviour
     {
         // Draw attack range sphere
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(transform.position, meleeRange);
 
         // Draw view range wire cube
         Gizmos.color = Color.green;
@@ -241,11 +248,11 @@ public class HumanBossController : MonoBehaviour
 
         // Draw min range wire cube
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position, new Vector3(minRange * 2, minRange * 2, 0f));
+        Gizmos.DrawWireCube(transform.position, new Vector3(mediumRange * 2, mediumRange * 2, 0f));
 
         // Draw close attack range sphere
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, closeAttackRange);
+        Gizmos.DrawWireSphere(transform.position, longRange);
 
         // Draw bullet range sphere
         Gizmos.color = Color.cyan;
@@ -372,12 +379,13 @@ public class HumanBossRunState : HumanBossBaseState
             Vector3 karPos = boss.character.transform.position;
             Vector3 pos = boss.transform.position;
             boss.timeBtwAttack -= Time.deltaTime;
+            boss.timeBtwmidAttack -= Time.deltaTime;
             if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
             {
                 if (!boss.stopMoving)
                 {
                     // Move towards character
-                    if (Mathf.Abs(karPos.x - pos.x) > boss.minRange && !(boss.pathBlocked && boss.grounded))
+                    if (Mathf.Abs(karPos.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
                     {
                         float direction = Mathf.Sign(karPos.x - pos.x);
                         Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
@@ -394,9 +402,13 @@ public class HumanBossRunState : HumanBossBaseState
             }
             //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.attackRange && boss.timeBtwAttack <= 0 )
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0 )
         {
             boss.SwitchState(boss.meleeState);
+        }
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtwmidAttack <= 0 )
+        {
+            boss.SwitchState(boss.mediumState);
         }
     }
     public override void OnCollisionEnter(HumanBossController boss , Collision2D collision)
@@ -427,7 +439,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-            if (Vector3.Distance(boss.transform.position, boss.character.transform.position) >= boss.attackRange)
+            if (Vector3.Distance(boss.transform.position, boss.character.transform.position) >= boss.meleeRange)
             {
                 boss.SwitchState(boss.runningState);
             }
@@ -440,8 +452,6 @@ public class HumanBossMeleeState : HumanBossBaseState
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            if (boss.timeBtwAttack <= 0)
-            {
                 // Apply push force to the player
                 // Apply push effect to the player
 
@@ -471,8 +481,6 @@ public class HumanBossMeleeState : HumanBossBaseState
                         Debug.Log("Player is null!");
                     }
                 }
-
-            }
             else
             {
                 boss.timeBtwAttack -= Time.deltaTime;
@@ -488,18 +496,14 @@ public class HumanBossMediumState : HumanBossBaseState
     private int currentPart = 1;  // Keep track of the current part of the attack
     private float delayBetweenFires = 1f;  // The delay between each fire instantiation
     private float fireDuration = 2f;  // The duration of each fire effect
-    private float fireLength = 1f; // ateşin oyuncudan uzaklığı.
+    private float fireLength = 2.5f; // ateşin oyuncudan uzaklığı.
 
     private float timer = 0f;  // Timer to track the delay between fires
-    private GameObject firePrefab;  // Prefab for the fire effect
 
     public override void EnterState(HumanBossController boss)
     {
         // Reset the current part to 1 when entering the state
         currentPart = 1;
-
-        // Load the fire prefab from resources or assign it manually
-        firePrefab = Resources.Load<GameObject>("FirePrefab");
     }
 
     public override void UpdateState(HumanBossController boss)
@@ -517,29 +521,32 @@ public class HumanBossMediumState : HumanBossBaseState
         timer += Time.deltaTime;
 
         // Check if the delay between fires has passed
-        if (timer >= delayBetweenFires)
+        if (timer >= delayBetweenFires && boss.character != null)
         {
             timer = 0f;  // Reset the timer
-
             // Perform the appropriate action for the current part of the attack
             switch (currentPart)
             {
                 case 1:
-                    // Perform the first part of the attack
+                    // Perform the second part of the attack
                     // e.g., play animation, apply damage, etc.
-                    CreateFire(boss.transform.position);
+                    Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                    Debug.Log("player direction1 "+playerDirection1);
+                    CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
                     break;
 
                 case 2:
-                    // Perform the second part of the attack
+                    // Perform the third part of the attack
                     // e.g., play animation, apply damage, etc.
-                    CreateFire(boss.transform.position + boss.transform.right * fireLength);
+                    Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                    CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
                     break;
 
                 case 3:
                     // Perform the third part of the attack
                     // e.g., play animation, apply damage, etc.
-                    CreateFire(boss.transform.position + boss.transform.right * 2 * fireLength);
+                    Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                    CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
                     break;
             }
 
@@ -548,20 +555,14 @@ public class HumanBossMediumState : HumanBossBaseState
         }
     }
 
-    private void CreateFire(Vector3 position)
+    private void CreateFire(Vector3 position , HumanBossController boss)
     {
         // Instantiate the fire effect at the specified position
-        GameObject fire = Instantiate(firePrefab, position, Quaternion.identity);
+        GameObject fire  = GameObject.Instantiate(boss.fireObject, position, Quaternion.identity);
 
         // Destroy the fire effect after the specified duration
-        Destroy(fire, fireDuration);
-
-        // Apply damage to the player or handle the collision accordingly
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            player.GetComponent<Health>().TakeDamage(1f);
-        }
+        GameObject.Destroy(fire, fireDuration);
+        boss.timeBtwmidAttack = boss.startTimeBtwmidAttack;
     }
 
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
