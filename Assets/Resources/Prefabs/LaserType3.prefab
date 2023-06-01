@@ -225,7 +225,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 8308166402853175269}
   edgeCollider: {fileID: 130156886089754217}
   directionVec: {x: 0, y: 0, z: 0}
-  rotationSpeed: 1000
+  rotationSpeed: 1
   startAngle: 90
   endAngle: 225
   mode: 1

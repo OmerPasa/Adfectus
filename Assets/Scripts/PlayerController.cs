@@ -18,10 +18,10 @@ namespace TarodevController
     /// </summary>
     /// 
     /// 
-    /// OUR NAMÝNG CONVENTÝON !!!!    
+    /// OUR NAMï¿½NG CONVENTï¿½ON !!!!    
     /// 
-    /// PUBLÝC  GameDeveloper
-    /// PRÝVATE gameDeveloper
+    /// PUBLï¿½C  GameDeveloper
+    /// PRï¿½VATE gameDeveloper
     public class PlayerController : MonoBehaviour, IPlayerController
     {
         // Public for external hooks
@@ -182,8 +182,8 @@ namespace TarodevController
         private void FixedUpdate()
         {
             // Check if the player has gone above the threshold
-            Debug.Log("y axis of player " + transform.position.y);
-            if (transform.position.y > 0.75f && virtualCamera != null) 
+            //Debug.Log("y axis of player " + transform.position.y);
+            if (transform.position.y > 0.75f && virtualCamera != null)
             {
                 virtualCamera.gameObject.SetActive(true);
             }
@@ -260,7 +260,7 @@ namespace TarodevController
         #region Collisions
 
 
-        [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
+        [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
 
 
         private void OnTriggerEnter2D(Collider2D laser)
@@ -277,7 +277,7 @@ namespace TarodevController
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;
-        [SerializeField] [Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
+        [SerializeField][Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
 
         private RayRange _raysUp, _raysRight, _raysDown, _raysLeft;
         private bool _colUp, _colRight, _colDown, _colLeft;
@@ -370,7 +370,7 @@ namespace TarodevController
                 Invoke("AttackComplete", damageDelay);
             }
         }
-        public void setExactHitTime(int counterQ)
+        public void setExactHitTime(int counterQ) //this does nothing
         {
             float exactHitTime = (float)counterQ * TimeB.quarterBeatDuration;
             //TimeB.timePassed
@@ -432,7 +432,7 @@ namespace TarodevController
 
         #region Walk
 
-        [Header("WALKING")] [SerializeField] private float _acceleration = 90;
+        [Header("WALKING")][SerializeField] private float _acceleration = 90;
         [SerializeField] private float _moveClamp = 13;
         [SerializeField] private float _deAcceleration = 60f;
         [SerializeField] private float _apexBonus = 2;
@@ -479,7 +479,7 @@ namespace TarodevController
 
         #region Gravity
 
-        [Header("GRAVITY")] [SerializeField] private float _fallClamp = -40f;
+        [Header("GRAVITY")][SerializeField] private float _fallClamp = -40f;
         [SerializeField] private float _minFallSpeed = 80f;
         [SerializeField] private float _maxFallSpeed = 120f;
         private float _fallSpeed;
@@ -508,7 +508,7 @@ namespace TarodevController
 
         #region Jump
 
-        [Header("JUMPING")] [SerializeField] private float _jumpHeight = 30;
+        [Header("JUMPING")][SerializeField] private float _jumpHeight = 30;
         [SerializeField] private float _jumpApexThreshold = 10f;
         [SerializeField] private float _coyoteTimeThreshold = 0.1f;
         [SerializeField] private float _jumpBuffer = 0.1f;
@@ -589,9 +589,9 @@ namespace TarodevController
         }
         #endregion
 
-                #region Dash
+        #region Dash
 
-            private void HandleDashing()
+        private void HandleDashing()
         {
             if (direction == 0)
             {
@@ -746,7 +746,7 @@ namespace TarodevController
                 currentOneWayPlatform = collision.gameObject;
 
             }
-            
+
         }
 
         private void OnCollisionExit2D(Collision2D collision)

@@ -13,7 +13,7 @@ public class Attack : MonoBehaviour
             return;
         }
 
-        if (data.duration.CounterEQ == TimeB.Counter_Q)
+        if (data.duration.CounterEQ == TimeB.CounterQ)
         {
             endAttack();
         }

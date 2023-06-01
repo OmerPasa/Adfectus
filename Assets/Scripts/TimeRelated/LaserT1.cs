@@ -32,7 +32,7 @@ public class LaserT1 : MonoBehaviour
         operationTotalTime = GetComponent<Attack>().data.duration.getDurInSeconds();
         startAngle = GetComponent<Attack>().data.f1;
         endAngle = GetComponent<Attack>().data.f2;
-        angleDiff = (endAngle - startAngle) / operationTotalTime * Mathf.PI / 180;
+        angleDiff = (endAngle - startAngle) / operationTotalTime * Mathf.PI / 180; //every second how much angle will be added
         directionVec = angleToVector(startAngle * Mathf.PI / 180);
     }
 

@@ -2,24 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimeAndBeat : MonoBehaviour
+public class TimeDriver : MonoBehaviour //TimeAndBeat.cs kopyası
 //boss scripti
 //atakları doğru TimeBda spawn eder
 {
     public GameObject player;
     public GameObject boss;
+    [SerializeField] int part;
     public AudioSource[] audioSources;
 
     public int currentLoopPos = 0;
     public int currentAttackPos = 0;
     public int durStart = 0;
 
-    public int prevBeatQC = -1;
+    public int prevCounterQ = -1;
     bool active = false;
 
 
     void Start()
     {
+        LoopData.currentPartIndex = part;
         TimeB.reset();
         StartCoroutine(StartAttack());
     }
@@ -28,6 +30,7 @@ public class TimeAndBeat : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
 
+        //Debug.Log("TimeDriver start");
         LoopData.player = player;
         LoopData.boss = boss;
         play(0);
@@ -39,28 +42,23 @@ public class TimeAndBeat : MonoBehaviour
     void Update()
     {
 
-        /*if (Input.GetKeyDown(KeyCode.C))
-        {
-            LoopController.isObjectiveCompleted = !LoopController.isObjectiveCompleted;
-        }*/
-
         if (!active)
         {
             return;
         }
 
         TimeB.tick(Time.deltaTime);
-        if (TimeB.CounterQ == prevBeatQC)
+        if (TimeB.CounterQ == prevCounterQ)//
         {//eğer Qbeat değişmediyse kontrol etmeye gerek yok
             return;
-        }
-        // Debug.Log("bQC: " + TimeB.Counter_Q);
+        }//Debug.Log("bQC: " + TimeB.CounterQ);
 
         if (LoopController.needChange && LoopController.changeIndex > TimeB.CounterQ)
         {//loop değişmesi gerekiyor ve değişme zamanı gelmediyse
-            prevBeatQC = TimeB.CounterQ;
+            prevCounterQ = TimeB.CounterQ;
             return;
         }
+
         if (LoopController.needChange && LoopController.changeIndex == TimeB.CounterQ)
         {//loop değişmesi gerekiyor ve değişme zamanı geldiyse
             LoopController.needChange = false;
@@ -70,16 +68,20 @@ public class TimeAndBeat : MonoBehaviour
 
         int patInd = LoopController.currentLoop[currentLoopPos, 0]; //pattern index
         int dur = LoopController.currentLoop[currentLoopPos, 1] + durStart; //döngü süresi
+
+
+
+
+
         AttackData currentAttackData = LoopData.patterns[patInd][currentAttackPos]; //atak datası
 
         if (TimeB.W % dur == currentAttackData.duration.beatSW && TimeB.Q == currentAttackData.duration.beatSQ)
         { //atak TimeBı geldiyse
             currentAttackData.action(transform.position, TimeB.CounterQ); //atak oluştur
+
             for (int size = 0; size < currentAttackData.extraAttackCount; size++)
-            {
-                // Debug.Log("extra attack: " + size + ", " + currentAttackData.extraAttackCount);
                 LoopData.patterns[patInd][currentAttackPos + size + 1].action(transform.position, TimeB.CounterQ); //atak oluştur
-            }
+
             currentAttackPos += 1 + currentAttackData.extraAttackCount;
         }
 
@@ -98,7 +100,7 @@ public class TimeAndBeat : MonoBehaviour
 
             }
         }
-        prevBeatQC = TimeB.CounterQ;
+        prevCounterQ = TimeB.CounterQ;
     }
 
     public AttackData getNextAttack()
