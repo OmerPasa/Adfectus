@@ -11,17 +11,19 @@ public class AttackData
     "Prefabs/LaserType3",
     "Prefabs/LaserType4",
      "Prefabs/LaserType5" };
-    // (-1 = Chase, -2 = Weakened, -3 = objective pass, -4 = fade in, -5 = fade out)
+    // -1 = Chase, -2 = Weakened, -3 = objective pass, -4 = fade in, -5 = fade out,
+    // -10 = human boss state change
 
     public int type;
     public int extraAttackCount;
 
     public Duration duration; //list of different objects with different start durations
 
-    public float f1; public float f2; public float f3;
+    public float f1, f2, f3;
     public bool b1;
 
     public GameObject g1;
+    public HumanBossBaseState s1;
 
     public AttackData(AttackData data, Duration dur)
     {
@@ -29,6 +31,7 @@ public class AttackData
         f1 = data.f1; f2 = data.f2; f3 = data.f3;
         b1 = data.b1;
         g1 = data.g1;
+        s1 = data.s1;
     }
 
     public AttackData
@@ -36,7 +39,7 @@ public class AttackData
         int extraAttackCount = 0,
         float f1 = -1f, float f2 = -1f, float f3 = -1f,
         bool b1 = false,
-        GameObject g1 = null
+        GameObject g1 = null, HumanBossBaseState s1 = null
     )
     {
         this.type = type;
@@ -50,6 +53,7 @@ public class AttackData
         this.b1 = b1;
 
         this.g1 = g1;
+        this.s1 = s1;
 
     }
 
@@ -62,6 +66,11 @@ public class AttackData
 
         int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
+
+        if (clone.s1 != null)
+        {
+            stateSenderForHumanBossController(clone);
+        }
 
         if (type > 0)
         {
@@ -90,12 +99,23 @@ public class AttackData
             case -5:
                 LoopData.boss.GetComponent<BossMainScript>().fadeOut(clone);
                 break;
+
+            case -10:
+                stateSenderForHumanBossController(clone);
+                break;
+
             case -16:
                 LoopData.player.GetComponent<TarodevController.PlayerController>().setExactHitTime(counter_Q + duration.duration);
                 //bundan emin deilim
                 break;
         }
 
+    }
+
+    void stateSenderForHumanBossController(AttackData clone)
+    {
+        //LoopData.boss.GetComponent<Attack>().data = clone;
+        LoopData.boss.GetComponent<HumanBossController>().SwitchState(clone.s1);
     }
 
     void denemekIcinKod(AttackData clone)

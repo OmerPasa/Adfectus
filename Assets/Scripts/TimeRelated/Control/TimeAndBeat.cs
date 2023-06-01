@@ -14,7 +14,7 @@ public class TimeAndBeat : MonoBehaviour
     public int currentAttackPos = 0;
     public int durStart = 0;
 
-    int prevBeatQC = -1;
+    public int prevBeatQC = -1;
     bool active = false;
 
 
@@ -39,7 +39,7 @@ public class TimeAndBeat : MonoBehaviour
     void Update()
     {
 
-/*        if (Input.GetKeyDown(KeyCode.C))
+        /*if (Input.GetKeyDown(KeyCode.C))
         {
             LoopController.isObjectiveCompleted = !LoopController.isObjectiveCompleted;
         }*/
@@ -49,19 +49,19 @@ public class TimeAndBeat : MonoBehaviour
             return;
         }
 
-        TimeB.tick(Time.deltaTime * 1000);
-        if (TimeB.Counter_Q == prevBeatQC)
+        TimeB.tick(Time.deltaTime);
+        if (TimeB.CounterQ == prevBeatQC)
         {//eğer Qbeat değişmediyse kontrol etmeye gerek yok
             return;
         }
         // Debug.Log("bQC: " + TimeB.Counter_Q);
 
-        if (LoopController.needChange && LoopController.changeIndex > TimeB.Counter_Q)
+        if (LoopController.needChange && LoopController.changeIndex > TimeB.CounterQ)
         {//loop değişmesi gerekiyor ve değişme zamanı gelmediyse
-            prevBeatQC = TimeB.Counter_Q;
+            prevBeatQC = TimeB.CounterQ;
             return;
         }
-        if (LoopController.needChange && LoopController.changeIndex == TimeB.Counter_Q)
+        if (LoopController.needChange && LoopController.changeIndex == TimeB.CounterQ)
         {//loop değişmesi gerekiyor ve değişme zamanı geldiyse
             LoopController.needChange = false;
             playUpdate();
@@ -74,11 +74,11 @@ public class TimeAndBeat : MonoBehaviour
 
         if (TimeB.W % dur == currentAttackData.duration.beatSW && TimeB.Q == currentAttackData.duration.beatSQ)
         { //atak TimeBı geldiyse
-            currentAttackData.action(transform.position, TimeB.Counter_Q); //atak oluştur
+            currentAttackData.action(transform.position, TimeB.CounterQ); //atak oluştur
             for (int size = 0; size < currentAttackData.extraAttackCount; size++)
             {
                 // Debug.Log("extra attack: " + size + ", " + currentAttackData.extraAttackCount);
-                LoopData.patterns[patInd][currentAttackPos + size + 1].action(transform.position, TimeB.Counter_Q); //atak oluştur
+                LoopData.patterns[patInd][currentAttackPos + size + 1].action(transform.position, TimeB.CounterQ); //atak oluştur
             }
             currentAttackPos += 1 + currentAttackData.extraAttackCount;
         }
@@ -98,7 +98,7 @@ public class TimeAndBeat : MonoBehaviour
 
             }
         }
-        prevBeatQC = TimeB.Counter_Q;
+        prevBeatQC = TimeB.CounterQ;
     }
 
     public AttackData getNextAttack()

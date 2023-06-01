@@ -276,7 +276,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 36421026}
-  - component: {fileID: 36421027}
+  - component: {fileID: 36421034}
   - component: {fileID: 36421028}
   - component: {fileID: 36421029}
   - component: {fileID: 36421030}
@@ -305,31 +305,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &36421027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36421025}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d93a001116ada74482a58b83795ffad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 1982680925}
-  boss: {fileID: 36421025}
-  audioSources:
-  - {fileID: 1550951953}
-  - {fileID: 584780038}
-  - {fileID: 1934334142}
-  - {fileID: 1465260199}
-  - {fileID: 1605217980}
-  - {fileID: 430416849}
-  - {fileID: 199312027}
-  currentLoopPos: 0
-  currentAttackPos: 0
-  durStart: 0
 --- !u!114 &36421028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,6 +455,33 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &36421034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36421025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcf3ce7e01fdbc24cb11215794b35a68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1982680925}
+  boss: {fileID: 36421025}
+  part: 0
+  audioSources:
+  - {fileID: 1550951953}
+  - {fileID: 584780038}
+  - {fileID: 1934334142}
+  - {fileID: 1465260199}
+  - {fileID: 1605217980}
+  - {fileID: 430416849}
+  - {fileID: 199312027}
+  currentLoopPos: 0
+  currentAttackPos: 0
+  durStart: 0
+  prevCounterQ: -1
 --- !u!1 &113676380
 GameObject:
   m_ObjectHideFlags: 0
@@ -2358,10 +2360,11 @@ MonoBehaviour:
   whatIsEnemies:
     serializedVersion: 2
     m_Bits: 256
-  attackRange: 2.5
+  fireObject: {fileID: 0}
   viewRange: 8.4
-  minRange: 0.33
-  closeAttackRange: 1.4
+  meleeRange: 0
+  mediumRange: 0
+  longRange: 0
   closeAttackTime: 0.24
   bulletRange: 2.14
   pushForce: 1.6
@@ -2376,6 +2379,8 @@ MonoBehaviour:
   damage: 3
   timeBtwAttack: 4
   startTimeBtwAttack: 4
+  timeBtwmidAttack: 0
+  startTimeBtwmidAttack: 0
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
@@ -4576,10 +4581,13 @@ MonoBehaviour:
   Healthsprite: {fileID: 1751486519}
   RangeImage: {fileID: 741823959}
   dashEffect: {fileID: 992014892}
+  virtualCamera: {fileID: 2033389180}
   attackDelay: 1
   damageToPlayer: 1
   rightRay: 1
   leftRay: 1
+  movementSpeed: 0.1
+  offsetSpeed: 0.5
   _characterBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -4785,7 +4793,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.3961039, y: 1}
+    m_SensorSize: {x: 1.8833203, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

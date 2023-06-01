@@ -1,8 +1,10 @@
+using UnityEngine;
+
 public static class LoopController
 {
     public static int prevIndex = 0;
     public static int currentIndex = 0;
-    public static int[,] currentLoop = LoopData.loops[currentIndex];
+    public static int[,] currentLoop;
 
 
     public static bool loopAllLoops = false;
@@ -31,7 +33,7 @@ public static class LoopController
     {
         prevIndex = currentIndex;
         currentIndex++;
-        if (currentIndex >= LoopData.loops.Length)
+        if (currentIndex >= LoopData.getPart().Length)
         {
             currentIndex = 0;
         }
@@ -40,7 +42,7 @@ public static class LoopController
         {
             end();
         }
-        return LoopData.loops[currentIndex];
+        return LoopData.getLoop(currentIndex);
     }
 
     public static void end()
@@ -52,7 +54,7 @@ public static class LoopController
     {
         prevIndex = 0;
         currentIndex = 0;
-        currentLoop = LoopData.loops[currentIndex];
+        currentLoop = LoopData.getLoop(currentIndex);
         isObjectiveCompleted = false;
         needChange = false;
         changeIndex = 0;

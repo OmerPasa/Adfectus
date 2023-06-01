@@ -8,54 +8,70 @@ public static class LoopData
     public static GameObject boss;
     public static List<GameObject> currentAttacks = new List<GameObject>();
 
+    public static int currentPartIndex = 0;
 
-    public static int[][,] loops = {
-    //patternIndex, duration
-        new int[,] {//start
-            { 17, 16 },
-        },
-        new int[,] {//boss1
-            { 6, 4 },
-            { 7, 4 },
-            { 8, 4 },
-            { 7, 4 },
-            { 6, 4 },
-            { 7, 4 },
-            { 9, 8 }
-        },
-        new int[,] {//boss2
-            { 10, 8 },
-            { 10, 8 },
-            { 10, 8 },
-            { 9, 8 }
-        },
-       new int[,] {//boss3
-            { 11, 4 },
-            { 12, 4 },
-            { 11, 4 },
-            { 12, 4 },
-            { 11, 4 },
-            { 12, 4 },
-            { 9, 8 }
-        },
-        new int[,] {//rise
-            { 18, 16 },
-        },
-        new int[,] {//boss4
-            { 13, 4 },
-            { 14, 4 },
-            { 15, 4 },
-            { 15, 4 },
-            { 13, 4 },
-            { 14, 4 },
-            { 9, 8 }
-        },
-        new int[,] {//end
-            { 9, 8 },
-            { 9, 8 }
-        },
 
+    public static int[][][,] parts = {
+        //part 0
+        new int[][,]
+        {
+            //patternIndex, duration
+            new int[,] {//start
+                { 17, 16 },
+            },
+            new int[,] {//boss1
+                { 6, 4 },
+                { 7, 4 },
+                { 8, 4 },
+                { 7, 4 },
+                { 6, 4 },
+                { 7, 4 },
+                { 9, 8 }
+            },
+            new int[,] {//boss2
+                { 10, 8 },
+                { 10, 8 },
+                { 10, 8 },
+                { 9, 8 }
+            },
+        new int[,] {//boss3
+                { 11, 4 },
+                { 12, 4 },
+                { 11, 4 },
+                { 12, 4 },
+                { 11, 4 },
+                { 12, 4 },
+                { 9, 8 }
+            },
+            new int[,] {//rise
+                { 18, 16 },
+            },
+            new int[,] {//boss4
+                { 13, 4 },
+                { 14, 4 },
+                { 15, 4 },
+                { 15, 4 },
+                { 13, 4 },
+                { 14, 4 },
+                { 9, 8 }
+            },
+            new int[,] {//end
+                { 9, 8 },
+                { 9, 8 }
+            },
+        },
     };
+
+    public static int[,] getLoop(int loopIndex, int partIndex = -1)
+    {
+        if (partIndex == -1) partIndex = currentPartIndex;
+        return parts[partIndex][loopIndex];
+    }
+    public static int[][,] getPart(int partIndex = -1)
+    {
+        if (partIndex == -1) partIndex = currentPartIndex;
+        return parts[currentPartIndex];
+    }
 
     //AttactType, W, Q, other params...
     public static AttackData[][] patterns =
@@ -273,9 +289,9 @@ public static class LoopData
     public static int loopTotalSize(int loopIndex)
     {//returns totatl Q of the loop
         int total = 0;
-        for (int i = 0; i < loops[loopIndex].GetLength(0); i++)
+        for (int i = 0; i < parts[currentPartIndex][loopIndex].GetLength(0); i++)
         {
-            total += loops[loopIndex][i, 1];
+            total += parts[currentPartIndex][loopIndex][i, 1];
         }
         return total * 4;
     }
