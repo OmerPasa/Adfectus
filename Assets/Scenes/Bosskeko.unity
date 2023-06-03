@@ -1719,7 +1719,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104693923}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.67, y: -1.738, z: -10}
+  m_LocalPosition: {x: 12.03, y: -1.738, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3054,7 +3054,7 @@ MonoBehaviour:
   visualJump: {fileID: 906395}
   jumpingScaleAmount: 0.76
   jumpAnimationDur: 0.1
-  landingScaleAmount: 1.09
+  landingScaleAmount: 0.5
   landAnimationDur: 0.1
   dodgeScaleAmount: 1.69
   dodAnimationDur: 0.1
@@ -3706,7 +3706,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1969924014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.67, y: -1.738, z: -10}
+  m_LocalPosition: {x: 12.03, y: -1.738, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3856,10 +3856,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
-  viewRange: 7.3
-  meleeRange: 3.3
-  mediumRange: 5.6
-  longRange: 10
+  viewRange: 28.4
+  meleeRange: 6.2
+  mediumRange: 11.8
+  longRange: 30.4
   closeAttackTime: 0.24
   bulletRange: 2.14
   pushForce: 1.6
@@ -3891,7 +3891,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003122445}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.67, y: -1.738, z: 0}
+  m_LocalPosition: {x: 12.03, y: -1.738, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

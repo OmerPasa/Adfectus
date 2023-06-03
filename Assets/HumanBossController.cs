@@ -20,16 +20,16 @@ public class HumanBossController : MonoBehaviour
     #endregion
 
     #region Ranges
-    [Range(0f, 10f)]
+    [Range(0f, 50f)]
     public float viewRange;
 
-    [Range(0f, 10f)]
+    [Range(0f, 50f)]
     public float meleeRange;
 
-    [Range(0f, 10f)]
+    [Range(0f, 50f)]
     public float mediumRange;
 
-    [Range(0f, 10f)]
+    [Range(0f, 50f)]
     public float longRange;
 
     public float closeAttackTime;
@@ -81,13 +81,13 @@ public class HumanBossController : MonoBehaviour
     public Animator animator;
     private string currentAnimaton;
 
-    const string ENEMY_IDLE = "Mole_Idle";
-    const string ENEMY_TAKEDAMAGE = "Mole_TakeDamage";
-    const string ENEMY_DEATH = "Mole_Explode";
-    const string ENEMY_ATTACK = "Mole_Attack";
-    const string ENEMY_JUMP = "Mole_Jump";
-    const string ENEMY_JUMPATTACK = "Mole_JumpAttack";
-    const string ENEMY_MOVEMENT = "Mole_Movement";
+    const string ENEMY_IDLE = "Boss1_Idle";
+    const string ENEMY_TAKEDAMAGE = "Boss1_TakeDamage";
+    const string ENEMY_DEATH = "Boss1_Explode";
+    const string ENEMY_ATTACK = "Boss1_Attack";
+    const string ENEMY_JUMP = "Boss1_Jump";
+    const string ENEMY_JUMPATTACK = "Boss1_JumpAttack";
+    const string ENEMY_MOVEMENT = "Boss1_Movement";
     #endregion
 
     private void Start()
