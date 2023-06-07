@@ -2375,7 +2375,7 @@ MonoBehaviour:
   jumpPower: 10
   jumpTime: 1
   damageDelay: 0
-  health: 4
+  Bosshealth: 4
   damage: 3
   timeBtwAttack: 4
   startTimeBtwAttack: 4
@@ -2385,6 +2385,7 @@ MonoBehaviour:
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
   stopMoving: 0
+  canTakeDmgBoss: 0
   isAttacking: 0
   is_jumping: 0
   animator: {fileID: 895456631}

@@ -7,6 +7,7 @@ public class HumanBossController : MonoBehaviour
 {
     #region outside_connections
     public GameObject gM;
+    public GameObject Healthbar;
     public GameObject character;
     public Transform eyeRay;
     public Transform midRay;
@@ -51,7 +52,7 @@ public class HumanBossController : MonoBehaviour
     float jumpTime2 = 0;
     float distance = 1;
     public float damageDelay;
-    public int health = 4;
+    public int bossHealth = 4;
     public float damage;
     int Count;
     [SerializeField] public float timeBtwAttack;
@@ -62,14 +63,15 @@ public class HumanBossController : MonoBehaviour
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
+    public bool canTakeDmgBoss;
     bool isFacing_Left;
     #endregion
 
     #region State_Machine States
     public HumanBossBaseState currentState;
     public HumanBossRunState runningState = new HumanBossRunState();
-    public HumanBossMeleeState meleeState = new HumanBossMeleeState();
-    public HumanBossMediumState mediumState = new HumanBossMediumState();
+    public ChargeAttackState chargeState = new ChargeAttackState();
+    public GroundSlamState groundSlamState = new GroundSlamState();
     public HumanBossAttackInitiater intiatorState = new HumanBossAttackInitiater();
     #endregion
 
@@ -92,6 +94,8 @@ public class HumanBossController : MonoBehaviour
 
     private void Start()
     {
+        Healthbar.GetComponent<healthbar_control>().SetMaxHealth(bossHealth);
+        canTakeDmgBoss = true;
         damage = PlayerPrefs.GetFloat("damageToPlayer");
         // starting state for the state machine
         currentState = runningState;
@@ -104,6 +108,7 @@ public class HumanBossController : MonoBehaviour
     }
     void Update()
     {
+        canTakeDmgBoss = true;
         //so it can update every frame too while we are in our states
         currentState.UpdateState(this);
 
@@ -198,7 +203,7 @@ public class HumanBossController : MonoBehaviour
 
 
     private void OnCollisionEnter2D(Collision2D collision)
-    {//so it can do collisions when we change collision states? every frame too while we are in our states
+    {//so we can do collisions when we change collision states? every frame too while we are in our states
         currentState.OnCollisionEnter(this, collision);
     }
 
@@ -238,11 +243,11 @@ public class HumanBossController : MonoBehaviour
             isTakingDamage = true;
             Destroy(collision.gameObject);
             ChangeAnimationState(ENEMY_TAKEDAMAGE);
-            health--;
+            bossHealth--;
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
             Invoke("DamageDelayComplete", damageDelay);
         }
-        if (health <= 0)
+        if (bossHealth <= 0)
         {
             isDying = true;
             ChangeAnimationState(ENEMY_DEATH);
@@ -254,6 +259,14 @@ public class HumanBossController : MonoBehaviour
     {
         isTakingDamage = false;
         is_jumping = false;
+    }
+    public void BossTakeDamage()
+    {
+        if (canTakeDmgBoss)
+        {
+            bossHealth -= 1;
+            Healthbar.GetComponent<healthbar_control>().SetHealth(bossHealth);
+        }
     }
     void Die()
     {
@@ -381,11 +394,12 @@ public class HumanBossRunState : HumanBossBaseState
     }
 }
 
-public class HumanBossMeleeState : HumanBossBaseState
+public class ChargeAttackState : HumanBossBaseState
 {
 
     public override void EnterState(HumanBossController boss)
     {
+        boss.canTakeDmgBoss = false;
         Debug.Log("Boss2 melee state started");
         // Calculate the direction towards the player
         Vector2 playerPosition = boss.character.transform.position;
@@ -404,6 +418,7 @@ public class HumanBossMeleeState : HumanBossBaseState
     public override void UpdateState(HumanBossController boss)
     {
         Debug.Log("Boss2 melee state updating");
+        boss.canTakeDmgBoss = false;
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
@@ -451,7 +466,7 @@ public class HumanBossMeleeState : HumanBossBaseState
     }
 }
 
-public class HumanBossMediumState : HumanBossBaseState
+public class GroundSlamState : HumanBossBaseState
 {
     private int currentPart = 1;  // Keep track of the current part of the attack
     private float delayBetweenFires = 1f;  // The delay between each fire instantiation
@@ -462,12 +477,14 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
+        boss.canTakeDmgBoss = false;
         // Reset the current part to 1 when entering the state
         currentPart = 1;
     }
 
     public override void UpdateState(HumanBossController boss)
     {
+        boss.canTakeDmgBoss = false;
         // Check if the boss has completed all three parts of the attack
         if (currentPart > 3)
         {
@@ -540,13 +557,15 @@ public class HumanBossAttackInitiater : HumanBossBaseState
 {
     public override void EnterState(HumanBossController boss)
     {
+        boss.canTakeDmgBoss = false;
+
         if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0)
         {
-            boss.SwitchState(boss.meleeState);
+            boss.SwitchState(boss.chargeState);
         }
         if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtwmidAttack <= 0)
         {
-            boss.SwitchState(boss.mediumState);
+            boss.SwitchState(boss.groundSlamState);
         }
         else
         {
@@ -556,7 +575,7 @@ public class HumanBossAttackInitiater : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-
+        boss.canTakeDmgBoss = false;
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
