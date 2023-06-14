@@ -8,7 +8,10 @@ public class TimeDriver : MonoBehaviour //TimeAndBeat.cs kopyası
 {
     public GameObject player;
     public GameObject boss;
-    [SerializeField] int part;
+
+    [SerializeField] int p;
+    public static int part;
+
     public AudioSource[] audioSources;
 
     public int currentLoopPos = 0;
@@ -21,7 +24,10 @@ public class TimeDriver : MonoBehaviour //TimeAndBeat.cs kopyası
 
     void Start()
     {
+        part = p; //bruh
         LoopData.currentPartIndex = part;
+        LoopData.boss = boss;
+        LoopData.player = player;
         TimeB.reset();
         StartCoroutine(StartAttack());
     }
@@ -77,10 +83,10 @@ public class TimeDriver : MonoBehaviour //TimeAndBeat.cs kopyası
 
         if (TimeB.W % dur == currentAttackData.duration.beatSW && TimeB.Q == currentAttackData.duration.beatSQ)
         { //atak TimeBı geldiyse
-            currentAttackData.action(transform.position, TimeB.CounterQ); //atak oluştur
+            currentAttackData.action(boss.transform.position, TimeB.CounterQ); //atak oluştur
 
             for (int size = 0; size < currentAttackData.extraAttackCount; size++)
-                LoopData.patterns[patInd][currentAttackPos + size + 1].action(transform.position, TimeB.CounterQ); //atak oluştur
+                LoopData.patterns[patInd][currentAttackPos + size + 1].action(boss.transform.position, TimeB.CounterQ); //atak oluştur
 
             currentAttackPos += 1 + currentAttackData.extraAttackCount;
         }

@@ -131,9 +131,13 @@ public class AttackData
         GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
         go.GetComponent<Attack>().data = clone;
-        Debug.Log("clone number " + clone.type);
-        LoopData.boss.GetComponent<BossMainScript>().attackAnim(clone);
-        Debug.Log("cloning");
+        //Debug.Log("clone number " + clone.type);
+
+        if (TimeDriver.part == 0) // this must be changed, we can not set animations for each part manually. Or we must?
+        {
+            LoopData.boss.GetComponent<BossMainScript>().attackAnim(clone);
+        }
+        //Debug.Log("cloning");
 
         //replaced with duration.counterSQ
         //go.GetComponent<Attack>().startQ = startBeatQ;
