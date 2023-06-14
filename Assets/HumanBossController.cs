@@ -337,7 +337,8 @@ public class HumanBossRunState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-        Debug.Log("Boss2 run state updating");
+        //Debug.Log("Boss2 run state updating");
+        Deb.ug("Boss2 run state updating");
         if (boss.character != null)
         {
             if (boss.animator.GetCurrentAnimatorStateInfo(0).IsName("ENEMY_ATTACK"))
@@ -403,7 +404,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-        Debug.Log("Boss2 melee state updating");
+        Deb.ug("Boss2 melee state updating");
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
