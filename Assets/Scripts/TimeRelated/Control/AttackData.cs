@@ -57,6 +57,7 @@ public class AttackData
 
     }
 
+    
     public void action(Vector3 pos, int counter_Q)
     {
         if (type == 0)
@@ -66,6 +67,8 @@ public class AttackData
 
         int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
+        HumanBossController hbc = LoopData.boss.GetComponent<HumanBossController>(); 
+        hbc.SwitchState(hbc.intiatorState); 
 
         if (clone.s1 != null)
         {

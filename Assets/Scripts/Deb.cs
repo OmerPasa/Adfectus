@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class Deb
 {
-    static bool spam_active = false;
+    static bool spam_active = true;
     static bool spam_active1 = true;
 
     /// <summary>

@@ -94,7 +94,7 @@ public class HumanBossController : MonoBehaviour
     {
         damage = PlayerPrefs.GetFloat("damageToPlayer");
         // starting state for the state machine
-        currentState = runningState;
+        currentState = intiatorState;
         // "this" is a reference to the context (this EXACT Monobehavior script)
         currentState.EnterState(this);
         animator = GetComponent<Animator>();
@@ -328,6 +328,35 @@ public abstract class HumanBossBaseState
     public abstract void OnCollisionEnter(HumanBossController boss, Collision2D collision);
 }
 
+public class HumanBossAttackInitiater : HumanBossBaseState
+{
+    public override void EnterState(HumanBossController boss)
+    {
+        Deb.ug("İnitiating Attack");
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0)
+        {
+            boss.SwitchState(boss.meleeState);
+        }
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtwmidAttack <= 0)
+        {
+            boss.SwitchState(boss.mediumState);
+        }
+        else
+        {
+            boss.SwitchState(boss.runningState);
+        }
+    }
+
+    public override void UpdateState(HumanBossController boss)
+    {
+
+    }
+    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    {
+
+    }
+}
+
 public class HumanBossRunState : HumanBossBaseState
 {
     public override void EnterState(HumanBossController boss)
@@ -537,30 +566,4 @@ public class HumanBossMediumState : HumanBossBaseState
 
 
 
-public class HumanBossAttackInitiater : HumanBossBaseState
-{
-    public override void EnterState(HumanBossController boss)
-    {
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0)
-        {
-            boss.SwitchState(boss.meleeState);
-        }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtwmidAttack <= 0)
-        {
-            boss.SwitchState(boss.mediumState);
-        }
-        else
-        {
-            boss.SwitchState(boss.runningState);
-        }
-    }
 
-    public override void UpdateState(HumanBossController boss)
-    {
-
-    }
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
-    {
-
-    }
-}
