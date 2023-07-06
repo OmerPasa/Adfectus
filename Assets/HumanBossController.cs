@@ -62,6 +62,7 @@ public class HumanBossController : MonoBehaviour
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
+    public bool canInstantiate = false;
     bool isFacing_Left;
     #endregion
 
@@ -321,8 +322,14 @@ public class HumanBossController : MonoBehaviour
     }
 }
 
+
+
+
+
 public abstract class HumanBossBaseState
 {
+    //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
+
     public abstract void EnterState(HumanBossController boss);
     public abstract void UpdateState(HumanBossController boss);
     public abstract void OnCollisionEnter(HumanBossController boss, Collision2D collision);
@@ -332,6 +339,7 @@ public class HumanBossAttackInitiater : HumanBossBaseState
 {
     public override void EnterState(HumanBossController boss)
     {
+        //boss.timeBtwAttack ı mı silsek ?
         Deb.ug("İnitiating Attack");
         if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0)
         {
@@ -340,6 +348,10 @@ public class HumanBossAttackInitiater : HumanBossBaseState
         if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtwmidAttack <= 0)
         {
             boss.SwitchState(boss.mediumState);
+        }
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtwmidAttack <= 0)
+        {
+            boss.SwitchState(boss.longState);
         }
         else
         {
@@ -366,6 +378,8 @@ public class HumanBossRunState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
+            // kodun temizlenmesi lazım zaten state değişince gidicekler zaten!
+
         //Debug.Log("Boss2 run state updating");
         Deb.ug("Boss2 run state updating");
         if (boss.character != null)
@@ -402,7 +416,6 @@ public class HumanBossRunState : HumanBossBaseState
                     }
                 }
             }
-            //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
         }
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
@@ -416,6 +429,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
+        canInstantiate = false;
         Debug.Log("Boss2 melee state started");
         // Calculate the direction towards the player
         Vector2 playerPosition = boss.character.transform.position;
@@ -492,6 +506,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
+        canInstantiate = false;
         // Reset the current part to 1 when entering the state
         currentPart = 1;
     }
@@ -562,7 +577,22 @@ public class HumanBossMediumState : HumanBossBaseState
     }
 }
 
+public class HumanBossLongState : HumanBossBaseState
+{
+    public abstract void EnterState(HumanBossController boss)
+    {
+        canInstantiate = true;
+        ChangeAnimationState(BOSS_LONGATTACK);
+    }
+    public abstract void UpdateState(HumanBossController boss)
+    {
 
+    }
+    public abstract void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    {
+
+    }
+}
 
 
 
