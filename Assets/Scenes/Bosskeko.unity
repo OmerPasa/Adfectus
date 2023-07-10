@@ -3912,7 +3912,7 @@ MonoBehaviour:
   viewRange: 28.4
   meleeRange: 6.2
   mediumRange: 11.8
-  longRange: 30.4
+  longRange: 29.2
   closeAttackTime: 0.24
   bulletRange: 2.14
   pushForce: 1.6
@@ -3945,7 +3945,7 @@ Transform:
   m_GameObject: {fileID: 2003122445}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 12.03, y: -1.738, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1963200202}

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TarodevController;
@@ -71,6 +71,7 @@ public class HumanBossController : MonoBehaviour
     public HumanBossRunState runningState = new HumanBossRunState();
     public HumanBossMeleeState meleeState = new HumanBossMeleeState();
     public HumanBossMediumState mediumState = new HumanBossMediumState();
+    public HumanBossLongState longState = new HumanBossLongState();
     public HumanBossAttackInitiater intiatorState = new HumanBossAttackInitiater();
     #endregion
 
@@ -82,13 +83,15 @@ public class HumanBossController : MonoBehaviour
     public Animator animator;
     private string currentAnimaton;
 
-    const string ENEMY_IDLE = "Boss1_Idle";
-    const string ENEMY_TAKEDAMAGE = "Boss1_TakeDamage";
-    const string ENEMY_DEATH = "Boss1_Explode";
-    const string ENEMY_ATTACK = "Boss1_Attack";
-    const string ENEMY_JUMP = "Boss1_Jump";
-    const string ENEMY_JUMPATTACK = "Boss1_JumpAttack";
-    const string ENEMY_MOVEMENT = "Boss1_Movement";
+    public const string ENEMY_IDLE = "Boss1_Idle";
+    public const string ENEMY_MOVEMENT = "Boss1_Movement";
+    public const string ENEMY_TAKEDAMAGE = "Boss1_TakeDamage";
+    public const string ENEMY_ATTACK1 = "Boss1_MeleeAttack";
+    public const string ENEMY_ATTACK2 = "Boss1_MediumAttack";
+    public const string ENEMY_ATTACK3 = "Boss1_LongAttack";
+    public const string ENEMY_JUMP = "Boss1_Jump";
+    public const string ENEMY_JUMPATTACK = "Boss1_JumpAttack";
+    public const string ENEMY_DEATH = "Boss1_Explode";
     #endregion
 
     private void Start()
@@ -429,7 +432,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
-        canInstantiate = false;
+        boss.canInstantiate = false;
         Debug.Log("Boss2 melee state started");
         // Calculate the direction towards the player
         Vector2 playerPosition = boss.character.transform.position;
@@ -506,7 +509,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
-        canInstantiate = false;
+        boss.canInstantiate = false;
         // Reset the current part to 1 when entering the state
         currentPart = 1;
     }
@@ -533,26 +536,26 @@ public class HumanBossMediumState : HumanBossBaseState
             switch (currentPart)
             {
                 case 1:
-                    // Perform the second part of the attack
-                    // e.g., play animation, apply damage, etc
-                    Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
-                    Debug.Log("player direction1 " + playerDirection1);
-                    CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
-                    break;
+                // Perform the second part of the attack
+                // e.g., play animation, apply damage, etc
+                Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                Debug.Log("player direction1 " + playerDirection1);
+                CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
+                break;
 
                 case 2:
-                    // Perform the third part of the attack
-                    // e.g., play animation, apply damage, etc.
-                    Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                    CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
-                    break;
+                // Perform the third part of the attack
+                // e.g., play animation, apply damage, etc.
+                Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
+                break;
 
                 case 3:
-                    // Perform the third part of the attack
-                    // e.g., play animation, apply damage, etc.
-                    Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                    CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
-                    break;
+                // Perform the third part of the attack
+                // e.g., play animation, apply damage, etc.
+                Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
+                break;
             }
 
             // Increase the current part for the next update
@@ -579,16 +582,16 @@ public class HumanBossMediumState : HumanBossBaseState
 
 public class HumanBossLongState : HumanBossBaseState
 {
-    public abstract void EnterState(HumanBossController boss)
+    public override void EnterState(HumanBossController boss)
     {
-        canInstantiate = true;
-        ChangeAnimationState(BOSS_LONGATTACK);
+        boss.canInstantiate = true;
+        boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
     }
-    public abstract void UpdateState(HumanBossController boss)
+    public override void UpdateState(HumanBossController boss)
     {
 
     }
-    public abstract void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
 
     }
