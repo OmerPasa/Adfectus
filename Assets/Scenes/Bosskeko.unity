@@ -3910,9 +3910,9 @@ MonoBehaviour:
     m_Bits: 256
   fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
   viewRange: 28.4
-  meleeRange: 6.2
+  meleeRange: 5.6
   mediumRange: 11.8
-  longRange: 29.2
+  longRange: 27.3
   closeAttackTime: 0.24
   bulletRange: 2.14
   pushForce: 1.6
@@ -3927,12 +3927,15 @@ MonoBehaviour:
   damage: 3
   timeBtwAttack: 4
   startTimeBtwAttack: 4
-  timeBtwmidAttack: 6
-  startTimeBtwmidAttack: 6
+  timeBtw_midAttack: 8
+  startTimeBtw_midAttack: 8
+  timeBtw_longAttack: 16
+  startTimeBtw_longAttack: 16
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
   stopMoving: 0
+  canInstantiate: 0
   isAttacking: 0
   is_jumping: 0
   animator: {fileID: 2003122448}

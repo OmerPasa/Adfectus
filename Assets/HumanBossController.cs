@@ -31,7 +31,6 @@ public class HumanBossController : MonoBehaviour
 
     [Range(0f, 50f)]
     public float longRange;
-
     public float closeAttackTime;
     [Range(0f, 10f)]
     public float bulletRange;
@@ -56,8 +55,10 @@ public class HumanBossController : MonoBehaviour
     int Count;
     [SerializeField] public float timeBtwAttack;
     [SerializeField] public float startTimeBtwAttack;
-    [SerializeField] public float timeBtwmidAttack;
-    [SerializeField] public float startTimeBtwmidAttack;
+    [SerializeField] public float timeBtw_midAttack;
+    [SerializeField] public float startTimeBtw_midAttack;
+    [SerializeField] public float timeBtw_longAttack;
+    [SerializeField] public float startTimeBtw_longAttack;
     public bool grounded = true;
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
@@ -110,6 +111,7 @@ public class HumanBossController : MonoBehaviour
     {
         //so it can update every frame too while we are in our states
         currentState.UpdateState(this);
+        //Debug.Log(timeBtw_longAttack + " current mid attack");
 
         #region Flipping
         if (character != null)
@@ -347,14 +349,17 @@ public class HumanBossAttackInitiater : HumanBossBaseState
         if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0)
         {
             boss.SwitchState(boss.meleeState);
+            Debug.Log("melee attack");
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtwmidAttack <= 0)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtw_midAttack <= 0)
         {
             boss.SwitchState(boss.mediumState);
+            Debug.Log("medium attack");
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtwmidAttack <= 0)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0)
         {
             boss.SwitchState(boss.longState);
+            Debug.Log("long attack");
         }
         else
         {
@@ -381,7 +386,7 @@ public class HumanBossRunState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-            // kodun temizlenmesi lazım zaten state değişince gidicekler zaten!
+        // kodun temizlenmesi lazım zaten state değişince gidicekler zaten!
 
         //Debug.Log("Boss2 run state updating");
         Deb.ug("Boss2 run state updating");
@@ -397,8 +402,11 @@ public class HumanBossRunState : HumanBossBaseState
             }
             Vector3 karPos = boss.character.transform.position;
             Vector3 pos = boss.transform.position;
+
+            //so we can make our attacks in successions. 
             boss.timeBtwAttack -= Time.deltaTime;
-            boss.timeBtwmidAttack -= Time.deltaTime;
+            boss.timeBtw_midAttack -= Time.deltaTime;
+            boss.timeBtw_longAttack -= Time.deltaTime;
             if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
             {
                 if (!boss.stopMoving)
@@ -432,6 +440,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
+        boss.timeBtwAttack = boss.startTimeBtwAttack;
         boss.canInstantiate = false;
         Debug.Log("Boss2 melee state started");
         // Calculate the direction towards the player
@@ -509,6 +518,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
+        boss.timeBtw_midAttack = 8f;
         boss.canInstantiate = false;
         // Reset the current part to 1 when entering the state
         currentPart = 1;
@@ -536,26 +546,26 @@ public class HumanBossMediumState : HumanBossBaseState
             switch (currentPart)
             {
                 case 1:
-                // Perform the second part of the attack
-                // e.g., play animation, apply damage, etc
-                Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
-                Debug.Log("player direction1 " + playerDirection1);
-                CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
-                break;
+                    // Perform the second part of the attack
+                    // e.g., play animation, apply damage, etc
+                    Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                    Debug.Log("player direction1 " + playerDirection1);
+                    CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
+                    break;
 
                 case 2:
-                // Perform the third part of the attack
-                // e.g., play animation, apply damage, etc.
-                Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
-                break;
+                    // Perform the third part of the attack
+                    // e.g., play animation, apply damage, etc.
+                    Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                    CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
+                    break;
 
                 case 3:
-                // Perform the third part of the attack
-                // e.g., play animation, apply damage, etc.
-                Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
-                break;
+                    // Perform the third part of the attack
+                    // e.g., play animation, apply damage, etc.
+                    Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                    CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
+                    break;
             }
 
             // Increase the current part for the next update
@@ -570,7 +580,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
         // Destroy the fire effect after the specified duration
         GameObject.Destroy(fire, fireDuration);
-        boss.timeBtwmidAttack = boss.startTimeBtwmidAttack;
+        boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
     }
 
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
@@ -584,6 +594,7 @@ public class HumanBossLongState : HumanBossBaseState
 {
     public override void EnterState(HumanBossController boss)
     {
+        boss.timeBtw_longAttack = 16f;
         boss.canInstantiate = true;
         boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
     }
