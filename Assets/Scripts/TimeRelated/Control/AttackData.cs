@@ -57,7 +57,7 @@ public class AttackData
 
     }
 
-    
+
     public void action(Vector3 pos, int counter_Q)
     {
         if (type == 0)
@@ -67,8 +67,8 @@ public class AttackData
 
         int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
-        HumanBossController hbc = LoopData.boss.GetComponent<HumanBossController>(); 
-        hbc.SwitchState(hbc.intiatorState); 
+        HumanBossController hbc = LoopData.boss.GetComponent<HumanBossController>();
+        hbc.SwitchState(hbc.intiatorState);
 
         if (clone.s1 != null)
         {
@@ -129,11 +129,12 @@ public class AttackData
 
     public void create(AttackData clone, Vector3 position, int startBeatQ)
     {
+
         denemekIcinKod(clone); //sonradan silinmeli, gerçeği yansıtmamaktadır
 
-        GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
+        //GameObject go = GameObject.Instantiate(Resources.Load(prefabPaths[type]), position, Quaternion.identity) as GameObject;
         //Debug.Log("c. " + clone.duration.CounterSQ + " " + clone.duration.CounterEQ + " ");
-        go.GetComponent<Attack>().data = clone;
+        //go.GetComponent<Attack>().data = clone;
         //Debug.Log("clone number " + clone.type);
 
         if (TimeDriver.part == 0) // this must be changed, we can not set animations for each part manually. Or we must?
@@ -145,6 +146,7 @@ public class AttackData
         //replaced with duration.counterSQ
         //go.GetComponent<Attack>().startQ = startBeatQ;
 
-        LoopData.currentAttacks.Add(go);
+        //LoopData.currentAttacks.Add(go);
+
     }
 }

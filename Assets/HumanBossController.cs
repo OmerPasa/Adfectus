@@ -296,22 +296,6 @@ public class HumanBossController : MonoBehaviour
         }
     }
 
-    void shoot(Vector3 karPos, Vector3 pos)
-    {
-
-        if (bulletTime - (Time.realtimeSinceStartup - bulletTime2) <= 0)
-        {
-            bulletTime2 = Time.realtimeSinceStartup;
-            Debug.Log("fire");//ate�
-
-            Vector3 a = (karPos - pos);
-            GameObject bulletClone = (GameObject)Instantiate(bullet, pos + transform.right * 0.5f + new Vector3(0, 0, -0.21f), transform.rotation);
-            bulletClone.transform.up = new Vector3(a.x, a.y, 0);
-            bulletClone.GetComponent<BulletScriptt>().StartShooting(a.x < 0);
-
-
-        }
-    }
     void OnTriggerExit2D(Collider2D temas)
     {
         if (temas.tag == "block")
@@ -400,21 +384,21 @@ public class HumanBossRunState : HumanBossBaseState
             {
                 boss.stopMoving = false;
             }
-            Vector3 karPos = boss.character.transform.position;
+
             Vector3 pos = boss.transform.position;
 
             //so we can make our attacks in successions. 
             boss.timeBtwAttack -= Time.deltaTime;
             boss.timeBtw_midAttack -= Time.deltaTime;
             boss.timeBtw_longAttack -= Time.deltaTime;
-            if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
+            if (Mathf.Abs(boss.character.transform.position.x - pos.x) < boss.viewRange)
             {
                 if (!boss.stopMoving)
                 {
                     // Move towards character
-                    if (Mathf.Abs(karPos.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
+                    if (Mathf.Abs(boss.character.transform.position.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
                     {
-                        float direction = Mathf.Sign(karPos.x - pos.x);
+                        float direction = Mathf.Sign(boss.character.transform.position.x - pos.x);
                         Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
                         rb2d.velocity = new Vector2(direction * boss.movementSpeed, rb2d.velocity.y);
                     }
@@ -518,6 +502,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
+        Deb.ug("starting to fire fireballs!!");
         boss.timeBtw_midAttack = 8f;
         boss.canInstantiate = false;
         // Reset the current part to 1 when entering the state
@@ -526,6 +511,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
+        Deb.ug("firing the fireballs!!");
         // Check if the boss has completed all three parts of the attack
         if (currentPart > 3)
         {
@@ -592,11 +578,27 @@ public class HumanBossMediumState : HumanBossBaseState
 
 public class HumanBossLongState : HumanBossBaseState
 {
+    public Vector3 distance_lasertoplayer;
     public override void EnterState(HumanBossController boss)
     {
-        boss.timeBtw_longAttack = 16f;
+        Deb.ug("Laser Enter state");
+        //boss.timeBtw_longAttack = 16f;
         boss.canInstantiate = true;
         boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
+        distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
+
+
+        GameObject go = GameObject.Instantiate(Resources.Load("Prefabs/LaserType6"), boss.transform.position, Quaternion.identity) as GameObject;
+        if (go != null)
+        {
+            go.GetComponent<LASER_Gun>().distance_lasertoplayerLaser = distance_lasertoplayer;
+        }
+        else
+        {
+            // Handle the case where LASER_Gun component is not found on go.
+            Debug.LogError("LASER_Gun component not found on the GameObject.");
+        }
+        boss.SwitchState(boss.runningState);
     }
     public override void UpdateState(HumanBossController boss)
     {
@@ -604,7 +606,6 @@ public class HumanBossLongState : HumanBossBaseState
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
-
     }
 }
 

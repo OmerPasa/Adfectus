@@ -3925,12 +3925,12 @@ MonoBehaviour:
   damageDelay: 0
   health: 4
   damage: 3
-  timeBtwAttack: 4
+  timeBtwAttack: 9.83
   startTimeBtwAttack: 4
   timeBtw_midAttack: 8
   startTimeBtw_midAttack: 8
-  timeBtw_longAttack: 16
-  startTimeBtw_longAttack: 16
+  timeBtw_longAttack: 0
+  startTimeBtw_longAttack: 6
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0

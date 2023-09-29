@@ -5,10 +5,10 @@ using UnityEngine;
 public class LaserT0 : MonoBehaviour
 {
     public LineRenderer lineRenderer;
+    public EdgeCollider2D edgeCollider;
     public Transform laserStart;
     //public Transform laserEnd;
     Vector3 laserEndVec = new Vector3(0, 0, 0);
-    public EdgeCollider2D edgeCollider;
     Transform target;
     public Vector3 direction = Vector3.zero;
 
@@ -41,10 +41,10 @@ public class LaserT0 : MonoBehaviour
             case 0:
                 lineRenderer.enabled = false;
                 break;
+
             case 1:
                 lineRenderer.enabled = true;
                 setLaserFiring();
-
 
                 break;
             case 2:
@@ -97,5 +97,4 @@ public class LaserT0 : MonoBehaviour
         points.SetValue(new Vector2(laserEndVec.x, laserEndVec.y), 1);
         edgeCollider.points = points;
     }
-
 }
