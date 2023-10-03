@@ -11,7 +11,8 @@ public class LASER_Gun : MonoBehaviour
     public Vector3 distance_lasertoplayerLaser;
     public void Update()
     {
-        transform.Translate(distance_lasertoplayerLaser * laserSpeed * Time.deltaTime);
+        //transform.Translate(distance_lasertoplayerLaser * laserSpeed * Time.deltaTime);
+        transform.position += distance_lasertoplayerLaser * (laserSpeed * Time.deltaTime);
     }
     private void OnCollisionEnter(Collision collision)
     {

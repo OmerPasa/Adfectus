@@ -3929,7 +3929,7 @@ MonoBehaviour:
   startTimeBtwAttack: 4
   timeBtw_midAttack: 8
   startTimeBtw_midAttack: 8
-  timeBtw_longAttack: 0
+  timeBtw_longAttack: 6
   startTimeBtw_longAttack: 6
   grounded: 1
   pathBlocked: 0

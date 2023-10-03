@@ -77,7 +77,7 @@ public class HumanBossController : MonoBehaviour
     #endregion
 
     #region Animations
-    public bool isAttacking;
+    public bool isAttackingShort, isAttackingMedium, isAttackingLong;
     private bool isTakingDamage;
     private bool isDying;
     public bool is_jumping;
@@ -188,7 +188,7 @@ public class HumanBossController : MonoBehaviour
         //if (pos.y != tempY) { grounded = false; } 
         //else { grounded = true; }
         // animation  part for idle or movement
-        if (!isAttacking && !isTakingDamage && !isDying)
+        if (!isAttackingShort && !isAttackingMedium && !isAttackingLong && !isTakingDamage && !isDying)
         {
             if (rg2d.velocity.x != 0.00f)
             {
@@ -208,11 +208,6 @@ public class HumanBossController : MonoBehaviour
         currentState.OnCollisionEnter(this, collision);
     }
 
-    void AttackComplete()
-    {
-        isAttacking = false;
-        Debug.Log("ATTACKCOMPLETEBOSS2");
-    }
     // Callback to draw gizmos only if the object is selected.
     void OnDrawGizmos()
     {
@@ -340,7 +335,7 @@ public class HumanBossAttackInitiater : HumanBossBaseState
             boss.SwitchState(boss.mediumState);
             Debug.Log("medium attack");
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate != false)
         {
             boss.SwitchState(boss.longState);
             Debug.Log("long attack");
@@ -459,9 +454,9 @@ public class HumanBossMeleeState : HumanBossBaseState
             // Apply the push force
             boss.rg2d.AddForce(pushDirection * 5f, ForceMode2D.Impulse);
 
-            if (!boss.isAttacking)
+            if (!boss.isAttackingShort)
             {
-                boss.isAttacking = true;
+                boss.isAttackingShort = true;
                 boss.ChangeAnimationState("ENEMY_ATTACK");
                 boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
 
@@ -484,6 +479,7 @@ public class HumanBossMeleeState : HumanBossBaseState
             else
             {
                 boss.timeBtwAttack -= Time.deltaTime;
+                boss.isAttackingShort = false;
                 boss.SwitchState(boss.runningState);
             }
 
@@ -504,7 +500,7 @@ public class HumanBossMediumState : HumanBossBaseState
     {
         Deb.ug("starting to fire fireballs!!");
         boss.timeBtw_midAttack = 8f;
-        boss.canInstantiate = false;
+        boss.isAttackingMedium = true;
         // Reset the current part to 1 when entering the state
         currentPart = 1;
     }
@@ -517,7 +513,8 @@ public class HumanBossMediumState : HumanBossBaseState
         {
             // Transition to a different state or perform any other actions
             // after completing the attack
-            boss.SwitchState(boss.runningState);
+            //boss.SwitchState(boss.runningState);
+            boss.isAttackingMedium = false;
             return;
         }
 
@@ -582,7 +579,7 @@ public class HumanBossLongState : HumanBossBaseState
     public override void EnterState(HumanBossController boss)
     {
         Deb.ug("Laser Enter state");
-        //boss.timeBtw_longAttack = 16f;
+        boss.timeBtw_longAttack = 6f;
         boss.canInstantiate = true;
         boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
         distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
@@ -598,6 +595,7 @@ public class HumanBossLongState : HumanBossBaseState
             // Handle the case where LASER_Gun component is not found on go.
             Debug.LogError("LASER_Gun component not found on the GameObject.");
         }
+        boss.canInstantiate = false;
         boss.SwitchState(boss.runningState);
     }
     public override void UpdateState(HumanBossController boss)
