@@ -106,6 +106,7 @@ public class HumanBossController : MonoBehaviour
         rg2d = GetComponent<Rigidbody2D>();
         gM = GameObject.Find("GameManager");
         character = GameObject.Find("Player");
+        canInstantiate = true;
     }
     void Update()
     {
@@ -304,6 +305,26 @@ public class HumanBossController : MonoBehaviour
         currentState = state;
         state.EnterState(this);
     }
+
+    public void AttackComplete(bool type)
+    {
+        if (type == isAttackingShort)
+        {
+            isAttackingShort = false;
+        }
+        else if (type == isAttackingMedium)
+        {
+            isAttackingMedium = false;
+        }
+        else if (type == isAttackingLong)
+        {
+            isAttackingLong = false;
+        }
+        else
+        {
+            canInstantiate = true;
+        }
+    }
 }
 
 
@@ -323,19 +344,20 @@ public class HumanBossAttackInitiater : HumanBossBaseState
 {
     public override void EnterState(HumanBossController boss)
     {
+
         //boss.timeBtwAttack ı mı silsek ?
         Deb.ug("İnitiating Attack");
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0 && boss.isAttackingMedium == false)
         {
             boss.SwitchState(boss.meleeState);
             Debug.Log("melee attack");
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtw_midAttack <= 0)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtw_midAttack <= 0 && boss.isAttackingShort == false)
         {
             boss.SwitchState(boss.mediumState);
             Debug.Log("medium attack");
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate != false)
+        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate == true)
         {
             boss.SwitchState(boss.longState);
             Debug.Log("long attack");
@@ -468,7 +490,7 @@ public class HumanBossMeleeState : HumanBossBaseState
                     boss.timeBtwAttack = boss.startTimeBtwAttack;
                     boss.SwitchState(boss.runningState);
                     boss.movementSpeed = 2f;
-                    boss.Invoke("AttackComplete", boss.damageDelay);
+                    boss.Invoke(nameof(boss.AttackComplete), boss.damageDelay);
 
                 }
                 if (playerController = null)
@@ -498,11 +520,14 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
-        Deb.ug("starting to fire fireballs!!");
         boss.timeBtw_midAttack = 8f;
         boss.isAttackingMedium = true;
+        boss.canInstantiate = false;
+
         // Reset the current part to 1 when entering the state
         currentPart = 1;
+        boss.SwitchState(boss.mediumState.UpdateState);
+        Deb.ug("starting to fire fireballs!!");
     }
 
     public override void UpdateState(HumanBossController boss)
@@ -511,10 +536,12 @@ public class HumanBossMediumState : HumanBossBaseState
         // Check if the boss has completed all three parts of the attack
         if (currentPart > 3)
         {
+            Deb.ug("currentPart3");
             // Transition to a different state or perform any other actions
             // after completing the attack
             //boss.SwitchState(boss.runningState);
-            boss.isAttackingMedium = false;
+            boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+            boss.Invoke(nameof(boss.AttackComplete), boss.damageDelay);
             return;
         }
 
@@ -600,6 +627,7 @@ public class HumanBossLongState : HumanBossBaseState
     }
     public override void UpdateState(HumanBossController boss)
     {
+        Deb.ug("Laser Update state");
 
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
