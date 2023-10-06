@@ -72,7 +72,7 @@ public class HumanBossController : MonoBehaviour
     public HumanBossRunState runningState = new HumanBossRunState();
     public HumanBossMeleeState meleeState = new HumanBossMeleeState();
     public HumanBossMediumState mediumState = new HumanBossMediumState();
-    public HumanBossLongState longState = new HumanBossLongState();
+    //public HumanBossLongState longState = new HumanBossLongState();
     public HumanBossAttackInitiater intiatorState = new HumanBossAttackInitiater();
     #endregion
 
@@ -357,11 +357,6 @@ public class HumanBossAttackInitiater : HumanBossBaseState
             boss.SwitchState(boss.mediumState);
             Debug.Log("medium attack");
         }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate == true)
-        {
-            boss.SwitchState(boss.longState);
-            Debug.Log("long attack");
-        }
         else
         {
             boss.SwitchState(boss.runningState);
@@ -387,10 +382,7 @@ public class HumanBossRunState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-        // kodun temizlenmesi lazım zaten state değişince gidicekler zaten!
-
         //Debug.Log("Boss2 run state updating");
-        Deb.ug("Boss2 run state updating");
         if (boss.character != null)
         {
             if (boss.animator.GetCurrentAnimatorStateInfo(0).IsName("ENEMY_ATTACK"))
@@ -401,21 +393,18 @@ public class HumanBossRunState : HumanBossBaseState
             {
                 boss.stopMoving = false;
             }
-
+            Vector3 karPos = boss.character.transform.position;
             Vector3 pos = boss.transform.position;
-
-            //so we can make our attacks in successions. 
-            boss.timeBtwAttack -= Time.deltaTime;
             boss.timeBtw_midAttack -= Time.deltaTime;
             boss.timeBtw_longAttack -= Time.deltaTime;
-            if (Mathf.Abs(boss.character.transform.position.x - pos.x) < boss.viewRange)
+            if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
             {
                 if (!boss.stopMoving)
                 {
                     // Move towards character
-                    if (Mathf.Abs(boss.character.transform.position.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
+                    if (Mathf.Abs(karPos.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
                     {
-                        float direction = Mathf.Sign(boss.character.transform.position.x - pos.x);
+                        float direction = Mathf.Sign(karPos.x - pos.x);
                         Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
                         rb2d.velocity = new Vector2(direction * boss.movementSpeed, rb2d.velocity.y);
                     }
@@ -428,6 +417,7 @@ public class HumanBossRunState : HumanBossBaseState
                     }
                 }
             }
+            //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
         }
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
@@ -441,9 +431,8 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
-        boss.timeBtwAttack = boss.startTimeBtwAttack;
-        boss.canInstantiate = false;
         Debug.Log("Boss2 melee state started");
+        boss.isAttackingShort = true;
         // Calculate the direction towards the player
         Vector2 playerPosition = boss.character.transform.position;
         Vector2 bossPosition = boss.transform.position;
@@ -476,34 +465,28 @@ public class HumanBossMeleeState : HumanBossBaseState
             // Apply the push force
             boss.rg2d.AddForce(pushDirection * 5f, ForceMode2D.Impulse);
 
-            if (!boss.isAttackingShort)
-            {
-                boss.isAttackingShort = true;
-                boss.ChangeAnimationState("ENEMY_ATTACK");
-                boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+            boss.ChangeAnimationState("ENEMY_ATTACK");
+            boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
 
-                // Apply damage to the player
-                TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
-                if (playerController != null)
-                {
-                    playerController.PlayerTakeDamage(boss.damage); // is not getting called
-                    boss.timeBtwAttack = boss.startTimeBtwAttack;
-                    boss.SwitchState(boss.runningState);
-                    boss.movementSpeed = 2f;
-                    boss.Invoke(nameof(boss.AttackComplete), boss.damageDelay);
-
-                }
-                if (playerController = null)
-                {
-                    Debug.Log("Player is null!");
-                }
-            }
-            else
+            // Apply damage to the player
+            TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
+            if (playerController != null)
             {
-                boss.timeBtwAttack -= Time.deltaTime;
-                boss.isAttackingShort = false;
+                playerController.PlayerTakeDamage(boss.damage); // is not getting called
+                boss.timeBtwAttack = boss.startTimeBtwAttack;
                 boss.SwitchState(boss.runningState);
+                boss.movementSpeed = 2f;
+                boss.Invoke("AttackComplete", boss.damageDelay);
+
             }
+            if (playerController = null)
+            {
+                Debug.Log("Player is null!");
+            }
+
+            boss.timeBtwAttack -= Time.deltaTime;
+            boss.SwitchState(boss.runningState);
+
 
         }
     }
@@ -520,28 +503,18 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController boss)
     {
-        boss.timeBtw_midAttack = 8f;
-        boss.isAttackingMedium = true;
-        boss.canInstantiate = false;
-
         // Reset the current part to 1 when entering the state
         currentPart = 1;
-        boss.SwitchState(boss.mediumState.UpdateState);
-        Deb.ug("starting to fire fireballs!!");
     }
 
     public override void UpdateState(HumanBossController boss)
     {
-        Deb.ug("firing the fireballs!!");
         // Check if the boss has completed all three parts of the attack
         if (currentPart > 3)
         {
-            Deb.ug("currentPart3");
             // Transition to a different state or perform any other actions
             // after completing the attack
-            //boss.SwitchState(boss.runningState);
-            boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-            boss.Invoke(nameof(boss.AttackComplete), boss.damageDelay);
+            boss.SwitchState(boss.runningState);
             return;
         }
 
@@ -590,7 +563,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
         // Destroy the fire effect after the specified duration
         GameObject.Destroy(fire, fireDuration);
-        boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
+        boss.timeBtwAttack = boss.startTimeBtwAttack;
     }
 
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
@@ -600,40 +573,7 @@ public class HumanBossMediumState : HumanBossBaseState
     }
 }
 
-public class HumanBossLongState : HumanBossBaseState
-{
-    public Vector3 distance_lasertoplayer;
-    public override void EnterState(HumanBossController boss)
-    {
-        Deb.ug("Laser Enter state");
-        boss.timeBtw_longAttack = 6f;
-        boss.canInstantiate = true;
-        boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
-        distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
 
-
-        GameObject go = GameObject.Instantiate(Resources.Load("Prefabs/LaserType6"), boss.transform.position, Quaternion.identity) as GameObject;
-        if (go != null)
-        {
-            go.GetComponent<LASER_Gun>().distance_lasertoplayerLaser = distance_lasertoplayer;
-        }
-        else
-        {
-            // Handle the case where LASER_Gun component is not found on go.
-            Debug.LogError("LASER_Gun component not found on the GameObject.");
-        }
-        boss.canInstantiate = false;
-        boss.SwitchState(boss.runningState);
-    }
-    public override void UpdateState(HumanBossController boss)
-    {
-        Deb.ug("Laser Update state");
-
-    }
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
-    {
-    }
-}
 
 
 
