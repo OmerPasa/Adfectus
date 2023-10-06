@@ -3922,21 +3922,23 @@ MonoBehaviour:
   movementSpeed: 2
   jumpPower: 10
   jumpTime: 1
-  damageDelay: 0
+  damageDelay: 2
   health: 4
   damage: 3
   timeBtwAttack: 9.83
   startTimeBtwAttack: 4
-  timeBtw_midAttack: 8
+  timeBtw_midAttack: 4.03
   startTimeBtw_midAttack: 8
-  timeBtw_longAttack: 6
+  timeBtw_longAttack: 3
   startTimeBtw_longAttack: 6
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
   stopMoving: 0
   canInstantiate: 0
-  isAttacking: 0
+  isAttackingShort: 0
+  isAttackingMedium: 0
+  isAttackingLong: 0
   is_jumping: 0
   animator: {fileID: 2003122448}
 --- !u!4 &2003122450
