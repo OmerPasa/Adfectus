@@ -3153,7 +3153,7 @@ MonoBehaviour:
   _fallClamp: -40
   _minFallSpeed: 80
   _maxFallSpeed: 120
-  _jumpHeight: 26.9
+  _jumpHeight: 28
   _jumpApexThreshold: 10
   _coyoteTimeThreshold: 0.2
   _jumpBuffer: 0.1
@@ -3930,7 +3930,7 @@ MonoBehaviour:
   timeBtw_shortAttack: 2.51
   startTimeBtw_shortAttack: 2.52
   timeBtw_midAttack: 3.13
-  startTimeBtw_midAttack: 2.48
+  startTimeBtw_midAttack: 3.67
   timeBtw_longAttack: 3
   startTimeBtw_longAttack: 4.03
   grounded: 1

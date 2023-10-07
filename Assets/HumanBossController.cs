@@ -310,6 +310,7 @@ public class HumanBossController : MonoBehaviour
     {
         isAttackingShort = false;
         canInstantiate = true;
+        movementSpeed = 2f;
     }
     public void AttackCompleteMedium()
     {
@@ -443,14 +444,18 @@ public class HumanBossRunState : HumanBossBaseState
 
 public class HumanBossMeleeState : HumanBossBaseState
 {
-
+    float maxChargeDistance;
+    float chargeDistance;
+    Vector2 playerPosition;
+    Vector2 bossPosition;
     public override void EnterState(HumanBossController boss)
     {
         Debug.Log("Boss2 melee state started");
         boss.isAttackingShort = true;
+        maxChargeDistance = 5.5f;
         // Calculate the direction towards the player
-        Vector2 playerPosition = boss.character.transform.position;
-        Vector2 bossPosition = boss.transform.position;
+        playerPosition = boss.character.transform.position;
+        bossPosition = boss.transform.position;
         float direction = Mathf.Sign(playerPosition.x - bossPosition.x);
 
         // Set the boss's movement speed to a high value
@@ -464,7 +469,18 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-        Deb.ug("Boss2 melee state updating");
+        Deb.ug("Boss2 melee state updating");// we could implement a check for players new position if its differs from the enter state we misseed so we call attack ended
+        playerPosition = boss.character.transform.position;
+        bossPosition = boss.transform.position;
+        chargeDistance = Vector2.Distance(bossPosition, playerPosition);
+        Debug.Log(chargeDistance);
+
+        if (chargeDistance > maxChargeDistance)
+        {
+            // Boss missed the player
+            // boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+            boss.Invoke(nameof(boss.AttackCompleteShort), boss.damageDelay);
+        }
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
@@ -494,7 +510,7 @@ public class HumanBossMeleeState : HumanBossBaseState
                 playerController.PlayerTakeDamage(boss.damage); // is not getting called
                 boss.timeBtw_shortAttack = boss.startTimeBtw_shortAttack;
                 boss.SwitchState(boss.runningState);
-                boss.movementSpeed = 2f;
+
                 boss.Invoke(nameof(boss.AttackCompleteShort), boss.damageDelay);
                 Deb.ug("Boss2 melee state player is NOT null");
 
