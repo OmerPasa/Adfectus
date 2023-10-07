@@ -468,6 +468,8 @@ public class HumanBossMeleeState : HumanBossBaseState
     }
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
     {
+        Deb.ug("Boss2 melee Collision happaned");
+
         Vector2 karPos = boss.character.transform.position;
         Vector2 pos = boss.transform.position;
 
@@ -485,6 +487,8 @@ public class HumanBossMeleeState : HumanBossBaseState
 
             // Apply damage to the player
             TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
+            Deb.ug("Boss2 melee state player is null??");
+
             if (playerController != null)
             {
                 playerController.PlayerTakeDamage(boss.damage); // is not getting called
@@ -492,6 +496,8 @@ public class HumanBossMeleeState : HumanBossBaseState
                 boss.SwitchState(boss.runningState);
                 boss.movementSpeed = 2f;
                 boss.Invoke(nameof(boss.AttackCompleteShort), boss.damageDelay);
+                Deb.ug("Boss2 melee state player is NOT null");
+
 
             }
             if (playerController = null)
