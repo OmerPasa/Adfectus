@@ -12,12 +12,13 @@ public class DiffucultyAdjusting : MonoBehaviour
         PlayerPrefs.SetFloat(damageToPlayer, damageToPlayerNumber);
     }
 
-    private void Update() 
+    private void Update()
     {
-        _slider.onValueChanged.AddListener((v) => {
+        _slider.onValueChanged.AddListener((v) =>
+        {
             _damageToPlayer = v;
         });
-        Debug.Log("damagetoplayer is " + _damageToPlayer);
+        Deb.ug("damagetoplayer is " + _damageToPlayer);
         SetFloat("damageToPlayer", _damageToPlayer);
     }
 }

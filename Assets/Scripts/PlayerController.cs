@@ -148,7 +148,7 @@ namespace TarodevController
             {
                 playerDying = true;
                 GameManager_.GetComponent<GameManager>().EndGame();
-                Debug.Log("game resetting");
+                Deb.ug("game resetting");
 
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 ChangeAnimationState(PLAYER_DEATH);

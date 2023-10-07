@@ -60,6 +60,19 @@ public static class LoopData
                 { 9, 8 }
             },
         },
+
+
+         //part 1
+        new int[][,]
+        {
+            //patternIndex, duration
+            new int[,] {//copy of boss2 
+                { 10, 8 },
+                { 10, 8 },
+                { 10, 8 },
+                { 10, 8 }
+            },
+        },
     };
 
     public static int[,] getLoop(int loopIndex, int partIndex = -1)

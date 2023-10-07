@@ -9,6 +9,7 @@ TagManager:
   - Ground
   - Laser
   - Boss2
+  - Bullet
   layers:
   - Default
   - TransparentFX
