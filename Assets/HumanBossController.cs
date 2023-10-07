@@ -53,8 +53,8 @@ public class HumanBossController : MonoBehaviour
     public int health = 4;
     public float damage;
     int Count;
-    [SerializeField] public float timeBtwAttack;
-    [SerializeField] public float startTimeBtwAttack;
+    [SerializeField] public float timeBtw_shortAttack;
+    [SerializeField] public float startTimeBtw_shortAttack;
     [SerializeField] public float timeBtw_midAttack;
     [SerializeField] public float startTimeBtw_midAttack;
     [SerializeField] public float timeBtw_longAttack;
@@ -315,6 +315,7 @@ public class HumanBossController : MonoBehaviour
     {
         isAttackingMedium = false;
         canInstantiate = true;
+        Deb.ug("AttackCompleteMedium");
     }
 
     public void AttackCompleteLong()
@@ -345,22 +346,22 @@ public class HumanBossAttackInitiater : HumanBossBaseState
 
         //boss.timeBtwAttack ı mı silsek ?
         Deb.ug("İnitiating Attack");
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate == true)
-        {
-            boss.SwitchState(boss.longState);
-            Debug.Log("long attack");
-        }
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtwAttack <= 0 && boss.isAttackingMedium == false)
-        {
-            boss.SwitchState(boss.meleeState);
-            Debug.Log("melee attack");
-        }
         if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtw_midAttack <= 0 && boss.isAttackingShort == false)
         {
             boss.SwitchState(boss.mediumState);
             Debug.Log("medium attack");
         }
-        else
+        else if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate == true)
+        {
+            boss.SwitchState(boss.longState);
+            Debug.Log("long attack");
+        }
+        else if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtw_shortAttack <= 0 && boss.isAttackingMedium == false)
+        {
+            boss.SwitchState(boss.meleeState);
+            Debug.Log("melee attack");
+        }
+        else if (boss.isAttackingMedium == false && boss.isAttackingShort == false)
         {
             boss.SwitchState(boss.runningState);
         }
@@ -398,6 +399,7 @@ public class HumanBossRunState : HumanBossBaseState
             }
             Vector3 karPos = boss.character.transform.position;
             Vector3 pos = boss.transform.position;
+            boss.timeBtw_shortAttack -= Time.deltaTime;
             boss.timeBtw_midAttack -= Time.deltaTime;
             boss.timeBtw_longAttack -= Time.deltaTime;
             if (Mathf.Abs(karPos.x - pos.x) < boss.viewRange)
@@ -469,28 +471,28 @@ public class HumanBossMeleeState : HumanBossBaseState
             boss.rg2d.AddForce(pushDirection * 5f, ForceMode2D.Impulse);
 
             boss.ChangeAnimationState("ENEMY_ATTACK");
-            boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+            // boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
 
             // Apply damage to the player
             TarodevController.PlayerController playerController = boss.character.GetComponent<TarodevController.PlayerController>();
             if (playerController != null)
             {
                 playerController.PlayerTakeDamage(boss.damage); // is not getting called
-                boss.timeBtwAttack = boss.startTimeBtwAttack;
+                boss.timeBtw_shortAttack = boss.startTimeBtw_shortAttack;
                 boss.SwitchState(boss.runningState);
                 boss.movementSpeed = 2f;
-                boss.Invoke("AttackComplete", boss.damageDelay);
+                boss.Invoke(nameof(boss.AttackCompleteShort), boss.damageDelay);
 
             }
             if (playerController = null)
             {
-                boss.timeBtwAttack -= Time.deltaTime;
+                boss.timeBtw_shortAttack -= Time.deltaTime;
                 boss.isAttackingShort = false;
                 boss.SwitchState(boss.runningState);
                 Debug.Log("Player is null!");
             }
 
-            boss.timeBtwAttack -= Time.deltaTime;
+            boss.timeBtw_shortAttack -= Time.deltaTime;
             boss.SwitchState(boss.runningState);
 
 
@@ -501,7 +503,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 public class HumanBossMediumState : HumanBossBaseState
 {
     private int currentPart = 1;  // Keep track of the current part of the attack
-    private float delayBetweenFires = 1f;  // The delay between each fire instantiation
+    private float delayBetweenFires = 0f;  // The delay between each fire instantiation
     private float fireDuration = 2f;  // The duration of each fire effect
     private float fireLength = 2.5f; // ateşin oyuncudan uzaklığı.
 
@@ -510,6 +512,7 @@ public class HumanBossMediumState : HumanBossBaseState
     public override void EnterState(HumanBossController boss)
     {
         // Reset the current part to 1 when entering the state
+
         currentPart = 1;
         boss.isAttackingMedium = true;
     }
@@ -533,6 +536,7 @@ public class HumanBossMediumState : HumanBossBaseState
         // Check if the delay between fires has passed
         if (timer >= delayBetweenFires && boss.character != null)
         {
+            Debug.Log("firing inside ");
             timer = 0f;  // Reset the timer
             // Perform the appropriate action for the current part of the attack
             switch (currentPart)
@@ -572,7 +576,7 @@ public class HumanBossMediumState : HumanBossBaseState
 
         // Destroy the fire effect after the specified duration
         GameObject.Destroy(fire, fireDuration);
-        boss.timeBtwAttack = boss.startTimeBtwAttack;
+        boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
     }
 
     public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
