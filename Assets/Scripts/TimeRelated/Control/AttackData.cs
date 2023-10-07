@@ -68,7 +68,7 @@ public class AttackData
         int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
         HumanBossController hbc = LoopData.boss.GetComponent<HumanBossController>();
-        hbc.SwitchState(hbc.intiatorState);
+        hbc.HumanBossAttackInitiater();
 
         if (clone.s1 != null)
         {

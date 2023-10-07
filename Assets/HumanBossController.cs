@@ -324,6 +324,36 @@ public class HumanBossController : MonoBehaviour
         canInstantiate = true;
     }
 
+    public void HumanBossAttackInitiater()
+    {
+        if (isAttackingShort == false && isAttackingMedium == false)
+        {
+
+            //boss.timeBtwAttack ı mı silsek ?
+            Deb.ug("İnitiating Attack");
+            if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
+            {
+                SwitchState(mediumState);
+                Debug.Log("medium attack");
+            }
+            else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && timeBtw_longAttack <= 0 && canInstantiate == true)
+            {
+                SwitchState(longState);
+                Debug.Log("long attack");
+            }
+            else if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
+            {
+                SwitchState(meleeState);
+                Debug.Log("melee attack");
+            }
+            else if (isAttackingMedium == false && isAttackingShort == false)
+            {
+                SwitchState(runningState);
+            }
+        }
+
+    }
+
 }
 
 
@@ -344,27 +374,7 @@ public class HumanBossAttackInitiater : HumanBossBaseState
     public override void EnterState(HumanBossController boss)
     {
 
-        //boss.timeBtwAttack ı mı silsek ?
-        Deb.ug("İnitiating Attack");
-        if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.mediumRange && boss.timeBtw_midAttack <= 0 && boss.isAttackingShort == false)
-        {
-            boss.SwitchState(boss.mediumState);
-            Debug.Log("medium attack");
-        }
-        else if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.longRange && boss.timeBtw_longAttack <= 0 && boss.canInstantiate == true)
-        {
-            boss.SwitchState(boss.longState);
-            Debug.Log("long attack");
-        }
-        else if (Vector3.Distance(boss.transform.position, boss.character.transform.position) <= boss.meleeRange && boss.timeBtw_shortAttack <= 0 && boss.isAttackingMedium == false)
-        {
-            boss.SwitchState(boss.meleeState);
-            Debug.Log("melee attack");
-        }
-        else if (boss.isAttackingMedium == false && boss.isAttackingShort == false)
-        {
-            boss.SwitchState(boss.runningState);
-        }
+
     }
 
     public override void UpdateState(HumanBossController boss)
@@ -503,12 +513,12 @@ public class HumanBossMeleeState : HumanBossBaseState
 public class HumanBossMediumState : HumanBossBaseState
 {
     private int currentPart = 1;  // Keep track of the current part of the attack
-    private float delayBetweenFires = 0f;  // The delay between each fire instantiation
+    private float delayBetweenFires = 1f;  // The delay between each fire instantiation
     private float fireDuration = 2f;  // The duration of each fire effect
     private float fireLength = 2.5f; // ateşin oyuncudan uzaklığı.
 
     private float timer = 0f;  // Timer to track the delay between fires
-
+    private readonly object stateLock = new object();
     public override void EnterState(HumanBossController boss)
     {
         // Reset the current part to 1 when entering the state
@@ -519,16 +529,6 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void UpdateState(HumanBossController boss)
     {
-        // Check if the boss has completed all three parts of the attack
-        if (currentPart > 3)
-        {
-            // Transition to a different state or perform any other actions
-            // after completing the attack
-            boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-
-            boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
-            return;
-        }
 
         // Increment the timer
         timer += Time.deltaTime;
@@ -536,36 +536,50 @@ public class HumanBossMediumState : HumanBossBaseState
         // Check if the delay between fires has passed
         if (timer >= delayBetweenFires && boss.character != null)
         {
-            Debug.Log("firing inside ");
-            timer = 0f;  // Reset the timer
-            // Perform the appropriate action for the current part of the attack
-            switch (currentPart)
+            lock (stateLock)
             {
-                case 1:
-                    // Perform the second part of the attack
-                    // e.g., play animation, apply damage, etc
-                    Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
-                    Debug.Log("player direction1 " + playerDirection1);
-                    CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
-                    break;
 
-                case 2:
-                    // Perform the third part of the attack
-                    // e.g., play animation, apply damage, etc.
-                    Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                    CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
-                    break;
+                Debug.Log("firing inside ");
+                timer = 0f;  // Reset the timer
+                             // Perform the appropriate action for the current part of the attack
+                switch (currentPart)
+                {
+                    case 1:
+                        // Perform the second part of the attack
+                        // e.g., play animation, apply damage, etc
+                        Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                        Debug.Log("player direction1 " + playerDirection1);
+                        CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
+                        break;
 
-                case 3:
-                    // Perform the third part of the attack
-                    // e.g., play animation, apply damage, etc.
-                    Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                    CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
-                    break;
+                    case 2:
+                        // Perform the third part of the attack
+                        // e.g., play animation, apply damage, etc.
+                        Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                        CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
+                        break;
+
+                    case 3:
+                        // Perform the third part of the attack
+                        // e.g., play animation, apply damage, etc.
+                        Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                        CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
+                        break;
+                }
+
+                // Increase the current part for the next update
+                currentPart++;
+                // Check if the boss has completed all three parts of the attack
+                if (currentPart > 3)
+                {
+                    // Transition to a different state or perform any other actions
+                    // after completing the attack
+                    boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+
+                    boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
+                    return;
+                }
             }
-
-            // Increase the current part for the next update
-            currentPart++;
         }
     }
 
