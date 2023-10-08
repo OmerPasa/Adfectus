@@ -3904,7 +3904,6 @@ MonoBehaviour:
   eyeRay: {fileID: 888653462}
   midRay: {fileID: 390291390}
   groundCheck: {fileID: 2098037377}
-  bullet: {fileID: 0}
   rg2d: {fileID: 2003122447}
   attackPos: {fileID: 1997780731}
   whatIsEnemies:
@@ -3915,12 +3914,11 @@ MonoBehaviour:
   meleeRange: 5.6
   mediumRange: 11.8
   longRange: 27.3
-  closeAttackTime: 0.24
   bulletRange: 2.14
   pushForce: 1.6
   pushDistance: 3
   maxMovementSpeed: 6
-  bulletTime: 0.4
+  bulletTime: 0
   movementSpeed: 2
   jumpPower: 10
   jumpTime: 1

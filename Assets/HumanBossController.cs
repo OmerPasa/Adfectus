@@ -11,7 +11,6 @@ public class HumanBossController : MonoBehaviour
     public Transform eyeRay;
     public Transform midRay;
     public Transform groundCheck;
-    public GameObject bullet;
     public Rigidbody2D rg2d;
     public Transform attackPos;
     public LayerMask whatIsEnemies;
@@ -31,7 +30,6 @@ public class HumanBossController : MonoBehaviour
 
     [Range(0f, 50f)]
     public float longRange;
-    public float closeAttackTime;
     [Range(0f, 10f)]
     public float bulletRange;
     [Range(0f, 10f)]
@@ -45,8 +43,6 @@ public class HumanBossController : MonoBehaviour
     #endregion
 
     #region variables
-    float closeATime2 = 0;
-    float bulletTime2 = 0;
     float jumpTime2 = 0;
     float distance = 1;
     public float damageDelay;
@@ -73,7 +69,6 @@ public class HumanBossController : MonoBehaviour
     public HumanBossMeleeState meleeState = new HumanBossMeleeState();
     public HumanBossMediumState mediumState = new HumanBossMediumState();
     public HumanBossLongState longState = new HumanBossLongState();
-    public HumanBossAttackInitiater intiatorState = new HumanBossAttackInitiater();
     #endregion
 
     #region Animations
@@ -99,7 +94,7 @@ public class HumanBossController : MonoBehaviour
     {
         damage = PlayerPrefs.GetFloat("damageToPlayer");
         // starting state for the state machine
-        currentState = intiatorState;
+        currentState = runningState;
         // "this" is a reference to the context (this EXACT Monobehavior script)
         currentState.EnterState(this);
         animator = GetComponent<Animator>();
@@ -228,10 +223,6 @@ public class HumanBossController : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, longRange);
 
-        // Draw bullet range sphere
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, bulletRange);
-
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -248,8 +239,8 @@ public class HumanBossController : MonoBehaviour
         {
             isDying = true;
             ChangeAnimationState(ENEMY_DEATH);
-            Debug.Log("MOLE_DIED");
-            Invoke("Die", 0.9f);
+            Debug.Log("HumanBoss1 DİED");
+            Invoke(nameof(Die), 0.9f);
         }
     }
     void DamageDelayComplete()
@@ -281,16 +272,6 @@ public class HumanBossController : MonoBehaviour
         }
     }
 
-    void closeAttack()
-    {
-        //gettingDamage
-        //animation
-        if (closeAttackTime - (Time.realtimeSinceStartup - closeATime2) <= 0)
-        {
-            Debug.Log("hit");
-            closeATime2 = Time.realtimeSinceStartup;
-        }
-    }
 
     void OnTriggerExit2D(Collider2D temas)
     {
@@ -368,24 +349,6 @@ public abstract class HumanBossBaseState
     public abstract void EnterState(HumanBossController boss);
     public abstract void UpdateState(HumanBossController boss);
     public abstract void OnCollisionEnter(HumanBossController boss, Collision2D collision);
-}
-
-public class HumanBossAttackInitiater : HumanBossBaseState
-{
-    public override void EnterState(HumanBossController boss)
-    {
-
-
-    }
-
-    public override void UpdateState(HumanBossController boss)
-    {
-
-    }
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
-    {
-
-    }
 }
 
 public class HumanBossRunState : HumanBossBaseState
