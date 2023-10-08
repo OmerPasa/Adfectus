@@ -593,7 +593,7 @@ public class HumanBossLongState : HumanBossBaseState
     public override void EnterState(HumanBossController boss)
     {
         Deb.ug("Laser Enter state");
-        boss.timeBtw_longAttack = 6f;
+        boss.timeBtw_longAttack = boss.startTimeBtw_longAttack;
         boss.canInstantiate = true;
         boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
         distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
