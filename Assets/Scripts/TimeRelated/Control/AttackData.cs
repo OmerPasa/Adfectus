@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TarodevController;
+using UnityEngine.SceneManagement;
 public class AttackData
 {
     static string[] prefabPaths = { "Prefabs/Null",
@@ -67,10 +68,17 @@ public class AttackData
 
         int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
-        HumanBossController_Damat hbc = LoopData.boss.GetComponent<HumanBossController_Damat>();
-        hbc.HumanBossAttackInitiater();
-        HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
-        hbc_D.HumanBossAttackInitiater();
+
+        if (SceneManager.GetActiveScene().name == "BossDamat")
+        {
+            HumanBossController_Damat hbc = LoopData.boss.GetComponent<HumanBossController_Damat>();
+            hbc.HumanBossAttackInitiater();
+        }
+        else if (SceneManager.GetActiveScene().name == "BossKeko")
+        {
+            HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
+            hbc_D.HumanBossAttackInitiater();
+        }
         PlayerController pc = LoopData.boss.GetComponent<PlayerController>();
         pc.BeatPress();
         if (clone.s1 != null)
