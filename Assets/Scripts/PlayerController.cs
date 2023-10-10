@@ -53,12 +53,18 @@ namespace TarodevController
         private bool wasGrounded;
         public bool _hasDashed;
         private bool isAttacking;
-        public float dashSpeed;
-        private float dashTime;
-        public float startDashTime;
+        public bool isFacingLeft;
+        private bool CanAttack;
         private int direction;
         public int damageBoss = 1;
-        public bool isFacingLeft;
+
+        public int missedBeatPenalty;
+        public int maxScore;
+        public int playerScore;
+
+        public float startDashTime;
+        private float dashTime;
+        public float dashSpeed;
         public float pushForce = 15f;
         private InputManager inputManager;
 
@@ -98,8 +104,12 @@ namespace TarodevController
         public float leftRay;
         public float movementSpeed = 0.1f;
         public float offsetSpeed = 0.5f;
-
         private float offset = 0f;
+
+        public TimingWindow timingWindow; // Assign this in the Unity Inspector
+
+        private float beatTimestamp; // Store the timestamp of the beat
+
 
         [SerializeField]
         public static float Playerhealth = 1;
@@ -191,6 +201,7 @@ namespace TarodevController
             {
                 virtualCamera.gameObject.SetActive(false);
             }
+
         }
         #region Gather Input
         private void GatherInput()
@@ -245,6 +256,50 @@ namespace TarodevController
             Debug.Log("Attacking");
             isAttacking = true;
         }
+        public void BeatPress()
+        {
+            CanAttack = true;
+            beatTimestamp = Time.time;
+        }
+
+        void CheckTiming()
+        {
+            float timingDifference = Mathf.Abs(beatTimestamp - timingWindow.perfectTiming);
+            float accuracy = 1.0f - (timingDifference / (timingWindow.windowSize / 2f));
+
+            // Ensure that accuracy is clamped between 0 and 1
+            accuracy = Mathf.Clamp01(accuracy);
+
+            // Calculate the score based on accuracy (you can define your scoring system)
+            int score = Mathf.RoundToInt(accuracy * maxScore);
+
+            if (timingWindow.IsTimingPerfect(beatTimestamp))
+            {
+                // The player's attack timing was within the timing window (on beat)
+                Debug.Log("Perfect Timing for Attack!");
+            }
+            else
+            {
+                // The player's attack timing was outside the timing window (missed beat)
+                Debug.Log("Missed Beat for Attack");
+                // Apply a penalty to the score for missing the beat
+                score -= missedBeatPenalty;
+            }
+
+            // Handle scoring and game logic using the 'score' variable
+            UpdateScore(score);
+        }
+
+        void UpdateScore(int score)
+        {
+            // Update the player's score and display it
+            playerScore += score;
+            Debug.Log("Score: " + playerScore);
+
+            // You can update the UI to display the player's score
+            // Example: scoreText.text = "Score: " + playerScore;
+        }
+
         #endregion
 
         #region Flip
@@ -260,7 +315,7 @@ namespace TarodevController
         #region Collisions
 
 
-        [Header("COLLISION")][SerializeField] private Bounds _characterBounds;
+        [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
 
 
         private void OnTriggerEnter2D(Collider2D laser)
@@ -273,18 +328,14 @@ namespace TarodevController
             }
         }
 
-
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;
-        [SerializeField][Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
+        [SerializeField] [Range(0.1f, 0.3f)] private float _rayBuffer = 0.1f; // Prevents side detectors hitting the ground
 
         private RayRange _raysUp, _raysRight, _raysDown, _raysLeft;
         private bool _colUp, _colRight, _colDown, _colLeft;
-
         private float _timeLeftGrounded;
-
-
         RaycastHit2D hitL;
         RaycastHit2D hitR;
 
@@ -351,7 +402,7 @@ namespace TarodevController
 
             Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
 
-            if (isAttacking)
+            if (isAttacking && CanAttack)
             {
                 if (enemiesInRange.Length >= 1)
                 {
@@ -432,7 +483,7 @@ namespace TarodevController
 
         #region Walk
 
-        [Header("WALKING")][SerializeField] private float _acceleration = 90;
+        [Header("WALKING")] [SerializeField] private float _acceleration = 90;
         [SerializeField] private float _moveClamp = 13;
         [SerializeField] private float _deAcceleration = 60f;
         [SerializeField] private float _apexBonus = 2;
@@ -479,7 +530,7 @@ namespace TarodevController
 
         #region Gravity
 
-        [Header("GRAVITY")][SerializeField] private float _fallClamp = -40f;
+        [Header("GRAVITY")] [SerializeField] private float _fallClamp = -40f;
         [SerializeField] private float _minFallSpeed = 80f;
         [SerializeField] private float _maxFallSpeed = 120f;
         private float _fallSpeed;
@@ -508,7 +559,7 @@ namespace TarodevController
 
         #region Jump
 
-        [Header("JUMPING")][SerializeField] private float _jumpHeight = 30;
+        [Header("JUMPING")] [SerializeField] private float _jumpHeight = 30;
         [SerializeField] private float _jumpApexThreshold = 10f;
         [SerializeField] private float _coyoteTimeThreshold = 0.1f;
         [SerializeField] private float _jumpBuffer = 0.1f;
@@ -784,8 +835,9 @@ namespace TarodevController
         void AttackComplete()
         {
             isAttacking = false;
+            CanAttack = false;
             RangeImage.color = new Color(0, 0, 0, 0);
-            //Debug.Log("ATTACKCOMPLETEPlayer");
+            Debug.Log("ATTACKCOMPLETEPlayer");
         }
         void dashRecovery()
         {
@@ -805,6 +857,18 @@ namespace TarodevController
 
             animator.Play(newAnimation);
             currentAnimaton = newAnimation;
+        }
+    }
+
+    public class TimingWindow
+    {
+        public float perfectTiming;  // The perfect timing for the action (e.g., the beat)
+        public float windowSize;     // The size of the timing window in seconds
+
+        public bool IsTimingPerfect(float actualTiming)
+        {
+            // Check if the actual timing falls within the timing window
+            return Mathf.Abs(actualTiming - perfectTiming) <= windowSize / 2f;
         }
     }
 }
