@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-
+using TarodevController;
 public class AttackData
 {
     static string[] prefabPaths = { "Prefabs/Null",
@@ -67,9 +67,12 @@ public class AttackData
 
         int[] wAndQ = Duration.durToTime(counter_Q);
         AttackData clone = new AttackData(this, new Duration(wAndQ[0], wAndQ[1], duration.duration));
-        HumanBossController hbc = LoopData.boss.GetComponent<HumanBossController>();
+        HumanBossController_Damat hbc = LoopData.boss.GetComponent<HumanBossController_Damat>();
         hbc.HumanBossAttackInitiater();
-
+        HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
+        hbc_D.HumanBossAttackInitiater();
+        PlayerController pc = LoopData.boss.GetComponent<PlayerController>();
+        pc.BeatPress();
         if (clone.s1 != null)
         {
             stateSenderForHumanBossController(clone);
@@ -118,7 +121,7 @@ public class AttackData
     void stateSenderForHumanBossController(AttackData clone)
     {
         //LoopData.boss.GetComponent<Attack>().data = clone;
-        LoopData.boss.GetComponent<HumanBossController>().SwitchState(clone.s1);
+        LoopData.boss.GetComponent<HumanBossController_Damat>().SwitchState(clone.s1);
     }
 
     void denemekIcinKod(AttackData clone)

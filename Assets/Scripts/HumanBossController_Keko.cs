@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TarodevController;
 
-public class HumanBossController : MonoBehaviour
+public class HumanBossController_Keko : MonoBehaviour
 {
     #region outside_connections
     public GameObject gM;
@@ -64,11 +64,11 @@ public class HumanBossController : MonoBehaviour
     #endregion
 
     #region State_Machine States
-    public HumanBossBaseState currentState;
-    public HumanBossRunState runningState = new HumanBossRunState();
-    public HumanBossMeleeState meleeState = new HumanBossMeleeState();
-    public HumanBossMediumState mediumState = new HumanBossMediumState();
-    public HumanBossLongState longState = new HumanBossLongState();
+    public HumanBoss2BaseState currentState;
+    public HumanBoss2RunState runningState = new HumanBoss2RunState();
+    public HumanBoss2MeleeState meleeState = new HumanBoss2MeleeState();
+    public HumanBoss2MediumState mediumState = new HumanBoss2MediumState();
+    public HumanBoss2LongState longState = new HumanBoss2LongState();
     #endregion
 
     #region Animations
@@ -239,7 +239,7 @@ public class HumanBossController : MonoBehaviour
         {
             isDying = true;
             ChangeAnimationState(ENEMY_DEATH);
-            Debug.Log("HumanBoss1 DÄ°ED");
+            Debug.Log("HumanBoss1 DÝED");
             Invoke(nameof(Die), 0.9f);
         }
     }
@@ -262,7 +262,7 @@ public class HumanBossController : MonoBehaviour
     }
     public void Jump()
     {
-        Debug.Log("AI_JUMPÄ°NG");
+        Debug.Log("AI_JUMPÝNG");
         if (jumpTime - (Time.realtimeSinceStartup - jumpTime2) <= 0)
         {
             jumpTime2 = Time.realtimeSinceStartup;
@@ -281,7 +281,7 @@ public class HumanBossController : MonoBehaviour
         }
     }
 
-    public void SwitchState(HumanBossBaseState state)
+    public void SwitchState(HumanBoss2BaseState state)
     {
         currentState = state;
         state.EnterState(this);
@@ -311,8 +311,8 @@ public class HumanBossController : MonoBehaviour
         if (isAttackingShort == false && isAttackingMedium == false)
         {
 
-            //boss.timeBtwAttack Ä± mÄ± silsek ?
-            Deb.ug("Ä°nitiating Attack");
+            //boss.timeBtwAttack ý mý silsek ?
+            Deb.ug("Ýnitiating Attack");
             if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
             {
                 SwitchState(mediumState);
@@ -342,23 +342,23 @@ public class HumanBossController : MonoBehaviour
 
 
 
-public abstract class HumanBossBaseState
+public abstract class HumanBoss2BaseState
 {
     //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
 
-    public abstract void EnterState(HumanBossController boss);
-    public abstract void UpdateState(HumanBossController boss);
-    public abstract void OnCollisionEnter(HumanBossController boss, Collision2D collision);
+    public abstract void EnterState(HumanBossController_Keko boss);
+    public abstract void UpdateState(HumanBossController_Keko boss);
+    public abstract void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision);
 }
 
-public class HumanBossRunState : HumanBossBaseState
+public class HumanBoss2RunState : HumanBoss2BaseState
 {
-    public override void EnterState(HumanBossController boss)
+    public override void EnterState(HumanBossController_Keko boss)
     {
         Debug.Log("Boss2 run state entered");
     }
 
-    public override void UpdateState(HumanBossController boss)
+    public override void UpdateState(HumanBossController_Keko boss)
     {
         //Debug.Log("Boss2 run state updating");
         if (boss.character != null)
@@ -399,19 +399,19 @@ public class HumanBossRunState : HumanBossBaseState
             //Boss.SwitchState(Boss.HumanBossMeleeState); // tthis will switch states!
         }
     }
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    public override void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision)
     {
 
     }
 }
 
-public class HumanBossMeleeState : HumanBossBaseState
+public class HumanBoss2MeleeState : HumanBoss2BaseState
 {
     float maxChargeDistance;
     float chargeDistance;
     Vector2 playerPosition;
     Vector2 bossPosition;
-    public override void EnterState(HumanBossController boss)
+    public override void EnterState(HumanBossController_Keko boss)
     {
         Debug.Log("Boss2 melee state started");
         boss.isAttackingShort = true;
@@ -430,7 +430,7 @@ public class HumanBossMeleeState : HumanBossBaseState
 
     }
 
-    public override void UpdateState(HumanBossController boss)
+    public override void UpdateState(HumanBossController_Keko boss)
     {
         Deb.ug("Boss2 melee state updating");// we could implement a check for players new position if its differs from the enter state we misseed so we call attack ended
         playerPosition = boss.character.transform.position;
@@ -445,7 +445,7 @@ public class HumanBossMeleeState : HumanBossBaseState
             boss.Invoke(nameof(boss.AttackCompleteShort), boss.damageDelay);
         }
     }
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    public override void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision)
     {
         Deb.ug("Boss2 melee Collision happaned");
 
@@ -495,16 +495,16 @@ public class HumanBossMeleeState : HumanBossBaseState
     }
 }
 
-public class HumanBossMediumState : HumanBossBaseState
+public class HumanBoss2MediumState : HumanBoss2BaseState
 {
     private int currentPart = 1;  // Keep track of the current part of the attack
     private float delayBetweenFires = 1f;  // The delay between each fire instantiation
     private float fireDuration = 2f;  // The duration of each fire effect
-    private float fireLength = 2.5f; // ateÅŸin oyuncudan uzaklÄ±ÄŸÄ±.
+    private float fireLength = 2.5f; // ateþin oyuncudan uzaklýðý.
 
     private float timer = 0f;  // Timer to track the delay between fires
     private readonly object stateLock = new object();
-    public override void EnterState(HumanBossController boss)
+    public override void EnterState(HumanBossController_Keko boss)
     {
         // Reset the current part to 1 when entering the state
 
@@ -512,7 +512,7 @@ public class HumanBossMediumState : HumanBossBaseState
         boss.isAttackingMedium = true;
     }
 
-    public override void UpdateState(HumanBossController boss)
+    public override void UpdateState(HumanBossController_Keko boss)
     {
 
         // Increment the timer
@@ -568,7 +568,7 @@ public class HumanBossMediumState : HumanBossBaseState
         }
     }
 
-    private void CreateFire(Vector3 position, HumanBossController boss)
+    private void CreateFire(Vector3 position, HumanBossController_Keko boss)
     {
         // Instantiate the fire effect at the specified position
         GameObject fire = GameObject.Instantiate(boss.fireObject, position, Quaternion.identity);
@@ -578,7 +578,7 @@ public class HumanBossMediumState : HumanBossBaseState
         boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
     }
 
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    public override void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision)
     {
         // Handle collision events during the attack if necessary
         // This method will be called when the boss collides with something
@@ -587,15 +587,15 @@ public class HumanBossMediumState : HumanBossBaseState
 
 }
 
-public class HumanBossLongState : HumanBossBaseState
+public class HumanBoss2LongState : HumanBoss2BaseState
 {
     public Vector3 distance_lasertoplayer;
-    public override void EnterState(HumanBossController boss)
+    public override void EnterState(HumanBossController_Keko boss)
     {
         Deb.ug("Laser Enter state");
         boss.timeBtw_longAttack = boss.startTimeBtw_longAttack;
         boss.canInstantiate = true;
-        boss.ChangeAnimationState(HumanBossController.ENEMY_ATTACK3);
+        boss.ChangeAnimationState(HumanBossController_Keko.ENEMY_ATTACK3);
         distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
 
 
@@ -612,12 +612,12 @@ public class HumanBossLongState : HumanBossBaseState
         boss.canInstantiate = false;
         boss.SwitchState(boss.runningState);
     }
-    public override void UpdateState(HumanBossController boss)
+    public override void UpdateState(HumanBossController_Keko boss)
     {
         Deb.ug("Laser Update state");
 
     }
-    public override void OnCollisionEnter(HumanBossController boss, Collision2D collision)
+    public override void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision)
     {
     }
 }
