@@ -80,7 +80,11 @@ public class AttackData
             hbc_D.HumanBossAttackInitiater();
         }
         PlayerController pc = LoopData.boss.GetComponent<PlayerController>();
-        pc.BeatPress();
+
+        if (pc != null)
+        {
+            pc.BeatPress();
+        }
         if (clone.s1 != null)
         {
             stateSenderForHumanBossController(clone);
