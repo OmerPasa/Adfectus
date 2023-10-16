@@ -44,13 +44,17 @@ public class HumanBossController_Keko : MonoBehaviour
     #endregion
 
     #region variables
+    private Material lineMaterial;
+    private Color initialColor;
+    private float startTime;
+    public Vector3 teleportPosition;
+    public int health = 4;
+    public int Count;
     float jumpTime2 = 0;
     float distance = 1;
     public float damageDelay;
-    public int health = 4;
     public float damage;
-    int Count;
-    public Vector3 teleportPosition;
+    public float lineDuration;
     [SerializeField] public float timeBtw_shortAttack;
     [SerializeField] public float startTimeBtw_shortAttack;
     [SerializeField] public float timeBtw_midAttack;
@@ -314,19 +318,47 @@ public class HumanBossController_Keko : MonoBehaviour
         float direction = Mathf.Sign(character.transform.position.x - transform.position.x);
         Vector3 playerPosition = character.transform.position;
         teleportPosition.x = playerPosition.x + direction * 2.0f; // Adjust the distance as needed
+        teleportPosition.y = transform.position.y;
 
         Debug.Log(playerPosition);
         Debug.Log(teleportPosition);
-        // Teleport the boss to the calculated position
-        transform.position = teleportPosition;
+        // Store the Line Renderer's material and initial color
+        lineMaterial = teleportLineRenderer.material;
+        initialColor = lineMaterial.color;
+
+        // Start the timer
+        startTime = Time.time;
 
         // Draw a line from the boss's current position to the teleportation destination
         teleportLineRenderer.positionCount = 2;
         teleportLineRenderer.SetPosition(0, transform.position);
         teleportLineRenderer.SetPosition(1, teleportPosition);
-        AttackCompleteShort();// geçiçi sistem oturunca sil!!
+        // Teleport the boss to the calculated position
+        transform.position = teleportPosition;
+        StartCoroutine(HideTeleportLine());
     }
 
+    // Coroutine to hide the teleport line after a duration
+    private IEnumerator HideTeleportLine()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < lineDuration)
+        {
+            float lerpValue = elapsedTime / lineDuration;
+            Color newColor = Color.Lerp(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), lerpValue);
+            lineMaterial.color = newColor;
+
+            elapsedTime = Time.time - startTime;
+            yield return null;
+        }
+
+        AttackCompleteShort();// geçiçi sistem oturunca sil!!
+        teleportLineRenderer.positionCount = 0; // Hide the line completely
+        // Set the Line Renderer's color back to normal
+        lineMaterial.color = initialColor;
+
+    }
     public void HumanBossAttackInitiater()
     {
         if (isAttackingShort == false && isAttackingMedium == false)
