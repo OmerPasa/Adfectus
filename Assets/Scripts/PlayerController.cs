@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using Cinemachine;
+using UnityEditor;
 
 namespace TarodevController
 {
@@ -29,6 +30,9 @@ namespace TarodevController
         [SerializeField] private BoxCollider2D playerCollider;
         [SerializeField] private BoxCollider2D bCol2d;
         [SerializeField] public Collider2D col2DHit = null;
+        HumanBossController_Keko boss = new HumanBossController_Keko();
+
+
         public float attackRange;
         public Transform attackPos;
 
@@ -325,6 +329,13 @@ namespace TarodevController
                 PlayerTakeDamage(damageToPlayer);
                 Debug.Log("amount of damage " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
+            }
+            else if (laser.gameObject.tag == "Keko_Shortattack")
+            {
+                PlayerTakeDamage(damageToPlayer);
+                Debug.Log("amount of damage " + damageToPlayer);
+                Debug.Log("DamageTaken by Player");
+                boss.IncreaseShortAttackLines();
             }
         }
 

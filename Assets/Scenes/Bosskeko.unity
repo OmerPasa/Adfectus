@@ -1721,7 +1721,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104693923}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.03, y: -1.738, z: -10}
+  m_LocalPosition: {x: -3.1, y: -0.6200005, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2479,7 +2479,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1453835943}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -3561,7 +3561,7 @@ MonoBehaviour:
   Count: 0
   damageDelay: 2
   damage: 3
-  lineDuration: 2
+  lineDuration: 5.09
   timeBtw_shortAttack: 2.51
   startTimeBtw_shortAttack: 2.52
   timeBtw_midAttack: 3

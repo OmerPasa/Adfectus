@@ -16,7 +16,11 @@ public class HumanBossController_Keko : MonoBehaviour
     public LayerMask whatIsEnemies;
     public GameObject fireObject;
     public LineRenderer teleportLineRenderer; // Assign the Line Renderer component in the inspector
+
     public Collider2D lineRendererCollisionObject;
+    public Collider2D lineRendererCollisionObject2;
+    public Collider2D lineRendererCollisionObject3;
+
 
     #endregion
 
@@ -50,7 +54,7 @@ public class HumanBossController_Keko : MonoBehaviour
     private float startTime;
     public Vector3 teleportPosition;
     public int health = 4;
-    public int Count;
+    public int Shortattackhitcount = 1;
     float jumpTime2 = 0;
     float distance = 1;
     public float damageDelay;
@@ -312,7 +316,10 @@ public class HumanBossController_Keko : MonoBehaviour
         isAttackingLong = false;
         canInstantiate = true;
     }
-
+    public void IncreaseShortAttackLines()
+    {
+        Shortattackhitcount++;
+    }
     public void TeleportBehindPlayer()
     {
         // Calculate the direction towards the player
@@ -335,21 +342,26 @@ public class HumanBossController_Keko : MonoBehaviour
         teleportLineRenderer.SetPosition(1, teleportPosition);
         // Teleport the boss to the calculated position
         transform.position = teleportPosition;
+
+
         GenerateCollider();
+
+
     }
 
     //generating mesh collider for line renderer
     public void GenerateCollider()
     {
+
         //MeshCollider collider = transform.Find("LineRenderer").gameObject.GetComponent<MeshCollider>();
         BoxCollider2D collider = lineRendererCollisionObject.GetComponent<BoxCollider2D>();
+        collider.enabled = false;
         if (collider == null)
         {
             //collider = transform.Find("LineRenderer").gameObject.AddComponent<MeshCollider>();
             collider = lineRendererCollisionObject.GetComponent<BoxCollider2D>();
         }
 
-        collider.enabled = true;
 
         if (teleportLineRenderer.enabled)
         {
@@ -384,14 +396,22 @@ public class HumanBossController_Keko : MonoBehaviour
             elapsedTime = Time.time - startTime;
             yield return null;
         }
+
+        lineRendererCollisionObject.GetComponent<BoxCollider2D>().enabled = true;
+        collider.enabled = true;
+        if (collider.enabled != true)
+        {
+        }
+        lineMaterial.color = Color.red;
+
         collider.enabled = false;
+
         collider.offset = Vector2.zero;
         collider.transform.position = Vector3.zero;
         AttackCompleteShort();// geçiçi sistem oturunca sil!!
         teleportLineRenderer.positionCount = 0; // Hide the line completely
                                                 // Set the Line Renderer's color back to normal
         lineMaterial.color = initialColor;
-
     }
     public void HumanBossAttackInitiater()
     {
@@ -506,7 +526,6 @@ public class HumanBoss2MeleeState : HumanBoss2BaseState
         boss.isAttackingShort = true;
         maxChargeDistance = 5.5f;
 
-
         // Set the boss's movement speed 
         boss.movementSpeed = 0f;
 
@@ -544,7 +563,7 @@ public class HumanBoss2MeleeState : HumanBoss2BaseState
 
             if (playerController != null)
             {
-                playerController.PlayerTakeDamage(boss.damage); // is not getting called
+                playerController.PlayerTakeDamage(boss.damage);
                 boss.timeBtw_shortAttack = boss.startTimeBtw_shortAttack;
                 boss.SwitchState(boss.runningState);
 
