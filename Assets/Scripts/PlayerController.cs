@@ -328,6 +328,7 @@ namespace TarodevController
             }
         }
 
+
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
         [SerializeField] private float _detectionRayLength = 0.1f;

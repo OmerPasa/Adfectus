@@ -16,6 +16,7 @@ public class HumanBossController_Keko : MonoBehaviour
     public LayerMask whatIsEnemies;
     public GameObject fireObject;
     public LineRenderer teleportLineRenderer; // Assign the Line Renderer component in the inspector
+    public Collider2D lineRendererCollisionObject;
 
     #endregion
 
@@ -320,8 +321,7 @@ public class HumanBossController_Keko : MonoBehaviour
         teleportPosition.x = playerPosition.x + direction * 2.0f; // Adjust the distance as needed
         teleportPosition.y = transform.position.y;
 
-        Debug.Log(playerPosition);
-        Debug.Log(teleportPosition);
+
         // Store the Line Renderer's material and initial color
         lineMaterial = teleportLineRenderer.material;
         initialColor = lineMaterial.color;
@@ -335,11 +335,43 @@ public class HumanBossController_Keko : MonoBehaviour
         teleportLineRenderer.SetPosition(1, teleportPosition);
         // Teleport the boss to the calculated position
         transform.position = teleportPosition;
-        StartCoroutine(HideTeleportLine());
+        GenerateCollider();
     }
 
-    // Coroutine to hide the teleport line after a duration
-    private IEnumerator HideTeleportLine()
+    //generating mesh collider for line renderer
+    public void GenerateCollider()
+    {
+        //MeshCollider collider = transform.Find("LineRenderer").gameObject.GetComponent<MeshCollider>();
+        BoxCollider2D collider = lineRendererCollisionObject.GetComponent<BoxCollider2D>();
+        if (collider == null)
+        {
+            //collider = transform.Find("LineRenderer").gameObject.AddComponent<MeshCollider>();
+            collider = lineRendererCollisionObject.GetComponent<BoxCollider2D>();
+        }
+
+        collider.enabled = true;
+
+        if (teleportLineRenderer.enabled)
+        {
+            // Set the BoxCollider2D position to match the LineRenderer
+            lineRendererCollisionObject.transform.position = teleportLineRenderer.transform.position;
+
+            // Calculate the center position and size based on LineRenderer's start and end points
+            Vector3 startPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(0));
+            Vector3 endPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1));
+            Vector3 center = (startPosition + endPosition) / 2f;
+            float sizeX = Vector3.Distance(startPosition, endPosition);
+            float sizeY = teleportLineRenderer.endWidth; // Set to your LineRenderer's width
+
+            // Update BoxCollider2D's position and size
+            collider.transform.position = center;
+            collider.size = new Vector2(sizeX, sizeY);
+        }
+
+        StartCoroutine(HideTeleportLine(collider));
+        // Coroutine to hide the teleport line after a duration
+    }
+    private IEnumerator HideTeleportLine(Collider2D collider)
     {
         float elapsedTime = 0f;
 
@@ -352,10 +384,12 @@ public class HumanBossController_Keko : MonoBehaviour
             elapsedTime = Time.time - startTime;
             yield return null;
         }
-
+        collider.enabled = false;
+        collider.offset = Vector2.zero;
+        collider.transform.position = Vector3.zero;
         AttackCompleteShort();// geçiçi sistem oturunca sil!!
         teleportLineRenderer.positionCount = 0; // Hide the line completely
-        // Set the Line Renderer's color back to normal
+                                                // Set the Line Renderer's color back to normal
         lineMaterial.color = initialColor;
 
     }
