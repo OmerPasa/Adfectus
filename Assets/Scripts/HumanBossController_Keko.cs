@@ -60,6 +60,8 @@ public class HumanBossController_Keko : MonoBehaviour
     public float damageDelay;
     public float damage;
     public float lineDuration;
+    public float TeleportDistance;
+
     [SerializeField] public float timeBtw_shortAttack;
     [SerializeField] public float startTimeBtw_shortAttack;
     [SerializeField] public float timeBtw_midAttack;
@@ -321,23 +323,20 @@ public class HumanBossController_Keko : MonoBehaviour
     {
         Shortattackhitcount++;
     }
+    #region TeleportBehindPlayer-ShortAttack
     public void TeleportBehindPlayer()
     {
         CalculateTeleportPosition();
-
         StoreLineRendererProperties();
-
         DrawTeleportLine();
-
-        GenerateCollider();
-
+        UpdateCollider();
     }
 
     private void CalculateTeleportPosition()
     {
         float direction = Mathf.Sign(character.transform.position.x - transform.position.x);
         Vector3 playerPosition = character.transform.position;
-        teleportPosition.x = playerPosition.x + direction * 2.0f; // Adjust the distance as needed
+        teleportPosition.x = playerPosition.x + direction * TeleportDistance; // Use a constant or parameter
         teleportPosition.y = transform.position.y;
     }
 
@@ -356,8 +355,7 @@ public class HumanBossController_Keko : MonoBehaviour
         transform.position = teleportPosition;
     }
 
-
-    private void GenerateCollider()
+    private void UpdateCollider()
     {
         BoxCollider2D collider = lineRendererCollisionObject.GetComponent<BoxCollider2D>();
         collider.enabled = false;
@@ -381,28 +379,20 @@ public class HumanBossController_Keko : MonoBehaviour
         StartCoroutine(HideTeleportLine(collider));
     }
 
-
-    // Coroutine to hide the teleport line after a duration
-
     private IEnumerator HideTeleportLine(Collider2D collider)
     {
-        float elapsedTime = 0f;
         float firstLineDuration = lineDuration - 1f;
-        while (elapsedTime < firstLineDuration)
-        {
-            float lerpValue = elapsedTime / firstLineDuration;
-            Color newColor = Color.Lerp(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), lerpValue);
-            lineMaterial.color = newColor;
 
-            elapsedTime = Time.time - startTime;
-            yield return null;
-        }
+        // Extract color manipulation to a separate method
+        yield return ColorLerpOverTime(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), firstLineDuration, lineMaterial);
+
         Debug.Log("startafterhide");
 
         collider.enabled = true;
         lineMaterial.color = Color.red;
 
-        StartCoroutine(FadeOutOverTime(1f));
+        yield return ColorLerpOverTime(Color.red, new Color(lineMaterial.color.r, lineMaterial.color.g, lineMaterial.color.b, 0f), 1f, lineMaterial);
+
         yield return new WaitForSeconds(1f);
         // setting everything back.
         collider.offset = Vector2.zero;
@@ -411,11 +401,10 @@ public class HumanBossController_Keko : MonoBehaviour
         Debug.Log("AFter hide finish");
         // Set the Line Renderer's color back to normal
         lineMaterial.color = initialColor;
-        AttackCompleteShort(); // This gets called now
-
+        AttackCompleteShort();
     }
 
-    IEnumerator FadeOutOverTime(float duration)
+    private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
     {
         float elapsedTime = 0f;
         startTime = Time.time;
@@ -423,15 +412,14 @@ public class HumanBossController_Keko : MonoBehaviour
         while (elapsedTime < duration)
         {
             float lerpValue = elapsedTime / duration;
-            Color newColor = Color.Lerp(Color.red, new Color(Color.red.r, Color.red.g, Color.red.b, 0f), lerpValue);
-            lineMaterial.color = newColor;
+            Color newColor = Color.Lerp(startColor, endColor, lerpValue);
+            targetMaterial.color = newColor;
 
             elapsedTime = Time.time - startTime;
             yield return null;
         }
-
-        // Additional code after the fade if needed
     }
+    #endregion
     public void HumanBossAttackInitiater()
     {
         if (isAttackingShort == false && isAttackingMedium == false)
