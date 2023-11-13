@@ -387,30 +387,50 @@ public class HumanBossController_Keko : MonoBehaviour
     private IEnumerator HideTeleportLine(Collider2D collider)
     {
         float elapsedTime = 0f;
-
-        while (elapsedTime < lineDuration)
+        float firstLineDuration = lineDuration - 1f;
+        while (elapsedTime < firstLineDuration)
         {
-            float lerpValue = elapsedTime / lineDuration;
+            float lerpValue = elapsedTime / firstLineDuration;
             Color newColor = Color.Lerp(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), lerpValue);
             lineMaterial.color = newColor;
 
             elapsedTime = Time.time - startTime;
+            yield return null;
         }
-
-        // Now that the lerping part is complete, you can proceed
-        // with the remaining code
+        Debug.Log("startafterhide");
 
         collider.enabled = true;
         lineMaterial.color = Color.red;
+
+        StartCoroutine(FadeOutOverTime(1f));
+        yield return new WaitForSeconds(1f);
+        // setting everything back.
         collider.offset = Vector2.zero;
         collider.transform.position = Vector3.zero;
-        AttackCompleteShort(); // This gets called now
-
         teleportLineRenderer.positionCount = 0; // Hide the line completely
-
+        Debug.Log("AFter hide finish");
         // Set the Line Renderer's color back to normal
         lineMaterial.color = initialColor;
-        return null;
+        AttackCompleteShort(); // This gets called now
+
+    }
+
+    IEnumerator FadeOutOverTime(float duration)
+    {
+        float elapsedTime = 0f;
+        startTime = Time.time;
+
+        while (elapsedTime < duration)
+        {
+            float lerpValue = elapsedTime / duration;
+            Color newColor = Color.Lerp(Color.red, new Color(Color.red.r, Color.red.g, Color.red.b, 0f), lerpValue);
+            lineMaterial.color = newColor;
+
+            elapsedTime = Time.time - startTime;
+            yield return null;
+        }
+
+        // Additional code after the fade if needed
     }
     public void HumanBossAttackInitiater()
     {
