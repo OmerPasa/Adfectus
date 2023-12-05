@@ -35,11 +35,10 @@ public static class TimeB
             return;
         }
         timePassed += time;
-        W = (int)(timePassed / beatDuration); // *4
+        W = (int)(timePassed / beatDuration);
         Q = (int)(timePassed / quarterBeatDuration) % 4;
 
         CounterQ = W * 4 + Q; //(int)(timePassed / quarterBeatDuration);
-        Deb.ug("W: " + W + " Q: " + Q + " CounterQ: " + CounterQ);
     }
 
     public static bool isBeatReached(int bQC)

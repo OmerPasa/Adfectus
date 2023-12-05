@@ -67,7 +67,10 @@ public static class LoopData
         {
             //patternIndex, duration
             new int[,] {//copy of boss2 
-                { 19, 32 }
+                { 10, 8 },
+                { 10, 8 },
+                { 10, 8 },
+                { 10, 8 }
             },
         },
     };
@@ -293,40 +296,6 @@ public static class LoopData
             new AttackData(-5, 0, 0, 24),
             new AttackData(-3, 3, 0, 4),
             new AttackData(-4, 8, 0, 32),
-        },
-
-        //19
-        new AttackData[] { //boss 2 /9.12.2023
-            new AttackData(-9, 0, 0, 1),
-            new AttackData(-9, 2, 0, 1),
-            new AttackData(-9, 4, 0, 1),
-            new AttackData(-9, 6, 0, 1),
-            new AttackData(-9, 6, 2, 1),
-            new AttackData(-9, 7, 2, 1),
-            new AttackData(-9, 8, 0, 1),
-            new AttackData(-9, 8, 2, 1),
-            new AttackData(-9, 10, 0, 1),
-            new AttackData(-9, 12, 0, 1),
-            new AttackData(-9, 13, 0, 1),
-            new AttackData(-9, 14, 0, 1),
-            new AttackData(-9, 14, 2, 1),
-            new AttackData(-9, 15, 2, 1),
-            new AttackData(-9, 16, 0, 1),
-            new AttackData(-9, 16, 2, 1),
-            new AttackData(-9, 17, 2, 1),
-            new AttackData(-9, 18, 0, 1),
-            new AttackData(-9, 20, 0, 1),
-            new AttackData(-9, 22, 0, 1),
-            new AttackData(-9, 22, 2, 1),
-            new AttackData(-9, 23, 2, 1),
-            new AttackData(-9, 24, 0, 1),
-            new AttackData(-9, 26, 2, 1),
-            new AttackData(-9, 27, 2, 1),
-            new AttackData(-9, 28, 2, 1),
-            new AttackData(-9, 29, 2, 1),
-            new AttackData(-9, 30, 2, 1),
-            new AttackData(-9, 31, 0, 1),
-            new AttackData(-9, 31, 2, 1)
         },
     };
 
