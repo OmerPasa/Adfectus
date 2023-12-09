@@ -13,6 +13,7 @@ public class AttackData
     "Prefabs/LaserType4",
      "Prefabs/LaserType5" };
     // -1 = Chase, -2 = Weakened, -3 = objective pass, -4 = fade in, -5 = fade out,
+    // -9 nothing
     // -10 = human boss state change
 
     public int type;
@@ -79,7 +80,7 @@ public class AttackData
             HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
             hbc_D.HumanBossAttackInitiater();
         }
-        PlayerController pc = LoopData.boss.GetComponent<PlayerController>();
+        PlayerController pc = LoopData.player.GetComponent<PlayerController>();
         pc.BeatPress();
         if (clone.s1 != null)
         {
@@ -112,6 +113,9 @@ public class AttackData
                 break;
             case -5:
                 LoopData.boss.GetComponent<BossMainScript>().fadeOut(clone);
+                break;
+
+            case -9:
                 break;
 
             case -10:
