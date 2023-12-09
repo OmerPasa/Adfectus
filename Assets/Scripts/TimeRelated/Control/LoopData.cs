@@ -6,6 +6,7 @@ public static class LoopData
 {
     public static GameObject player;
     public static GameObject boss;
+    public static GameObject testObject;
     public static List<GameObject> currentAttacks = new List<GameObject>();
 
     public static int currentPartIndex = 0;

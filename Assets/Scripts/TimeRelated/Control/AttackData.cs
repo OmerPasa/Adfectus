@@ -117,6 +117,10 @@ public class AttackData
                 break;
 
             case -9:
+                if (LoopData.testObject.GetComponent<SpriteRenderer>().color.r == 1)
+                    LoopData.testObject.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 1);
+                else
+                    LoopData.testObject.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 1);
                 break;
 
             case -10:
