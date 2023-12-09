@@ -62,6 +62,7 @@ public class AttackData
 
     public void action(Vector3 pos, int counter_Q)
     {
+        Debug.Log("action " + type + " " + counter_Q);
         if (type == 0)
         {
             return;

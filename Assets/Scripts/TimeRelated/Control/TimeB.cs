@@ -39,7 +39,7 @@ public static class TimeB
         Q = (int)(timePassed / quarterBeatDuration) % 4;
 
         CounterQ = W * 4 + Q; //(int)(timePassed / quarterBeatDuration);
-        Deb.ug("W: " + W + " Q: " + Q + " CounterQ: " + CounterQ);
+        //Deb.ug("W: " + W + " Q: " + Q + " CounterQ: " + CounterQ);
     }
 
     public static bool isBeatReached(int bQC)

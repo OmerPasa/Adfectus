@@ -330,26 +330,14 @@ public static class LoopData
         },
         //20
         new AttackData[] { //boss 2 /9.12.2023
-            new AttackData(-9, 0, 0, 1),
             new AttackData(-9, 2, 0, 1),
-            new AttackData(-9, 4, 0, 1),
             new AttackData(-9, 6, 0, 1),
-            new AttackData(-9, 8, 0, 1),
             new AttackData(-9, 10, 0, 1),
-            new AttackData(-9, 12, 0, 1),
             new AttackData(-9, 14, 0, 1),
-            new AttackData(-9, 16, 0, 1),
             new AttackData(-9, 18, 0, 1),
-            new AttackData(-9, 20, 0, 1),
             new AttackData(-9, 22, 0, 1),
-            new AttackData(-9, 24, 0, 1),
-            new AttackData(-9, 26, 2, 1),
-            new AttackData(-9, 27, 2, 1),
-            new AttackData(-9, 28, 2, 1),
-            new AttackData(-9, 29, 2, 1),
-            new AttackData(-9, 30, 2, 1),
-            new AttackData(-9, 31, 0, 1),
-            new AttackData(-9, 31, 2, 1)
+            new AttackData(-9, 26, 0, 1),
+            new AttackData(-9, 30, 0, 1)
         },
     };
 
