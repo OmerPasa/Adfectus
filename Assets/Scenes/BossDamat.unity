@@ -1293,7 +1293,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7777778, y: 1}
+    m_SensorSize: {x: 2.052814, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -3747,7 +3747,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7777778, y: 1}
+    m_SensorSize: {x: 2.052814, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -3928,12 +3928,12 @@ MonoBehaviour:
   damageDelay: 2
   health: 4
   damage: 3
-  timeBtw_shortAttack: 2.51
-  startTimeBtw_shortAttack: 2.52
-  timeBtw_midAttack: 3.13
-  startTimeBtw_midAttack: 3.67
-  timeBtw_longAttack: 1.5
-  startTimeBtw_longAttack: 1.66
+  timeBtw_shortAttack: 0
+  startTimeBtw_shortAttack: 0
+  timeBtw_midAttack: 0
+  startTimeBtw_midAttack: 0
+  timeBtw_longAttack: 0
+  startTimeBtw_longAttack: 0
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
