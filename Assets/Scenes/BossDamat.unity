@@ -2907,7 +2907,7 @@ GameObject:
   - component: {fileID: 1663860202}
   - component: {fileID: 1663860201}
   m_Layer: 0
-  m_Name: Square
+  m_Name: TestObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4014,16 +4014,15 @@ MonoBehaviour:
   health: 4
   damage: 3
   timeBtw_shortAttack: 0
-  startTimeBtw_shortAttack: 1.66
+  startTimeBtw_shortAttack: 0
   timeBtw_midAttack: 0
-  startTimeBtw_midAttack: 1.8
+  startTimeBtw_midAttack: 0
   timeBtw_longAttack: 0
-  startTimeBtw_longAttack: 1.63
+  startTimeBtw_longAttack: 0
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0
   stopMoving: 0
-  canInstantiate: 0
   isAttackingShort: 0
   isAttackingMedium: 0
   isAttackingLong: 0
