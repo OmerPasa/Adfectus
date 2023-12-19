@@ -308,12 +308,17 @@ public class HumanBossController_Damat : MonoBehaviour
 
     public void HumanBossAttackInitiater()
     {
+        Deb.ug("İnitiating Attack");
         if (isAttackingShort == false && isAttackingMedium == false)
         {
 
             //boss.timeBtwAttack ı mı silsek ?
-            Deb.ug("İnitiating Attack");
-            if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
+            if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
+            {
+                SwitchState(meleeState);
+                Debug.Log("melee attack");
+            }
+            else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
             {
                 SwitchState(mediumState);
                 Debug.Log("medium attack");
@@ -322,11 +327,6 @@ public class HumanBossController_Damat : MonoBehaviour
             {
                 SwitchState(longState);
                 Debug.Log("long attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
-            {
-                SwitchState(meleeState);
-                Debug.Log("melee attack");
             }
             else if (isAttackingMedium == false && isAttackingShort == false)
             {

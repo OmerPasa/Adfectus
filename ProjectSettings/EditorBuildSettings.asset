@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BossDamat.unity
     guid: 841bf71974091124ba6d23ee0afab72c
-  - enabled: 1
-    path: Assets/Scenes/BossKeko.unity
-    guid: f07fbebf2536e1b46b080b5a89c996c8
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   m_configObjects: {}
