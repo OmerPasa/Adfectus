@@ -341,7 +341,7 @@ public class HumanBossController_Damat : MonoBehaviour
     {
         Deb.ug("İnitiating Attack");
         Debug.Log("is player is in range " + playerIsInRange);
-        //boss.timeBtwAttack ı mı silsek ?
+
         if (playerIsInRange == true && isAttackingShort == false)
         {
             Debug.Log("is player is in range " + playerIsInRange);
@@ -361,7 +361,7 @@ public class HumanBossController_Damat : MonoBehaviour
         }
         else
         {
-            Debug.Log(isAttackingLong + "is attacking long?");
+            Debug.Log(isAttackingLong + "is Running");
             SwitchState(runningState);
         }
     }
@@ -445,7 +445,7 @@ public class HumanBossMeleeState : HumanBossBaseState
     {
         Debug.Log("Boss2 melee state started");
         boss.isAttackingShort = true;
-        maxChargeDistance = 5f;
+        maxChargeDistance = 3.5f;
         // Calculate the direction towards the player
         playerPosition = boss.character.transform.position;
         bossPosition = boss.transform.position;
@@ -548,6 +548,7 @@ public class HumanBossMediumState : HumanBossBaseState
     public override void EnterState(HumanBossController_Damat boss)
     {
         Debug.Log("Enetrstate midium state is " + mediumAttackState);
+        boss.Invoke(nameof(boss.AttackCompleteMedium), 0.11f);
 
         if (mediumAttackState == MediumAttackState.Completed)
         {
@@ -618,10 +619,9 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void OnCollisionEnter(HumanBossController_Damat boss, Collision2D collision)
     {
-        throw new System.NotImplementedException();
+        boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+        boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
     }
-
-
 }
 
 public class HumanBossLongState : HumanBossBaseState
