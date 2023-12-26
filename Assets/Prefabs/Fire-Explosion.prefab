@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -8756459306856107574}
   m_Layer: 0
   m_Name: Fire-Explosion
-  m_TagString: Untagged
+  m_TagString: Explosion
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,6 +98,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa43bbaabd73241449b5295101986cb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fieldOfImpact: 3.67
+  force: 101.25
+  layertoHit:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!61 &-8756459306856107574
 BoxCollider2D:
   m_ObjectHideFlags: 0

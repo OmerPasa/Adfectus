@@ -317,14 +317,67 @@ namespace TarodevController
 
         [Header("COLLISION")] [SerializeField] private Bounds _characterBounds;
 
-
-        private void OnTriggerEnter2D(Collider2D laser)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (laser.gameObject.tag == "Laser")
+            Debug.Log("collusion happned");
+            if (collision.gameObject.CompareTag("Boss2"))
+            {
+                // Calculate the push direction away from the boss
+                Vector3 bossPosition = collision.gameObject.transform.position;
+                Vector3 playerPosition = transform.position;
+
+                //Calculating the direction
+                Vector3 pushDirection = (playerPosition - bossPosition).normalized;
+
+                // Apply the push force
+                rb2d.AddForce(pushDirection * pushForce, ForceMode2D.Impulse);
+                Debug.Log("Player has been pushed by the boss2");
+                ApplyDodgeAnimation();
+
+
+            }
+            else if (collision.gameObject.CompareTag("OneWayPlatform"))
+            {
+                currentOneWayPlatform = collision.gameObject;
+            }
+
+
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("OneWayPlatform"))
+            {
+                currentOneWayPlatform = null;
+            }
+        }
+        private IEnumerator DisableCollusion()
+        {
+            Collider2D platformCollider = currentOneWayPlatform.GetComponent<Collider2D>();
+            Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
+            Physics2D.IgnoreCollision(playerCollider, platformCollider);
+            yield return new WaitForSeconds(0.6f);
+            Physics2D.IgnoreCollision(playerCollider, platformCollider, false);
+        }
+
+        private void OnTriggerEnter2D(Collider2D trigger)
+        {
+            if (trigger.gameObject.tag == "Laser")
             {
                 PlayerTakeDamage(damageToPlayer);
                 Debug.Log("amount of damage " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
+            }
+            else if (trigger.gameObject.CompareTag("Explosion"))
+            {
+                Vector3 explosionPosition = trigger.gameObject.transform.position;
+                Vector3 playerPosition = transform.position;
+
+                //Calculating the direction
+                Vector3 pushDirection = (playerPosition - explosionPosition).normalized;
+
+                // Apply the push force
+                rb2d.AddForce(pushDirection * pushForce, ForceMode2D.Impulse);
             }
         }
 
@@ -773,48 +826,7 @@ namespace TarodevController
         }
         #endregion
 
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            Debug.Log("collusion happned");
-            if (collision.gameObject.CompareTag("Boss2"))
-            {
-                // Calculate the push direction away from the boss
-                Vector3 bossPosition = collision.gameObject.transform.position;
-                Vector3 playerPosition = transform.position;
 
-                //Calculating the direction
-                Vector3 pushDirection = (playerPosition - bossPosition).normalized;
-
-                // Apply the push force
-                rb2d.AddForce(pushDirection * pushForce, ForceMode2D.Impulse);
-                Debug.Log("Player has been pushed by the boss2");
-                ApplyDodgeAnimation();
-
-
-            }
-            if (collision.gameObject.CompareTag("OneWayPlatform"))
-            {
-                currentOneWayPlatform = collision.gameObject;
-
-            }
-
-        }
-
-        private void OnCollisionExit2D(Collision2D collision)
-        {
-            if (collision.gameObject.CompareTag("OneWayPlatform"))
-            {
-                currentOneWayPlatform = null;
-            }
-        }
-        private IEnumerator DisableCollusion()
-        {
-            Collider2D platformCollider = currentOneWayPlatform.GetComponent<Collider2D>();
-            Debug.Log($"current disabled collusion {platformCollider.gameObject.name}");
-            Physics2D.IgnoreCollision(playerCollider, platformCollider);
-            yield return new WaitForSeconds(0.6f);
-            Physics2D.IgnoreCollision(playerCollider, platformCollider, false);
-        }
         private void OneWayPlatform()
         {
             currentOneWayPlatform?.gameObject.SetActive(true);
