@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TarodevController;
+using System;
 
 public class HumanBossController_Damat : MonoBehaviour
 {
@@ -64,6 +65,7 @@ public class HumanBossController_Damat : MonoBehaviour
     public bool playerIsInRange = false;
     bool isFacing_Left;
     public Vector2 endPos_Player;
+    public Vector2 FacingDirection = Vector2.left;
     #endregion
 
     #region State_Machine States
@@ -114,17 +116,24 @@ public class HumanBossController_Damat : MonoBehaviour
         #region Flipping
         if (character != null)
         {
-            if (transform.position.x < character.transform.position.x)
+            if (transform.position.x < character.transform.position.x && transform.localScale != new Vector3(-1f, 1f, 1f))
             {
                 //turn object
                 transform.localScale = new Vector3(-1f, 1f, 1f);
                 isFacing_Left = true;
+                FacingDirection = Vector2.right;
+                Debug.Log("Flipped to left");
             }
-            else if (transform.position.x > character.transform.position.x)
+            if (transform.position.x > character.transform.position.x && transform.localScale != new Vector3(1f, 1f, 1f))
             {
                 //turn object ro other side
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 isFacing_Left = false;
+                FacingDirection = Vector2.left;
+
+                Debug.Log("Flipped to right");
+
+
             }
         }
         #endregion
@@ -159,27 +168,24 @@ public class HumanBossController_Damat : MonoBehaviour
             pathBlocked_ButCANJump = false;
 
         // Player in range detection rays
-        if (isFacing_Left)
-        {
-            distance = -distance;
-        }
+
 
         Vector2 endPos_Player = midRay.position + Vector3.left * distance;
 
-        RaycastHit2D hit_Player = Physics2D.Raycast(midRay.position, Vector2.left, distance, 1 << LayerMask.NameToLayer("Player"));
+        RaycastHit2D hit_Player = Physics2D.Raycast(midRay.position, FacingDirection, distance, 1 << LayerMask.NameToLayer("Player"));
 
         if (hit_Player.collider != null)
         {
             if (hit_Player.collider.CompareTag("Player"))
             {
                 playerIsInRange = true;
-                Debug.DrawRay(midRay.position, Vector2.left * distance, Color.red);
+                Debug.DrawRay(midRay.position, FacingDirection * distance, Color.red);
             }
         }
         else
         {
             playerIsInRange = false;
-            Debug.DrawRay(midRay.position, Vector2.left * distance, Color.green);
+            Debug.DrawRay(midRay.position, FacingDirection * distance, Color.green);
         }
         #endregion
 
@@ -405,7 +411,7 @@ public class HumanBossRunState : HumanBossBaseState
                 if (!boss.stopMoving)
                 {
                     // Move towards character
-                    if (Mathf.Abs(karPos.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
+                    if (Mathf.Abs(karPos.x - pos.x) > (-2f + boss.meleeRange) && !(boss.pathBlocked && boss.grounded))
                     {
                         float direction = Mathf.Sign(karPos.x - pos.x);
                         Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
@@ -520,109 +526,102 @@ public class HumanBossMeleeState : HumanBossBaseState
 }
 public class HumanBossMediumState : HumanBossBaseState
 {
-    private int currentPart = 1;  // Keep track of the current part of the attack
-    private int firesCreated = 0; // Keep track of the number of fires created
-    private float delayBetweenFires = 1f;  // The delay between each fire instantiation
-    private float fireDuration = 2f;  // The duration of each fire effect
-    private float fireLength = 2.5f; // ateşin oyuncudan uzaklığı.
-    private float timeBetweenMethodCalls = 5f; // Time limit between method calls
+    private int currentPart = 1;
+    private float delayBetweenFires = 1f;
+    private float fireDuration = 2f;
+    private float fireLength = (float)Math.PI;
 
-    private float timer = 0f;  // Timer to track the delay between fires
-    private float methodCallTimer = 0f; // Timer to track the time between method calls
+    private float timer = 0f;
     private readonly object stateLock = new object();
+
+    // Add a state enum to keep track of the current state within the medium attack
+    private enum MediumAttackState
+    {
+        InitiatingPart1,
+        InitiatingPart2,
+        InitiatingPart3,
+        Completed
+    }
+
+    private MediumAttackState mediumAttackState = MediumAttackState.InitiatingPart1;
 
     public override void EnterState(HumanBossController_Damat boss)
     {
-        // Reset the current part and firesCreated when entering the state
-        currentPart = 1;
-        firesCreated = 0;
-        boss.isAttackingMedium = true;
-        Debug.Log("is attacking medium ?" + boss.isAttackingMedium);
+        Debug.Log("Enetrstate midium state is " + mediumAttackState);
+
+        if (mediumAttackState == MediumAttackState.Completed)
+        {
+            currentPart = 1;
+            boss.isAttackingMedium = true;
+            mediumAttackState = MediumAttackState.InitiatingPart1;
+        }
+        else if (mediumAttackState != MediumAttackState.InitiatingPart1)
+        {
+            boss.isAttackingMedium = true;
+        }
 
     }
 
     public override void UpdateState(HumanBossController_Damat boss)
     {
-        // Increment the timers
         timer += Time.deltaTime;
-        methodCallTimer += Time.deltaTime;
 
-        // Check if the time limit between method calls has passed
-        if (methodCallTimer >= timeBetweenMethodCalls)
+        // Check if the delay between fires has passed
+        if (timer >= delayBetweenFires && boss.character != null)
         {
-            // Reset the timer for the next method call
-            methodCallTimer = 0f;
-
             lock (stateLock)
             {
-                // Check if the delay between fires has passed
-                if (timer >= delayBetweenFires && boss.character != null)
+                Debug.Log("firing inside ");
+
+                timer = 0f;
+
+                // Perform the appropriate action based on the current state
+                switch (mediumAttackState)
                 {
-                    Debug.Log("firing inside ");
-                    timer = 0f;  // Reset the timer
-                    CreateFire(boss);
+                    case MediumAttackState.InitiatingPart1:
+                        Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                        Debug.Log("player direction1 " + playerDirection1);
+                        CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
+                        mediumAttackState = MediumAttackState.InitiatingPart2;
+                        break;
+
+                    case MediumAttackState.InitiatingPart2:
+                        Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                        CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
+                        mediumAttackState = MediumAttackState.InitiatingPart3;
+                        break;
+
+                    case MediumAttackState.InitiatingPart3:
+                        Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                        CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
+                        mediumAttackState = MediumAttackState.Completed;
+                        break;
+                }
+                Debug.Log("Current midium state is " + mediumAttackState);
+                // Check if the boss has completed all three parts of the attack
+                if (mediumAttackState == MediumAttackState.InitiatingPart2 || mediumAttackState == MediumAttackState.InitiatingPart3 || mediumAttackState == MediumAttackState.Completed)
+                {
+                    boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+                    boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
+                    return;
                 }
             }
         }
     }
+
+    private void CreateFire(Vector3 position, HumanBossController_Damat boss)
+    {
+        GameObject fire = GameObject.Instantiate(boss.fireObject, position, Quaternion.identity);
+        GameObject.Destroy(fire, fireDuration);
+        boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
+    }
+
     public override void OnCollisionEnter(HumanBossController_Damat boss, Collision2D collision)
     {
         throw new System.NotImplementedException();
     }
 
-    private void CreateFire(HumanBossController_Damat boss)
-    {
-        // Perform the appropriate action for the current part of the attack
-        switch (currentPart)
-        {
-            case 1:
-                Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
-                Debug.Log("player direction1 " + playerDirection1);
-                CreateFireAtPosition(boss.transform.position + playerDirection1.normalized * fireLength, boss);
-                break;
 
-            case 2:
-                Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                Debug.Log("player direction2 " + playerDirection2);
-                CreateFireAtPosition(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
-                break;
-
-            case 3:
-                Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                Debug.Log("player direction3 " + playerDirection3);
-                CreateFireAtPosition(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
-                break;
-        }
-
-        // Increase the current part for the next update
-        currentPart++;
-
-        // Check if the boss has completed all three parts of the attack
-        if (currentPart > 3)
-        {
-            // Transition to a different state or perform any other actions
-            // after completing the attack
-            boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-            boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
-        }
-    }
-
-    private void CreateFireAtPosition(Vector3 position, HumanBossController_Damat boss)
-    {
-        // Create fire at the specified position
-        // e.g., Instantiate fire prefab, play particle effect, etc.
-        Debug.Log("Creating fire at position: " + position);
-
-        // Increase the count of fires created
-        firesCreated++;
-
-        // Check if the boss has created the required number of fires
-        if (firesCreated >= currentPart)
-        {
-            // Reset the firesCreated count for the next method call
-            firesCreated = 0;
-        }
-    }
 }
 
 public class HumanBossLongState : HumanBossBaseState
