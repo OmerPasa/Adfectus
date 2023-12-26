@@ -34,7 +34,10 @@ public class HumanBossController_Damat : MonoBehaviour
     public float bulletRange;
     [Range(0f, 10f)]
     public float pushForce;
-    public float pushDistance = 200f;
+    [Range(0f, 10f)]
+    public float distance;
+    [Range(0f, 2000f)]
+    public float pushDistance;
     public float maxMovementSpeed;
     public float bulletTime;
     public float movementSpeed;
@@ -44,7 +47,6 @@ public class HumanBossController_Damat : MonoBehaviour
 
     #region variables
     float jumpTime2 = 0;
-    float distance = 1;
     public float damageDelay;
     public int health = 4;
     public float damage;
@@ -59,7 +61,9 @@ public class HumanBossController_Damat : MonoBehaviour
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
+    public bool playerIsInRange = false;
     bool isFacing_Left;
+    public Vector2 endPos_Player;
     #endregion
 
     #region State_Machine States
@@ -135,27 +139,47 @@ public class HumanBossController_Damat : MonoBehaviour
         {
             grounded = false;
         }
-
-        var castDist = distance;
+        //parth blocked but can jump part
+        var castDist = 1;
         if (isFacing_Left)
         {
-            castDist = -distance;
+            castDist = -1;
         }
-
         Vector2 endPos = midRay.position + Vector3.left * castDist;
-        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Ground"));
+        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Default"));
 
         if (Midray.collider != null)
         {
             if (Midray.collider.gameObject.CompareTag("Ground"))
             {
                 pathBlocked_ButCANJump = true;
+            }
+        }
+        else
+            pathBlocked_ButCANJump = false;
 
+        // Player in range detection rays
+        if (isFacing_Left)
+        {
+            distance = -distance;
+        }
+
+        Vector2 endPos_Player = midRay.position + Vector3.left * distance;
+
+        RaycastHit2D hit_Player = Physics2D.Raycast(midRay.position, Vector2.left, distance, 1 << LayerMask.NameToLayer("Player"));
+
+        if (hit_Player.collider != null)
+        {
+            if (hit_Player.collider.CompareTag("Player"))
+            {
+                playerIsInRange = true;
+                Debug.DrawRay(midRay.position, Vector2.left * distance, Color.red);
             }
         }
         else
         {
-            pathBlocked_ButCANJump = false;
+            playerIsInRange = false;
+            Debug.DrawRay(midRay.position, Vector2.left * distance, Color.green);
         }
         #endregion
 
@@ -207,7 +231,9 @@ public class HumanBossController_Damat : MonoBehaviour
     {
         // Draw attack range sphere
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, meleeRange);
+        //Gizmos.DrawWireSphere(transform.position, meleeRange);
+
+
 
         // Draw view range wire cube
         Gizmos.color = Color.green;
@@ -220,6 +246,8 @@ public class HumanBossController_Damat : MonoBehaviour
         // Draw close attack range sphere
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, longRange);
+
+
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -288,7 +316,9 @@ public class HumanBossController_Damat : MonoBehaviour
     public void AttackCompleteShort()
     {
         isAttackingShort = false;
-        movementSpeed = 2f;
+        playerIsInRange = false;
+        movementSpeed = 1f;
+
     }
     public void AttackCompleteMedium()
     {
@@ -304,10 +334,12 @@ public class HumanBossController_Damat : MonoBehaviour
     public void HumanBossAttackInitiater()
     {
         Deb.ug("İnitiating Attack");
-
+        Debug.Log("is player is in range " + playerIsInRange);
         //boss.timeBtwAttack ı mı silsek ?
-        if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && isAttackingShort == false)
+        if (playerIsInRange == true && isAttackingShort == false)
         {
+            Debug.Log("is player is in range " + playerIsInRange);
+
             SwitchState(meleeState);
             Debug.Log("melee attack");
         }
