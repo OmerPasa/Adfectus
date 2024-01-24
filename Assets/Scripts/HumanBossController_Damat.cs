@@ -63,6 +63,7 @@ public class HumanBossController_Damat : MonoBehaviour
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
     public bool playerIsInRange = false;
+    public bool playerIsInMidRangeHorizontal = false;
     bool isFacing_Left;
     public Vector2 endPos_Player;
     public Vector2 FacingDirection = Vector2.left;
@@ -186,6 +187,15 @@ public class HumanBossController_Damat : MonoBehaviour
         {
             playerIsInRange = false;
             Debug.DrawRay(midRay.position, FacingDirection * distance, Color.green);
+        }
+
+        if (character.transform.position.y < 1)
+        {
+            playerIsInMidRangeHorizontal = true;
+        }
+        else if (character.transform.position.y > 1)
+        {
+            playerIsInMidRangeHorizontal = false;
         }
         #endregion
 
@@ -349,7 +359,7 @@ public class HumanBossController_Damat : MonoBehaviour
             SwitchState(meleeState);
             Debug.Log("melee attack");
         }
-        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && isAttackingMedium == false)
+        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && playerIsInMidRangeHorizontal == true && isAttackingMedium == false)
         {
             SwitchState(mediumState);
             Debug.Log("medium attack");
@@ -526,7 +536,6 @@ public class HumanBossMeleeState : HumanBossBaseState
 }
 public class HumanBossMediumState : HumanBossBaseState
 {
-    private int currentPart = 1;
     private float delayBetweenFires = 1f;
     private float fireDuration = 2f;
     private float fireLength = (float)Math.PI;
@@ -549,10 +558,8 @@ public class HumanBossMediumState : HumanBossBaseState
     {
         Debug.Log("Enetrstate midium state is " + mediumAttackState);
         boss.Invoke(nameof(boss.AttackCompleteMedium), 0.11f);
-
         if (mediumAttackState == MediumAttackState.Completed)
         {
-            currentPart = 1;
             boss.isAttackingMedium = true;
             mediumAttackState = MediumAttackState.InitiatingPart1;
         }
@@ -575,26 +582,45 @@ public class HumanBossMediumState : HumanBossBaseState
                 Debug.Log("firing inside ");
 
                 timer = 0f;
+                Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                Debug.Log("player direction1 " + playerDirection1);
+
+                playerDirection1 = new Vector3(playerDirection1.x, 0f, 0f);
+                Debug.Log("player direction1 only X " + playerDirection1);
 
                 // Perform the appropriate action based on the current state
                 switch (mediumAttackState)
                 {
                     case MediumAttackState.InitiatingPart1:
-                        Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+
+
+
                         Debug.Log("player direction1 " + playerDirection1);
                         CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
                         mediumAttackState = MediumAttackState.InitiatingPart2;
                         break;
 
                     case MediumAttackState.InitiatingPart2:
-                        Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                        CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
+                        //Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                        CreateFire(boss.transform.position + playerDirection1.normalized * fireLength * 2, boss);
                         mediumAttackState = MediumAttackState.InitiatingPart3;
                         break;
 
                     case MediumAttackState.InitiatingPart3:
-                        Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                        CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
+                        //Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                        // Find all GameObjects with a specific tag
+                        GameObject[] objectsWithSpecificTag = GameObject.FindGameObjectsWithTag("Explosion");
+
+                        // Check if there are at least 2 objects with the specified tag
+                        if (objectsWithSpecificTag.Length >= 2)
+                        {
+                            CreateFire(boss.transform.position + playerDirection1.normalized * fireLength * 1, boss);
+                        }
+                        else
+                        {
+                            // Less than 2 objects with the specified tag were found
+                            CreateFire(boss.transform.position + playerDirection1.normalized * fireLength * 3, boss);
+                        }
                         mediumAttackState = MediumAttackState.Completed;
                         break;
                 }
