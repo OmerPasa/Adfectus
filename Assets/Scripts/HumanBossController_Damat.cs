@@ -44,6 +44,7 @@ public class HumanBossController_Damat : MonoBehaviour
     public float movementSpeed;
     public float jumpPower;
     public float jumpTime;
+    public float elapsedTime;
     #endregion
 
     #region variables
@@ -556,12 +557,28 @@ public class HumanBossMediumState : HumanBossBaseState
 
     public override void EnterState(HumanBossController_Damat boss)
     {
+        var enterDelay = (boss.elapsedTime - Time.time) * -1;
+        Debug.Log(enterDelay + "enter delay num");
+        Debug.Log(boss.elapsedTime + "elapsedTime num");
+        Debug.Log(Time.time + "Time num");
+        Debug.Log("player is in mid range horizontal ? " + boss.playerIsInMidRangeHorizontal);
+        boss.elapsedTime = Time.time;
+
+        if (enterDelay >= 2f)
+        {
+
+            Debug.Log("İt has been a long time For middle attack part2");
+            mediumAttackState = MediumAttackState.InitiatingPart1;
+            boss.isAttackingMedium = true;
+
+        }
         Debug.Log("Enetrstate midium state is " + mediumAttackState);
         boss.Invoke(nameof(boss.AttackCompleteMedium), 0.11f);
         if (mediumAttackState == MediumAttackState.Completed)
         {
             boss.isAttackingMedium = true;
-            mediumAttackState = MediumAttackState.InitiatingPart1;
+            //mediumAttackState = MediumAttackState.InitiatingPart1;
+
         }
         else if (mediumAttackState != MediumAttackState.InitiatingPart1)
         {

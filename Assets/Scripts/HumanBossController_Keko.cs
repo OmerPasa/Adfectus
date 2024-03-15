@@ -407,6 +407,10 @@ public class HumanBoss2RunState : HumanBoss2BaseState
 
 public class HumanBoss2MeleeState : HumanBoss2BaseState
 {
+
+    /// <summary>
+    /// character will go and drove a line that coul include player then after a given time that line will change and do damage there could be more than 1 line drawn.
+    /// </summary>
     float maxChargeDistance;
     float chargeDistance;
     Vector2 playerPosition;
@@ -496,7 +500,9 @@ public class HumanBoss2MeleeState : HumanBoss2BaseState
 }
 
 public class HumanBoss2MediumState : HumanBoss2BaseState
-{
+{/// <summary>
+/// jumps and disseppears while gone a mark will shown to say where he will land which follows the player and comes back does area damage.
+/// </summary>
     private int currentPart = 1;  // Keep track of the current part of the attack
     private float delayBetweenFires = 1f;  // The delay between each fire instantiation
     private float fireDuration = 2f;  // The duration of each fire effect
@@ -583,12 +589,13 @@ public class HumanBoss2MediumState : HumanBoss2BaseState
         // Handle collision events during the attack if necessary
         // This method will be called when the boss collides with something
     }
-
-
 }
 
 public class HumanBoss2LongState : HumanBoss2BaseState
 {
+    /// <summary>
+    /// waits a litle and jumpsin ???????????????
+    /// </summary>
     public Vector3 distance_lasertoplayer;
     public override void EnterState(HumanBossController_Keko boss)
     {

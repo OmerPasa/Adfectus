@@ -1312,7 +1312,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 852491672}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.4, y: 6.3199997, z: -10}
+  m_LocalPosition: {x: -4.02, y: 0.16999948, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1721,7 +1721,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104693923}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.59, y: -1.7, z: -10}
+  m_LocalPosition: {x: 11.1, y: -1.7, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3302,7 +3302,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762447352}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.4, y: 5.26, z: 0}
+  m_LocalPosition: {x: -4.02, y: -0.89, z: 0}
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3849,7 +3849,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1969924014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.59, y: -1.7, z: -10}
+  m_LocalPosition: {x: 11.1, y: -1.7, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4000,7 +4000,7 @@ MonoBehaviour:
   fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
   viewRange: 28.4
   meleeRange: 5.6
-  mediumRange: 11.8
+  mediumRange: 9.6
   longRange: 27.3
   bulletRange: 2.14
   pushForce: 1.6
@@ -4011,6 +4011,7 @@ MonoBehaviour:
   movementSpeed: 2
   jumpPower: 10
   jumpTime: 1
+  elapsedTime: 0
   damageDelay: 0
   health: 4
   damage: 3
@@ -4025,6 +4026,7 @@ MonoBehaviour:
   pathBlocked_ButCANJump: 0
   stopMoving: 0
   playerIsInRange: 0
+  playerIsInMidRangeHorizontal: 0
   endPos_Player: {x: 0, y: 0}
   FacingDirection: {x: 0, y: 0}
   isAttackingShort: 0
@@ -4040,7 +4042,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003122445}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.59, y: -1.7, z: 0}
+  m_LocalPosition: {x: 11.1, y: -1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
