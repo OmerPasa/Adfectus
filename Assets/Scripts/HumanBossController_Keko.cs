@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TarodevController;
+using System.Threading;
 
 public class HumanBossController_Keko : MonoBehaviour
 {
@@ -16,10 +17,8 @@ public class HumanBossController_Keko : MonoBehaviour
     public LayerMask whatIsEnemies;
     public GameObject fireObject;
     public LineRenderer teleportLineRenderer; // Assign the Line Renderer component in the inspector
-
-    public Collider2D lineRendererCollisionObject;
-    public Collider2D lineRendererCollisionObject2;
-    public Collider2D lineRendererCollisionObject3;
+    public LineRenderer teleportLineRenderer2; // Assign the Line Renderer component in the inspector
+    public LineRenderer teleportLineRenderer3; // Assign the Line Renderer component in the inspector
 
 
     #endregion
@@ -73,7 +72,9 @@ public class HumanBossController_Keko : MonoBehaviour
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
     public bool canInstantiate = false;
+    public bool canAttackTeleport2 = false;
     bool isFacing_Left;
+    private Mutex canAttackTeleport2Mutex = new Mutex();
     #endregion
 
     #region State_Machine States
@@ -302,7 +303,7 @@ public class HumanBossController_Keko : MonoBehaviour
 
     public void AttackCompleteShort()
     {
-        lineRendererCollisionObject.GetComponent<BoxCollider2D>().enabled = false;
+        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         isAttackingShort = false;
         canInstantiate = true;
         movementSpeed = 2f;
@@ -319,17 +320,14 @@ public class HumanBossController_Keko : MonoBehaviour
         isAttackingLong = false;
         canInstantiate = true;
     }
-    public void IncreaseShortAttackLines()
-    {
-        Shortattackhitcount++;
-    }
     #region TeleportBehindPlayer-ShortAttack
-    public void TeleportBehindPlayer()
+    public IEnumerator TeleportBehindPlayer(LineRenderer teleportLineRenderer)
     {
         CalculateTeleportPosition();
-        StoreLineRendererProperties();
-        DrawTeleportLine();
-        UpdateCollider();
+        StoreLineRendererProperties(teleportLineRenderer);
+        DrawTeleportLine(teleportLineRenderer);
+        UpdateCollider(teleportLineRenderer);
+        yield break;
     }
 
     private void CalculateTeleportPosition()
@@ -340,14 +338,14 @@ public class HumanBossController_Keko : MonoBehaviour
         teleportPosition.y = transform.position.y;
     }
 
-    private void StoreLineRendererProperties()
+    private void StoreLineRendererProperties(LineRenderer teleportLineRenderer)
     {
         lineMaterial = teleportLineRenderer.material;
         initialColor = lineMaterial.color;
         startTime = Time.time;
     }
 
-    private void DrawTeleportLine()
+    private void DrawTeleportLine(LineRenderer teleportLineRenderer)
     {
         teleportLineRenderer.positionCount = 2;
         teleportLineRenderer.SetPosition(0, transform.position);
@@ -355,9 +353,9 @@ public class HumanBossController_Keko : MonoBehaviour
         transform.position = teleportPosition;
     }
 
-    private void UpdateCollider()
+    private void UpdateCollider(LineRenderer teleportLineRenderer)
     {
-        BoxCollider2D collider = lineRendererCollisionObject.GetComponent<BoxCollider2D>();
+        BoxCollider2D collider = teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>();
         collider.enabled = false;
 
         if (teleportLineRenderer.enabled)
@@ -367,7 +365,7 @@ public class HumanBossController_Keko : MonoBehaviour
     }
     private void SetColliderPositionAndSize(BoxCollider2D collider)
     {
-        lineRendererCollisionObject.transform.position = teleportLineRenderer.transform.position;
+        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().transform.position = teleportLineRenderer.transform.position;
         Vector3 startPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(0));
         Vector3 endPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1));
         Vector3 center = (startPosition + endPosition) / 2f;
@@ -376,6 +374,10 @@ public class HumanBossController_Keko : MonoBehaviour
 
         collider.transform.position = center;
         collider.size = new Vector2(sizeX, sizeY);
+        if (canAttackTeleport2 == true)
+        {
+            Debug.Log("secondteleportPRE");
+        }
         StartCoroutine(HideTeleportLine(collider));
     }
 
@@ -385,14 +387,23 @@ public class HumanBossController_Keko : MonoBehaviour
 
         // Extract color manipulation to a separate method
         yield return ColorLerpOverTime(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), firstLineDuration, lineMaterial);
-
         Debug.Log("startafterhide");
-
         collider.enabled = true;
         lineMaterial.color = Color.red;
+        canAttackTeleport2Mutex.WaitOne();
+        Debug.Log("canAttackTeleport2: " + canAttackTeleport2);
+        Debug.Log("Shortattackhitcount: " + Shortattackhitcount);
 
+        if (canAttackTeleport2 == true || Shortattackhitcount == 2)// still not seing true...
+        {
+            Debug.Log("secondteleport");
+            // var lineMaterialOne = lineMaterial;//storing first lines values
+            //var initialColorOne = initialColor;//storing first lines values
+            StartCoroutine(TeleportBehindPlayer(teleportLineRenderer2));
+            //canAttackTeleport2 = false;
+        }
+        canAttackTeleport2Mutex.ReleaseMutex();
         yield return ColorLerpOverTime(Color.red, new Color(lineMaterial.color.r, lineMaterial.color.g, lineMaterial.color.b, 0f), 1f, lineMaterial);
-
         yield return new WaitForSeconds(1f);
         // setting everything back.
         collider.offset = Vector2.zero;
@@ -402,6 +413,22 @@ public class HumanBossController_Keko : MonoBehaviour
         // Set the Line Renderer's color back to normal
         lineMaterial.color = initialColor;
         AttackCompleteShort();
+    }
+    public void IncreaseShortAttackLines()
+    {
+        Shortattackhitcount++;// if is 2  that meansboss can draw 2 lines 
+        Debug.Log("Shortattackhitcount " + Shortattackhitcount);
+        if (Shortattackhitcount == 2)
+        {
+            canAttackTeleport2 = true;
+            if (canAttackTeleport2 == false)
+            {
+                canAttackTeleport2 = true;
+            }
+            Debug.Log("canAttackTeleport2: in attacklines" + canAttackTeleport2);
+
+
+        }
     }
 
     private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
@@ -535,8 +562,8 @@ public class HumanBoss2MeleeState : HumanBoss2BaseState
 
         // Set the boss's movement speed 
         boss.movementSpeed = 0f;
-
-        boss.Invoke(nameof(boss.TeleportBehindPlayer), 1f);
+        boss.StartCoroutine(boss.TeleportBehindPlayer(boss.teleportLineRenderer));
+        //boss.Invoke(nameof(boss.TeleportBehindPlayer), 1f);
 
     }
 

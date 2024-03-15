@@ -324,16 +324,20 @@ namespace TarodevController
 
         private void OnTriggerEnter2D(Collider2D laser)
         {
+            Debug.Log("Trigger entered: " + laser.gameObject.tag);
+
             if (laser.gameObject.tag == "Laser")
             {
+                Debug.Log("Laser condition met");
                 PlayerTakeDamage(damageToPlayer);
-                Debug.Log("amount of damage " + damageToPlayer);
+                Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
             }
             else if (laser.gameObject.tag == "Keko_Shortattack")
             {
+                Debug.Log("Keko_Shortattack condition met");
                 PlayerTakeDamage(damageToPlayer);
-                Debug.Log("amount of damage " + damageToPlayer);
+                Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
                 boss.IncreaseShortAttackLines();
             }
@@ -787,7 +791,6 @@ namespace TarodevController
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            Debug.Log("collusion happned");
             if (collision.gameObject.CompareTag("Boss2"))
             {
                 // Calculate the push direction away from the boss

@@ -1901,7 +1901,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104693923}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.03, y: -1.738, z: -10}
+  m_LocalPosition: {x: 0, y: -1.738, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3903,9 +3903,8 @@ MonoBehaviour:
     m_Bits: 256
   fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
   teleportLineRenderer: {fileID: 1453835946}
-  lineRendererCollisionObject: {fileID: 1453835949}
-  lineRendererCollisionObject2: {fileID: 829440094}
-  lineRendererCollisionObject3: {fileID: 1475417000}
+  teleportLineRenderer2: {fileID: 829440096}
+  teleportLineRenderer3: {fileID: 1475417002}
   viewRange: 28
   meleeRange: 5.6
   mediumRange: 12
@@ -3936,6 +3935,7 @@ MonoBehaviour:
   pathBlocked_ButCANJump: 0
   stopMoving: 0
   canInstantiate: 0
+  canAttackTeleport2: 0
   isAttackingShort: 0
   isAttackingMedium: 0
   isAttackingLong: 0
@@ -4426,7 +4426,7 @@ MonoBehaviour:
   m_Priority: 10
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
-  m_Follow: {fileID: 0}
+  m_Follow: {fileID: 1904355462}
   m_Lens:
     FieldOfView: 40
     OrthographicSize: 10
@@ -4453,7 +4453,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1969924014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.03, y: -1.738, z: -10}
+  m_LocalPosition: {x: 0, y: -1.738, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -9,12 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/MEnu.unity
     guid: d16bc61be974bd44fb17caff4884e212
   - enabled: 1
-    path: Assets/Scenes/BossGrandpa.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
     path: Assets/Scenes/BossDamat.unity
     guid: 841bf71974091124ba6d23ee0afab72c
   - enabled: 1
-    path: Assets/Scenes/BossKeko.unity
-    guid: f07fbebf2536e1b46b080b5a89c996c8
+    path: Assets/Scenes/BossGrandpa.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   m_configObjects: {}
