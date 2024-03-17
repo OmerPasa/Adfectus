@@ -76,7 +76,7 @@ public class AttackData
             HumanBossController_Damat hbc = LoopData.boss.GetComponent<HumanBossController_Damat>();
             hbc.HumanBossAttackInitiater();
         }
-        else if (SceneManager.GetActiveScene().name == "BossKeko")
+        else if (SceneManager.GetActiveScene().name == "BossKekoFix")
         {
             HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
             hbc_D.HumanBossAttackInitiater();

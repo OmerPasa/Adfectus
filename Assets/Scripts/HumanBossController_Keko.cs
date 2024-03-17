@@ -34,17 +34,20 @@ public class HumanBossController_Keko : MonoBehaviour
     public float bulletRange;
     [Range(0f, 10f)]
     public float pushForce;
-    public float pushDistance = 200f;
+    [Range(0f, 10f)]
+    public float distance;
+    [Range(0f, 2000f)]
+    public float pushDistance;
     public float maxMovementSpeed;
     public float bulletTime;
     public float movementSpeed;
     public float jumpPower;
     public float jumpTime;
+    public float elapsedTime;
     #endregion
 
     #region variables
     float jumpTime2 = 0;
-    float distance = 1;
     public float damageDelay;
     public int health = 4;
     public float damage;
@@ -59,16 +62,19 @@ public class HumanBossController_Keko : MonoBehaviour
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
-    public bool canInstantiate = false;
+    public bool playerIsInRange = false;
+    public bool playerIsInMidRangeHorizontal = false;
     bool isFacing_Left;
+    public Vector2 endPos_Player;
+    public Vector2 FacingDirection = Vector2.left;
     #endregion
 
     #region State_Machine States
     public HumanBoss2BaseState currentState;
-    public HumanBoss2RunState runningState = new HumanBoss2RunState();
-    public HumanBoss2MeleeState meleeState = new HumanBoss2MeleeState();
-    public HumanBoss2MediumState mediumState = new HumanBoss2MediumState();
-    public HumanBoss2LongState longState = new HumanBoss2LongState();
+    public HumanBoss2RunKState runningState = new HumanBoss2RunKState();
+    public HumanBoss2MeleeKState meleeState = new HumanBoss2MeleeKState();
+    public HumanBoss2MediumKState mediumState = new HumanBoss2MediumKState();
+    public HumanBoss2LongKState longState = new HumanBoss2LongKState();
     #endregion
 
     #region Animations
@@ -101,7 +107,6 @@ public class HumanBossController_Keko : MonoBehaviour
         rg2d = GetComponent<Rigidbody2D>();
         gM = GameObject.Find("GameManager");
         character = GameObject.Find("Player");
-        canInstantiate = true;
     }
     void Update()
     {
@@ -112,17 +117,24 @@ public class HumanBossController_Keko : MonoBehaviour
         #region Flipping
         if (character != null)
         {
-            if (transform.position.x < character.transform.position.x)
+            if (transform.position.x < character.transform.position.x && transform.localScale != new Vector3(-1f, 1f, 1f))
             {
                 //turn object
                 transform.localScale = new Vector3(-1f, 1f, 1f);
                 isFacing_Left = true;
+                FacingDirection = Vector2.right;
+                Debug.Log("Flipped to left");
             }
-            else if (transform.position.x > character.transform.position.x)
+            if (transform.position.x > character.transform.position.x && transform.localScale != new Vector3(1f, 1f, 1f))
             {
                 //turn object ro other side
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 isFacing_Left = false;
+                FacingDirection = Vector2.left;
+
+                Debug.Log("Flipped to right");
+
+
             }
         }
         #endregion
@@ -137,27 +149,53 @@ public class HumanBossController_Keko : MonoBehaviour
         {
             grounded = false;
         }
-
-        var castDist = distance;
+        //parth blocked but can jump part
+        var castDist = 1;
         if (isFacing_Left)
         {
-            castDist = -distance;
+            castDist = -1;
         }
-
         Vector2 endPos = midRay.position + Vector3.left * castDist;
-        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Ground"));
+        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Default"));
 
         if (Midray.collider != null)
         {
             if (Midray.collider.gameObject.CompareTag("Ground"))
             {
                 pathBlocked_ButCANJump = true;
+            }
+        }
+        else
+            pathBlocked_ButCANJump = false;
 
+        // Player in range detection rays
+
+
+        Vector2 endPos_Player = midRay.position + Vector3.left * distance;
+
+        RaycastHit2D hit_Player = Physics2D.Raycast(midRay.position, FacingDirection, distance, 1 << LayerMask.NameToLayer("Player"));
+
+        if (hit_Player.collider != null)
+        {
+            if (hit_Player.collider.CompareTag("Player"))
+            {
+                playerIsInRange = true;
+                Debug.DrawRay(midRay.position, FacingDirection * distance, Color.red);
             }
         }
         else
         {
-            pathBlocked_ButCANJump = false;
+            playerIsInRange = false;
+            Debug.DrawRay(midRay.position, FacingDirection * distance, Color.green);
+        }
+
+        if (character.transform.position.y < 1)
+        {
+            playerIsInMidRangeHorizontal = true;
+        }
+        else if (character.transform.position.y > 1)
+        {
+            playerIsInMidRangeHorizontal = false;
         }
         #endregion
 
@@ -209,7 +247,9 @@ public class HumanBossController_Keko : MonoBehaviour
     {
         // Draw attack range sphere
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, meleeRange);
+        //Gizmos.DrawWireSphere(transform.position, meleeRange);
+
+
 
         // Draw view range wire cube
         Gizmos.color = Color.green;
@@ -222,6 +262,8 @@ public class HumanBossController_Keko : MonoBehaviour
         // Draw close attack range sphere
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, longRange);
+
+
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -290,50 +332,48 @@ public class HumanBossController_Keko : MonoBehaviour
     public void AttackCompleteShort()
     {
         isAttackingShort = false;
-        canInstantiate = true;
-        movementSpeed = 2f;
+        playerIsInRange = false;
+        movementSpeed = 1f;
+
     }
     public void AttackCompleteMedium()
     {
         isAttackingMedium = false;
-        canInstantiate = true;
         Deb.ug("AttackCompleteMedium");
     }
 
     public void AttackCompleteLong()
     {
         isAttackingLong = false;
-        canInstantiate = true;
     }
 
     public void HumanBossAttackInitiater()
     {
-        if (isAttackingShort == false && isAttackingMedium == false)
+        Deb.ug("Ýnitiating Attack");
+        Debug.Log("is player is in range " + playerIsInRange);
+
+        if (playerIsInRange == true && isAttackingShort == false)
         {
+            Debug.Log("is player is in range " + playerIsInRange);
 
-            //boss.timeBtwAttack ý mý silsek ?
-            Deb.ug("Ýnitiating Attack");
-            if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
-            {
-                SwitchState(mediumState);
-                Debug.Log("medium attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && timeBtw_longAttack <= 0 && canInstantiate == true)
-            {
-                SwitchState(longState);
-                Debug.Log("long attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
-            {
-                SwitchState(meleeState);
-                Debug.Log("melee attack");
-            }
-            else if (isAttackingMedium == false && isAttackingShort == false)
-            {
-                SwitchState(runningState);
-            }
+            SwitchState(meleeState);
+            Debug.Log("melee attack");
         }
-
+        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && playerIsInMidRangeHorizontal == true && isAttackingMedium == false)
+        {
+            SwitchState(mediumState);
+            Debug.Log("medium attack");
+        }
+        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == false)
+        {
+            SwitchState(longState);
+            Deb.ug("long attack");
+        }
+        else
+        {
+            Debug.Log(isAttackingLong + "is Running");
+            SwitchState(runningState);
+        }
     }
 
 }
@@ -351,7 +391,7 @@ public abstract class HumanBoss2BaseState
     public abstract void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision);
 }
 
-public class HumanBoss2RunState : HumanBoss2BaseState
+public class HumanBoss2RunKState : HumanBoss2BaseState
 {
     public override void EnterState(HumanBossController_Keko boss)
     {
@@ -405,7 +445,7 @@ public class HumanBoss2RunState : HumanBoss2BaseState
     }
 }
 
-public class HumanBoss2MeleeState : HumanBoss2BaseState
+public class HumanBoss2MeleeKState : HumanBoss2BaseState
 {
 
     /// <summary>
@@ -499,7 +539,7 @@ public class HumanBoss2MeleeState : HumanBoss2BaseState
     }
 }
 
-public class HumanBoss2MediumState : HumanBoss2BaseState
+public class HumanBoss2MediumKState : HumanBoss2BaseState
 {/// <summary>
 /// jumps and disseppears while gone a mark will shown to say where he will land which follows the player and comes back does area damage.
 /// </summary>
@@ -591,7 +631,7 @@ public class HumanBoss2MediumState : HumanBoss2BaseState
     }
 }
 
-public class HumanBoss2LongState : HumanBoss2BaseState
+public class HumanBoss2LongKState : HumanBoss2BaseState
 {
     /// <summary>
     /// waits a litle and jumpsin ???????????????
@@ -601,7 +641,7 @@ public class HumanBoss2LongState : HumanBoss2BaseState
     {
         Deb.ug("Laser Enter state");
         boss.timeBtw_longAttack = boss.startTimeBtw_longAttack;
-        boss.canInstantiate = true;
+        boss.isAttackingLong = true;
         boss.ChangeAnimationState(HumanBossController_Keko.ENEMY_ATTACK3);
         distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
 
@@ -616,7 +656,7 @@ public class HumanBoss2LongState : HumanBoss2BaseState
             // Handle the case where LASER_Gun component is not found on go.
             Debug.LogError("LASER_Gun component not found on the GameObject.");
         }
-        boss.canInstantiate = false;
+        boss.isAttackingLong = false;
         boss.SwitchState(boss.runningState);
     }
     public override void UpdateState(HumanBossController_Keko boss)

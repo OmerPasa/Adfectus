@@ -849,7 +849,7 @@ namespace TarodevController
             isAttacking = false;
             CanAttack = false;
             RangeImage.color = new Color(0, 0, 0, 0);
-            Debug.Log("ATTACKCOMPLETEPlayer");
+            //Debug.Log("ATTACKCOMPLETEPlayer");
         }
         void dashRecovery()
         {
