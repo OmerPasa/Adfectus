@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TarodevController;
+using System.Threading;
 
 public class HumanBossController_Keko : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class HumanBossController_Keko : MonoBehaviour
     public Transform attackPos;
     public LayerMask whatIsEnemies;
     public GameObject fireObject;
+    public LineRenderer teleportLineRenderer; // Assign the Line Renderer component in the inspector
+    public LineRenderer teleportLineRenderer2; // Assign the Line Renderer component in the inspector
+    public LineRenderer teleportLineRenderer3; // Assign the Line Renderer component in the inspector
+
 
     #endregion
 
@@ -34,24 +39,28 @@ public class HumanBossController_Keko : MonoBehaviour
     public float bulletRange;
     [Range(0f, 10f)]
     public float pushForce;
-    [Range(0f, 10f)]
-    public float distance;
-    [Range(0f, 2000f)]
-    public float pushDistance;
+    public float pushDistance = 200f;
     public float maxMovementSpeed;
     public float bulletTime;
     public float movementSpeed;
     public float jumpPower;
     public float jumpTime;
-    public float elapsedTime;
     #endregion
 
     #region variables
-    float jumpTime2 = 0;
-    public float damageDelay;
+    private Material lineMaterial;
+    private Color initialColor;
+    private float startTime;
+    public Vector3 teleportPosition;
     public int health = 4;
+    public int Shortattackhitcount = 1;
+    float jumpTime2 = 0;
+    float distance = 1;
+    public float damageDelay;
     public float damage;
-    int Count;
+    public float lineDuration;
+    public float TeleportDistance;
+
     [SerializeField] public float timeBtw_shortAttack;
     [SerializeField] public float startTimeBtw_shortAttack;
     [SerializeField] public float timeBtw_midAttack;
@@ -62,19 +71,18 @@ public class HumanBossController_Keko : MonoBehaviour
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
-    public bool playerIsInRange = false;
-    public bool playerIsInMidRangeHorizontal = false;
+    public bool canInstantiate = false;
+    public bool canAttackTeleport2 = false;
     bool isFacing_Left;
-    public Vector2 endPos_Player;
-    public Vector2 FacingDirection = Vector2.left;
+    private Mutex canAttackTeleport2Mutex = new Mutex();
     #endregion
 
     #region State_Machine States
     public HumanBoss2BaseState currentState;
-    public HumanBoss2RunKState runningState = new HumanBoss2RunKState();
-    public HumanBoss2MeleeKState meleeState = new HumanBoss2MeleeKState();
-    public HumanBoss2MediumKState mediumState = new HumanBoss2MediumKState();
-    public HumanBoss2LongKState longState = new HumanBoss2LongKState();
+    public HumanBoss2RunState runningState = new HumanBoss2RunState();
+    public HumanBoss2MeleeState meleeState = new HumanBoss2MeleeState();
+    public HumanBoss2MediumState mediumState = new HumanBoss2MediumState();
+    public HumanBoss2LongState longState = new HumanBoss2LongState();
     #endregion
 
     #region Animations
@@ -107,6 +115,7 @@ public class HumanBossController_Keko : MonoBehaviour
         rg2d = GetComponent<Rigidbody2D>();
         gM = GameObject.Find("GameManager");
         character = GameObject.Find("Player");
+        canInstantiate = true;
     }
     void Update()
     {
@@ -117,24 +126,17 @@ public class HumanBossController_Keko : MonoBehaviour
         #region Flipping
         if (character != null)
         {
-            if (transform.position.x < character.transform.position.x && transform.localScale != new Vector3(-1f, 1f, 1f))
+            if (transform.position.x < character.transform.position.x)
             {
                 //turn object
                 transform.localScale = new Vector3(-1f, 1f, 1f);
                 isFacing_Left = true;
-                FacingDirection = Vector2.right;
-                Debug.Log("Flipped to left");
             }
-            if (transform.position.x > character.transform.position.x && transform.localScale != new Vector3(1f, 1f, 1f))
+            else if (transform.position.x > character.transform.position.x)
             {
                 //turn object ro other side
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 isFacing_Left = false;
-                FacingDirection = Vector2.left;
-
-                Debug.Log("Flipped to right");
-
-
             }
         }
         #endregion
@@ -149,53 +151,27 @@ public class HumanBossController_Keko : MonoBehaviour
         {
             grounded = false;
         }
-        //parth blocked but can jump part
-        var castDist = 1;
+
+        var castDist = distance;
         if (isFacing_Left)
         {
-            castDist = -1;
+            castDist = -distance;
         }
+
         Vector2 endPos = midRay.position + Vector3.left * castDist;
-        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Default"));
+        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Ground"));
 
         if (Midray.collider != null)
         {
             if (Midray.collider.gameObject.CompareTag("Ground"))
             {
                 pathBlocked_ButCANJump = true;
+
             }
         }
         else
+        {
             pathBlocked_ButCANJump = false;
-
-        // Player in range detection rays
-
-
-        Vector2 endPos_Player = midRay.position + Vector3.left * distance;
-
-        RaycastHit2D hit_Player = Physics2D.Raycast(midRay.position, FacingDirection, distance, 1 << LayerMask.NameToLayer("Player"));
-
-        if (hit_Player.collider != null)
-        {
-            if (hit_Player.collider.CompareTag("Player"))
-            {
-                playerIsInRange = true;
-                Debug.DrawRay(midRay.position, FacingDirection * distance, Color.red);
-            }
-        }
-        else
-        {
-            playerIsInRange = false;
-            Debug.DrawRay(midRay.position, FacingDirection * distance, Color.green);
-        }
-
-        if (character.transform.position.y < 1)
-        {
-            playerIsInMidRangeHorizontal = true;
-        }
-        else if (character.transform.position.y > 1)
-        {
-            playerIsInMidRangeHorizontal = false;
         }
         #endregion
 
@@ -247,9 +223,7 @@ public class HumanBossController_Keko : MonoBehaviour
     {
         // Draw attack range sphere
         Gizmos.color = Color.red;
-        //Gizmos.DrawWireSphere(transform.position, meleeRange);
-
-
+        Gizmos.DrawWireSphere(transform.position, meleeRange);
 
         // Draw view range wire cube
         Gizmos.color = Color.green;
@@ -262,8 +236,6 @@ public class HumanBossController_Keko : MonoBehaviour
         // Draw close attack range sphere
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, longRange);
-
-
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -331,49 +303,178 @@ public class HumanBossController_Keko : MonoBehaviour
 
     public void AttackCompleteShort()
     {
+        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         isAttackingShort = false;
-        playerIsInRange = false;
-        movementSpeed = 1f;
-
+        canInstantiate = true;
+        movementSpeed = 2f;
     }
     public void AttackCompleteMedium()
     {
         isAttackingMedium = false;
+        canInstantiate = true;
         Deb.ug("AttackCompleteMedium");
     }
 
     public void AttackCompleteLong()
     {
         isAttackingLong = false;
+        canInstantiate = true;
+    }
+    #region TeleportBehindPlayer-ShortAttack
+    public IEnumerator TeleportBehindPlayer(LineRenderer teleportLineRenderer)
+    {
+        CalculateTeleportPosition();
+        StoreLineRendererProperties(teleportLineRenderer);
+        DrawTeleportLine(teleportLineRenderer);
+        UpdateCollider(teleportLineRenderer);
+        yield break;
     }
 
+    private void CalculateTeleportPosition()
+    {
+        float direction = Mathf.Sign(character.transform.position.x - transform.position.x);
+        Vector3 playerPosition = character.transform.position;
+        teleportPosition.x = playerPosition.x + direction * TeleportDistance; // Use a constant or parameter
+        teleportPosition.y = transform.position.y;
+    }
+
+    private void StoreLineRendererProperties(LineRenderer teleportLineRenderer)
+    {
+        lineMaterial = teleportLineRenderer.material;
+        initialColor = lineMaterial.color;
+        startTime = Time.time;
+    }
+
+    private void DrawTeleportLine(LineRenderer teleportLineRenderer)
+    {
+        teleportLineRenderer.positionCount = 2;
+        teleportLineRenderer.SetPosition(0, transform.position);
+        teleportLineRenderer.SetPosition(1, teleportPosition);
+        transform.position = teleportPosition;
+    }
+
+    private void UpdateCollider(LineRenderer teleportLineRenderer)
+    {
+        BoxCollider2D collider = teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>();
+        collider.enabled = false;
+
+        if (teleportLineRenderer.enabled)
+        {
+            SetColliderPositionAndSize(collider);
+        }
+    }
+    private void SetColliderPositionAndSize(BoxCollider2D collider)
+    {
+        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().transform.position = teleportLineRenderer.transform.position;
+        Vector3 startPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(0));
+        Vector3 endPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1));
+        Vector3 center = (startPosition + endPosition) / 2f;
+        float sizeX = Vector3.Distance(startPosition, endPosition);
+        float sizeY = teleportLineRenderer.endWidth; // Set to your LineRenderer's width
+
+        collider.transform.position = center;
+        collider.size = new Vector2(sizeX, sizeY);
+        if (canAttackTeleport2 == true)
+        {
+            Debug.Log("secondteleportPRE");
+        }
+        StartCoroutine(HideTeleportLine(collider));
+    }
+
+    private IEnumerator HideTeleportLine(Collider2D collider)
+    {
+        float firstLineDuration = lineDuration - 1f;
+
+        // Extract color manipulation to a separate method
+        yield return ColorLerpOverTime(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), firstLineDuration, lineMaterial);
+        Debug.Log("startafterhide");
+        collider.enabled = true;
+        lineMaterial.color = Color.red;
+        canAttackTeleport2Mutex.WaitOne();
+        Debug.Log("canAttackTeleport2: " + canAttackTeleport2);
+        Debug.Log("Shortattackhitcount: " + Shortattackhitcount);
+
+        if (canAttackTeleport2 == true || Shortattackhitcount == 2)// still not seing true...
+        {
+            Debug.Log("secondteleport");
+            // var lineMaterialOne = lineMaterial;//storing first lines values
+            //var initialColorOne = initialColor;//storing first lines values
+            StartCoroutine(TeleportBehindPlayer(teleportLineRenderer2));
+            //canAttackTeleport2 = false;
+        }
+        canAttackTeleport2Mutex.ReleaseMutex();
+        yield return ColorLerpOverTime(Color.red, new Color(lineMaterial.color.r, lineMaterial.color.g, lineMaterial.color.b, 0f), 1f, lineMaterial);
+        yield return new WaitForSeconds(1f);
+        // setting everything back.
+        collider.offset = Vector2.zero;
+        collider.transform.position = Vector3.zero;
+        teleportLineRenderer.positionCount = 0; // Hide the line completely
+        Debug.Log("AFter hide finish");
+        // Set the Line Renderer's color back to normal
+        lineMaterial.color = initialColor;
+        AttackCompleteShort();
+    }
+    public void IncreaseShortAttackLines()
+    {
+        Shortattackhitcount++;// if is 2  that meansboss can draw 2 lines 
+        Debug.Log("Shortattackhitcount " + Shortattackhitcount);
+        if (Shortattackhitcount == 2)
+        {
+            canAttackTeleport2 = true;
+            if (canAttackTeleport2 == false)
+            {
+                canAttackTeleport2 = true;
+            }
+            Debug.Log("canAttackTeleport2: in attacklines" + canAttackTeleport2);
+
+
+        }
+    }
+
+    private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
+    {
+        float elapsedTime = 0f;
+        startTime = Time.time;
+
+        while (elapsedTime < duration)
+        {
+            float lerpValue = elapsedTime / duration;
+            Color newColor = Color.Lerp(startColor, endColor, lerpValue);
+            targetMaterial.color = newColor;
+
+            elapsedTime = Time.time - startTime;
+            yield return null;
+        }
+    }
+    #endregion
     public void HumanBossAttackInitiater()
     {
-        Deb.ug("Ýnitiating Attack");
-        Debug.Log("is player is in range " + playerIsInRange);
+        if (isAttackingShort == false && isAttackingMedium == false)
+        {
 
-        if (playerIsInRange == true && isAttackingShort == false)
-        {
-            Debug.Log("is player is in range " + playerIsInRange);
+            //boss.timeBtwAttack ý mý silsek ?
+            Deb.ug("Ýnitiating Attack");
+            if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
+            {
+                SwitchState(mediumState);
+                Debug.Log("medium attack");
+            }
+            else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && timeBtw_longAttack <= 0 && canInstantiate == true)
+            {
+                SwitchState(longState);
+                Debug.Log("long attack");
+            }
+            else if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
+            {
+                SwitchState(meleeState);
+                Debug.Log("melee attack");
+            }
+            else if (isAttackingMedium == false && isAttackingShort == false)
+            {
+                SwitchState(runningState);
+            }
+        }
 
-            SwitchState(meleeState);
-            Debug.Log("melee attack");
-        }
-        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && playerIsInMidRangeHorizontal == true && isAttackingMedium == false)
-        {
-            SwitchState(mediumState);
-            Debug.Log("medium attack");
-        }
-        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == false)
-        {
-            SwitchState(longState);
-            Deb.ug("long attack");
-        }
-        else
-        {
-            Debug.Log(isAttackingLong + "is Running");
-            SwitchState(runningState);
-        }
     }
 
 }
@@ -391,7 +492,7 @@ public abstract class HumanBoss2BaseState
     public abstract void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision);
 }
 
-public class HumanBoss2RunKState : HumanBoss2BaseState
+public class HumanBoss2RunState : HumanBoss2BaseState
 {
     public override void EnterState(HumanBossController_Keko boss)
     {
@@ -445,12 +546,10 @@ public class HumanBoss2RunKState : HumanBoss2BaseState
     }
 }
 
-public class HumanBoss2MeleeKState : HumanBoss2BaseState
-{
-
-    /// <summary>
-    /// character will go and drove a line that coul include player then after a given time that line will change and do damage there could be more than 1 line drawn.
-    /// </summary>
+public class HumanBoss2MeleeState : HumanBoss2BaseState
+{// this short attack  will be done if player is near if player is again in the range attack
+ // will be done  as swordsman runs through his enemy aka it will be teleported
+ // to new location only remain will be the air that cutted
     float maxChargeDistance;
     float chargeDistance;
     Vector2 playerPosition;
@@ -460,34 +559,18 @@ public class HumanBoss2MeleeKState : HumanBoss2BaseState
         Debug.Log("Boss2 melee state started");
         boss.isAttackingShort = true;
         maxChargeDistance = 5.5f;
-        // Calculate the direction towards the player
-        playerPosition = boss.character.transform.position;
-        bossPosition = boss.transform.position;
-        float direction = Mathf.Sign(playerPosition.x - bossPosition.x);
 
-        // Set the boss's movement speed to a high value
-        boss.movementSpeed = boss.maxMovementSpeed;
-
-        // Move the boss towards the player until they collide
-        Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
-        rb2d.velocity = new Vector2(direction * boss.movementSpeed, rb2d.velocity.y);
+        // Set the boss's movement speed 
+        boss.movementSpeed = 0f;
+        boss.StartCoroutine(boss.TeleportBehindPlayer(boss.teleportLineRenderer));
+        //boss.Invoke(nameof(boss.TeleportBehindPlayer), 1f);
 
     }
 
+
+
     public override void UpdateState(HumanBossController_Keko boss)
     {
-        Deb.ug("Boss2 melee state updating");// we could implement a check for players new position if its differs from the enter state we misseed so we call attack ended
-        playerPosition = boss.character.transform.position;
-        bossPosition = boss.transform.position;
-        chargeDistance = Vector2.Distance(bossPosition, playerPosition);
-        Debug.Log(chargeDistance);
-
-        if (chargeDistance > maxChargeDistance)
-        {
-            // Boss missed the player
-            // boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-            boss.Invoke(nameof(boss.AttackCompleteShort), boss.damageDelay);
-        }
     }
     public override void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision)
     {
@@ -514,7 +597,7 @@ public class HumanBoss2MeleeKState : HumanBoss2BaseState
 
             if (playerController != null)
             {
-                playerController.PlayerTakeDamage(boss.damage); // is not getting called
+                playerController.PlayerTakeDamage(boss.damage);
                 boss.timeBtw_shortAttack = boss.startTimeBtw_shortAttack;
                 boss.SwitchState(boss.runningState);
 
@@ -539,109 +622,39 @@ public class HumanBoss2MeleeKState : HumanBoss2BaseState
     }
 }
 
-public class HumanBoss2MediumKState : HumanBoss2BaseState
-{/// <summary>
-/// jumps and disseppears while gone a mark will shown to say where he will land which follows the player and comes back does area damage.
-/// </summary>
-    private int currentPart = 1;  // Keep track of the current part of the attack
-    private float delayBetweenFires = 1f;  // The delay between each fire instantiation
-    private float fireDuration = 2f;  // The duration of each fire effect
-    private float fireLength = 2.5f; // ateþin oyuncudan uzaklýðý.
+public class HumanBoss2MediumState : HumanBoss2BaseState
+{
 
-    private float timer = 0f;  // Timer to track the delay between fires
-    private readonly object stateLock = new object();
     public override void EnterState(HumanBossController_Keko boss)
     {
         // Reset the current part to 1 when entering the state
 
-        currentPart = 1;
-        boss.isAttackingMedium = true;
     }
 
     public override void UpdateState(HumanBossController_Keko boss)
     {
-
-        // Increment the timer
-        timer += Time.deltaTime;
-
-        // Check if the delay between fires has passed
-        if (timer >= delayBetweenFires && boss.character != null)
-        {
-            lock (stateLock)
-            {
-
-                Debug.Log("firing inside ");
-                timer = 0f;  // Reset the timer
-                             // Perform the appropriate action for the current part of the attack
-                switch (currentPart)
-                {
-                    case 1:
-                        // Perform the second part of the attack
-                        // e.g., play animation, apply damage, etc
-                        Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
-                        Debug.Log("player direction1 " + playerDirection1);
-                        CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
-                        break;
-
-                    case 2:
-                        // Perform the third part of the attack
-                        // e.g., play animation, apply damage, etc.
-                        Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                        CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
-                        break;
-
-                    case 3:
-                        // Perform the third part of the attack
-                        // e.g., play animation, apply damage, etc.
-                        Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                        CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
-                        break;
-                }
-
-                // Increase the current part for the next update
-                currentPart++;
-                // Check if the boss has completed all three parts of the attack
-                if (currentPart > 3)
-                {
-                    // Transition to a different state or perform any other actions
-                    // after completing the attack
-                    boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-
-                    boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
-                    return;
-                }
-            }
-        }
+        boss.SwitchState(boss.runningState);
+        boss.isAttackingMedium = false;
     }
 
-    private void CreateFire(Vector3 position, HumanBossController_Keko boss)
-    {
-        // Instantiate the fire effect at the specified position
-        GameObject fire = GameObject.Instantiate(boss.fireObject, position, Quaternion.identity);
-
-        // Destroy the fire effect after the specified duration
-        GameObject.Destroy(fire, fireDuration);
-        boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
-    }
 
     public override void OnCollisionEnter(HumanBossController_Keko boss, Collision2D collision)
     {
         // Handle collision events during the attack if necessary
         // This method will be called when the boss collides with something
     }
+
+
 }
 
-public class HumanBoss2LongKState : HumanBoss2BaseState
+public class HumanBoss2LongState : HumanBoss2BaseState
 {
-    /// <summary>
-    /// waits a litle and jumpsin ???????????????
-    /// </summary>
     public Vector3 distance_lasertoplayer;
     public override void EnterState(HumanBossController_Keko boss)
     {
         Deb.ug("Laser Enter state");
         boss.timeBtw_longAttack = boss.startTimeBtw_longAttack;
-        boss.isAttackingLong = true;
+        boss.canInstantiate = true;
         boss.ChangeAnimationState(HumanBossController_Keko.ENEMY_ATTACK3);
         distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
 
@@ -656,7 +669,7 @@ public class HumanBoss2LongKState : HumanBoss2BaseState
             // Handle the case where LASER_Gun component is not found on go.
             Debug.LogError("LASER_Gun component not found on the GameObject.");
         }
-        boss.isAttackingLong = false;
+        boss.canInstantiate = false;
         boss.SwitchState(boss.runningState);
     }
     public override void UpdateState(HumanBossController_Keko boss)
