@@ -8,6 +8,7 @@ public class TimeDriver : MonoBehaviour //TimeAndBeat.cs kopyası
 {
     public GameObject player;
     public GameObject boss;
+    public GameObject testObject;
 
     [SerializeField] int p;
     public static int part;
@@ -39,6 +40,7 @@ public class TimeDriver : MonoBehaviour //TimeAndBeat.cs kopyası
         //Debug.Log("TimeDriver start");
         LoopData.player = player;
         LoopData.boss = boss;
+        LoopData.testObject = testObject;
         play(0);
         currentLoopPos = 0;
         active = true;
