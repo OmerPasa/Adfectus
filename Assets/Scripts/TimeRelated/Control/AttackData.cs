@@ -73,13 +73,13 @@ public class AttackData
 
         if (SceneManager.GetActiveScene().name == "BossDamat")
         {
-            HumanBossController_Damat hbc = LoopData.boss.GetComponent<HumanBossController_Damat>();
-            hbc.HumanBossAttackInitiater();
+            HumanBossController_Damat hbc_D = LoopData.boss.GetComponent<HumanBossController_Damat>();
+            hbc_D.HumanBossAttackInitiater();
         }
         else if (SceneManager.GetActiveScene().name == "BossKekoFix")
         {
-            HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
-            hbc_D.HumanBossAttackInitiater();
+            HumanBossController_Keko hbc_K = LoopData.boss.GetComponent<HumanBossController_Keko>();
+            hbc_K.HumanBossAttackInitiater();
         }
 
         PlayerController pc = LoopData.player.GetComponent<PlayerController>();
@@ -134,7 +134,6 @@ public class AttackData
                 //bundan emin deilim
                 break;
         }
-
     }
 
     void stateSenderForHumanBossController(AttackData clone)

@@ -367,9 +367,9 @@ namespace TarodevController
         private void OnTriggerEnter2D(Collider2D trigger)
         {
 
-            Debug.Log("Trigger entered: " + laser.gameObject.tag);
+            Debug.Log("Trigger entered: " + trigger.gameObject.tag);
 
-            if (laser.gameObject.tag == "Laser")
+            if (trigger.gameObject.tag == "Laser")
 
             {
                 Debug.Log("Laser condition met");
@@ -377,7 +377,7 @@ namespace TarodevController
                 Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
             }
-            else if (laser.gameObject.tag == "Keko_Shortattack")
+            else if (trigger.gameObject.tag == "Keko_Shortattack")
             {
                 Debug.Log("Keko_Shortattack condition met");
                 PlayerTakeDamage(damageToPlayer);
@@ -844,15 +844,9 @@ namespace TarodevController
         }
         #endregion
 
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            if (collision.gameObject.CompareTag("Boss2"))
-            {
-                // Calculate the push direction away from the boss
-                Vector3 bossPosition = collision.gameObject.transform.position;
-                Vector3 playerPosition = transform.position;
 
-        private void OneWayPlatform()
+
+        void OneWayPlatform()
         {
             currentOneWayPlatform?.gameObject.SetActive(true);
             Debug.Log($"currentonewayplatform from inside LAST part is {currentOneWayPlatform}.");

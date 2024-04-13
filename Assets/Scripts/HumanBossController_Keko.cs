@@ -417,7 +417,7 @@ public class HumanBossController_Keko : MonoBehaviour
     }
     public void IncreaseShortAttackLines()
     {
-        Shortattackhitcount++;// if is 2  that meansboss can draw 2 lines 
+        Shortattackhitcount++;// if is 2  that meansboss can draw 2 lines
         Debug.Log("Shortattackhitcount " + Shortattackhitcount);
         if (Shortattackhitcount == 2)
         {
@@ -447,76 +447,18 @@ public class HumanBossController_Keko : MonoBehaviour
             yield return null;
         }
     }
+
     #endregion
+
+
     public void HumanBossAttackInitiater()
     {
-        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().transform.position = teleportLineRenderer.transform.position;
-        Vector3 startPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(0));
-        Vector3 endPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1));
-        Vector3 center = (startPosition + endPosition) / 2f;
-        float sizeX = Vector3.Distance(startPosition, endPosition);
-        float sizeY = teleportLineRenderer.endWidth; // Set to your LineRenderer's width
 
-        collider.transform.position = center;
-        collider.size = new Vector2(sizeX, sizeY);
-        if (canAttackTeleport2 == true)
-        {
-            Debug.Log("secondteleportPRE");
-        }
-        StartCoroutine(HideTeleportLine(collider));
-    }
-
-
-            Deb.ug("Ýnitiating Attack");
-            if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
-            {
-                SwitchState(meleeState);
-                Debug.Log("melee attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && timeBtw_longAttack <= 0 && canInstantiate == true)
-            {
-                SwitchState(longState);
-                Debug.Log("long attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
-            {
-                SwitchState(mediumState);
-                Debug.Log("medium attack");
-            }
-            else if (isAttackingMedium == false && isAttackingShort == false)
-
-            {
-                canAttackTeleport2 = true;
-            }
-            Debug.Log("canAttackTeleport2: in attacklines" + canAttackTeleport2);
-
-
-        }
-    }
-
-    private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
-    {
-        float elapsedTime = 0f;
-        startTime = Time.time;
-
-        while (elapsedTime < duration)
-        {
-            float lerpValue = elapsedTime / duration;
-            Color newColor = Color.Lerp(startColor, endColor, lerpValue);
-            targetMaterial.color = newColor;
-
-            elapsedTime = Time.time - startTime;
-            yield return null;
-        }
-    }
-    #endregion
-    public void HumanBossAttackInitiater()
-    {
-        //boss.timeBtwAttack ý mý silsek ?
         Deb.ug("Ýnitiating Attack");
-
-        if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingShort == false)
+        if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && isAttackingShort == false)
         {
+            canAttackTeleport2 = true;
+            Debug.Log("canAttackTeleport2: in attacklines" + canAttackTeleport2);
             SwitchState(meleeState);
             Debug.Log("melee attack");
         }
@@ -525,19 +467,20 @@ public class HumanBossController_Keko : MonoBehaviour
             SwitchState(mediumState);
             Debug.Log("medium attack");
         }
-        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == false)
+        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == true)
         {
             SwitchState(longState);
             Debug.Log("long attack");
         }
         else
         {
-            Debug.Log(isAttackingLong + "is Running");
             SwitchState(runningState);
         }
-    }
 
+
+    }
 }
+
 
 public abstract class HumanBoss2BaseState
 {
