@@ -449,39 +449,32 @@ public class HumanBossController_Keko : MonoBehaviour
     #endregion
     public void HumanBossAttackInitiater()
     {
-        if (isAttackingShort == false && isAttackingMedium == false)
+        //boss.timeBtwAttack ý mý silsek ?
+        Deb.ug("Ýnitiating Attack");
+
+        if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingShort == false)
         {
-
-            //boss.timeBtwAttack ý mý silsek ?
-            Deb.ug("Ýnitiating Attack");
-            if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
-            {
-                SwitchState(mediumState);
-                Debug.Log("medium attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && timeBtw_longAttack <= 0 && canInstantiate == true)
-            {
-                SwitchState(longState);
-                Debug.Log("long attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
-            {
-                SwitchState(meleeState);
-                Debug.Log("melee attack");
-            }
-            else if (isAttackingMedium == false && isAttackingShort == false)
-            {
-                SwitchState(runningState);
-            }
+            SwitchState(meleeState);
+            Debug.Log("melee attack");
         }
-
+        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && isAttackingMedium == false)
+        {
+            SwitchState(mediumState);
+            Debug.Log("medium attack");
+        }
+        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == false)
+        {
+            SwitchState(longState);
+            Debug.Log("long attack");
+        }
+        else
+        {
+            Debug.Log(isAttackingLong + "is Running");
+            SwitchState(runningState);
+        }
     }
 
 }
-
-
-
-
 
 public abstract class HumanBoss2BaseState
 {
