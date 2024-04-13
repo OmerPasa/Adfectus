@@ -1980,8 +1980,7 @@ MonoBehaviour:
   player: {fileID: 1762447352}
   boss: {fileID: 2003122445}
   testObject: {fileID: 1663860200}
-
-  p: 1
+  p: 0
   audioSources:
   - {fileID: 1517817676}
   currentLoopPos: 0
@@ -4019,24 +4018,23 @@ MonoBehaviour:
   attackPos: {fileID: 1997780731}
   whatIsEnemies:
     serializedVersion: 2
-
     m_Bits: 0
-  fireObject: {fileID: 1386294131819396813, guid: cb001ae290e7179429f2b0575a176ee5, type: 3}
+  fireObject: {fileID: 0}
   teleportLineRenderer: {fileID: 0}
   teleportLineRenderer2: {fileID: 0}
   teleportLineRenderer3: {fileID: 0}
-  viewRange: 16
-  meleeRange: 4
-  mediumRange: 10
-  longRange: 16
+  viewRange: 0
+  meleeRange: 0
+  mediumRange: 0
+  longRange: 0
   bulletRange: 0
-  pushForce: 10
+  pushForce: 0
   pushDistance: 200
-  maxMovementSpeed: 10
+  maxMovementSpeed: 0
   bulletTime: 0
-  movementSpeed: 3
-  jumpPower: 3
-  jumpTime: 3
+  movementSpeed: 0
+  jumpPower: 0
+  jumpTime: 0
   teleportPosition: {x: 0, y: 0, z: 0}
   health: 4
   Shortattackhitcount: 1
@@ -4060,7 +4058,7 @@ MonoBehaviour:
   isAttackingMedium: 0
   isAttackingLong: 0
   is_jumping: 0
-  animator: {fileID: 2003122448}
+  animator: {fileID: 0}
 --- !u!1 &2025265507
 GameObject:
   m_ObjectHideFlags: 0
