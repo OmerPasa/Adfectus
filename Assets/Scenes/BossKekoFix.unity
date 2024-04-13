@@ -1979,6 +1979,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1762447352}
   boss: {fileID: 2003122445}
+  testObject: {fileID: 1663860200}
+
   p: 1
   audioSources:
   - {fileID: 1517817676}
@@ -4017,36 +4019,37 @@ MonoBehaviour:
   attackPos: {fileID: 1997780731}
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 256
-  fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
+
+    m_Bits: 0
+  fireObject: {fileID: 1386294131819396813, guid: cb001ae290e7179429f2b0575a176ee5, type: 3}
   teleportLineRenderer: {fileID: 0}
   teleportLineRenderer2: {fileID: 0}
   teleportLineRenderer3: {fileID: 0}
-  viewRange: 28
-  meleeRange: 5.6
-  mediumRange: 12
-  longRange: 27
-  bulletRange: 2.15
-  pushForce: 1.6
-  pushDistance: 3
-  maxMovementSpeed: 6
+  viewRange: 16
+  meleeRange: 4
+  mediumRange: 10
+  longRange: 16
+  bulletRange: 0
+  pushForce: 10
+  pushDistance: 200
+  maxMovementSpeed: 10
   bulletTime: 0
-  movementSpeed: 2
-  jumpPower: 10
-  jumpTime: 1
+  movementSpeed: 3
+  jumpPower: 3
+  jumpTime: 3
   teleportPosition: {x: 0, y: 0, z: 0}
   health: 4
   Shortattackhitcount: 1
-  damageDelay: 2
-  damage: 3
+  damageDelay: 0
+  damage: 0
   lineDuration: 0
   TeleportDistance: 0
-  timeBtw_shortAttack: 2.51
-  startTimeBtw_shortAttack: 2.52
-  timeBtw_midAttack: 3
-  startTimeBtw_midAttack: 3.5
-  timeBtw_longAttack: 3
-  startTimeBtw_longAttack: 1.5
+  timeBtw_shortAttack: 0
+  startTimeBtw_shortAttack: 0
+  timeBtw_midAttack: 0
+  startTimeBtw_midAttack: 0
+  timeBtw_longAttack: 0
+  startTimeBtw_longAttack: 0
   grounded: 1
   pathBlocked: 0
   pathBlocked_ButCANJump: 0

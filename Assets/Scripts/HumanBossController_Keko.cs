@@ -253,7 +253,7 @@ public class HumanBossController_Keko : MonoBehaviour
         {
             isDying = true;
             ChangeAnimationState(ENEMY_DEATH);
-            Debug.Log("HumanBoss1 D›ED");
+            Debug.Log("HumanBoss1 D√ùED");
             Invoke(nameof(Die), 0.9f);
         }
     }
@@ -276,7 +276,7 @@ public class HumanBossController_Keko : MonoBehaviour
     }
     public void Jump()
     {
-        Debug.Log("AI_JUMP›NG");
+        Debug.Log("AI_JUMP√ùNG");
         if (jumpTime - (Time.realtimeSinceStartup - jumpTime2) <= 0)
         {
             jumpTime2 = Time.realtimeSinceStartup;
@@ -329,6 +329,7 @@ public class HumanBossController_Keko : MonoBehaviour
         UpdateCollider(teleportLineRenderer);
         yield break;
     }
+
 
     private void CalculateTeleportPosition()
     {
@@ -449,11 +450,24 @@ public class HumanBossController_Keko : MonoBehaviour
     #endregion
     public void HumanBossAttackInitiater()
     {
-        if (isAttackingShort == false && isAttackingMedium == false)
-        {
+        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().transform.position = teleportLineRenderer.transform.position;
+        Vector3 startPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(0));
+        Vector3 endPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1));
+        Vector3 center = (startPosition + endPosition) / 2f;
+        float sizeX = Vector3.Distance(startPosition, endPosition);
+        float sizeY = teleportLineRenderer.endWidth; // Set to your LineRenderer's width
 
-            //boss.timeBtwAttack ˝ m˝ silsek ?
-            Deb.ug("›nitiating Attack");
+        collider.transform.position = center;
+        collider.size = new Vector2(sizeX, sizeY);
+        if (canAttackTeleport2 == true)
+        {
+            Debug.Log("secondteleportPRE");
+        }
+        StartCoroutine(HideTeleportLine(collider));
+    }
+
+
+            Deb.ug("√ùnitiating Attack");
             if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
             {
                 SwitchState(meleeState);
@@ -470,18 +484,60 @@ public class HumanBossController_Keko : MonoBehaviour
                 Debug.Log("medium attack");
             }
             else if (isAttackingMedium == false && isAttackingShort == false)
-            {
-                SwitchState(runningState);
-            }
-        }
 
+            {
+                canAttackTeleport2 = true;
+            }
+            Debug.Log("canAttackTeleport2: in attacklines" + canAttackTeleport2);
+
+
+        }
+    }
+
+    private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
+    {
+        float elapsedTime = 0f;
+        startTime = Time.time;
+
+        while (elapsedTime < duration)
+        {
+            float lerpValue = elapsedTime / duration;
+            Color newColor = Color.Lerp(startColor, endColor, lerpValue);
+            targetMaterial.color = newColor;
+
+            elapsedTime = Time.time - startTime;
+            yield return null;
+        }
+    }
+    #endregion
+    public void HumanBossAttackInitiater()
+    {
+        //boss.timeBtwAttack √Ω m√Ω silsek ?
+        Deb.ug("√ùnitiating Attack");
+
+        if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingShort == false)
+        {
+            SwitchState(meleeState);
+            Debug.Log("melee attack");
+        }
+        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && isAttackingMedium == false)
+        {
+            SwitchState(mediumState);
+            Debug.Log("medium attack");
+        }
+        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == false)
+        {
+            SwitchState(longState);
+            Debug.Log("long attack");
+        }
+        else
+        {
+            Debug.Log(isAttackingLong + "is Running");
+            SwitchState(runningState);
+        }
     }
 
 }
-
-
-
-
 
 public abstract class HumanBoss2BaseState
 {

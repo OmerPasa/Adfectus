@@ -13,6 +13,7 @@ public class AttackData
     "Prefabs/LaserType4",
      "Prefabs/LaserType5" };
     // -1 = Chase, -2 = Weakened, -3 = objective pass, -4 = fade in, -5 = fade out,
+    // -9 nothing
     // -10 = human boss state change
 
     public int type;
@@ -61,6 +62,7 @@ public class AttackData
 
     public void action(Vector3 pos, int counter_Q)
     {
+        //Debug.Log("action " + type + " " + counter_Q);
         if (type == 0)
         {
             return;
@@ -74,17 +76,15 @@ public class AttackData
             HumanBossController_Damat hbc = LoopData.boss.GetComponent<HumanBossController_Damat>();
             hbc.HumanBossAttackInitiater();
         }
-        else if (SceneManager.GetActiveScene().name == "BossKeko")
+        else if (SceneManager.GetActiveScene().name == "BossKekoFix")
         {
             HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
             hbc_D.HumanBossAttackInitiater();
         }
-        PlayerController pc = LoopData.boss.GetComponent<PlayerController>();
 
-        if (pc != null)
-        {
-            pc.BeatPress();
-        }
+        PlayerController pc = LoopData.player.GetComponent<PlayerController>();
+        pc.BeatPress();
+
         if (clone.s1 != null)
         {
             stateSenderForHumanBossController(clone);
@@ -116,6 +116,13 @@ public class AttackData
                 break;
             case -5:
                 LoopData.boss.GetComponent<BossMainScript>().fadeOut(clone);
+                break;
+
+            case -9:
+                if (LoopData.testObject.GetComponent<SpriteRenderer>().color.r == 1)
+                    LoopData.testObject.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 1);
+                else
+                    LoopData.testObject.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 1);
                 break;
 
             case -10:

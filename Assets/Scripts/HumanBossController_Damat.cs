@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TarodevController;
+using System;
 
 public class HumanBossController_Damat : MonoBehaviour
 {
@@ -34,17 +35,20 @@ public class HumanBossController_Damat : MonoBehaviour
     public float bulletRange;
     [Range(0f, 10f)]
     public float pushForce;
-    public float pushDistance = 200f;
+    [Range(0f, 10f)]
+    public float distance;
+    [Range(0f, 2000f)]
+    public float pushDistance;
     public float maxMovementSpeed;
     public float bulletTime;
     public float movementSpeed;
     public float jumpPower;
     public float jumpTime;
+    public float elapsedTime;
     #endregion
 
     #region variables
     float jumpTime2 = 0;
-    float distance = 1;
     public float damageDelay;
     public int health = 4;
     public float damage;
@@ -59,8 +63,11 @@ public class HumanBossController_Damat : MonoBehaviour
     public bool pathBlocked = false;
     public bool pathBlocked_ButCANJump;
     public bool stopMoving;
-    public bool canInstantiate = false;
+    public bool playerIsInRange = false;
+    public bool playerIsInMidRangeHorizontal = false;
     bool isFacing_Left;
+    public Vector2 endPos_Player;
+    public Vector2 FacingDirection = Vector2.left;
     #endregion
 
     #region State_Machine States
@@ -101,7 +108,6 @@ public class HumanBossController_Damat : MonoBehaviour
         rg2d = GetComponent<Rigidbody2D>();
         gM = GameObject.Find("GameManager");
         character = GameObject.Find("Player");
-        canInstantiate = true;
     }
     void Update()
     {
@@ -112,17 +118,24 @@ public class HumanBossController_Damat : MonoBehaviour
         #region Flipping
         if (character != null)
         {
-            if (transform.position.x < character.transform.position.x)
+            if (transform.position.x < character.transform.position.x && transform.localScale != new Vector3(-1f, 1f, 1f))
             {
                 //turn object
                 transform.localScale = new Vector3(-1f, 1f, 1f);
                 isFacing_Left = true;
+                FacingDirection = Vector2.right;
+                Debug.Log("Flipped to left");
             }
-            else if (transform.position.x > character.transform.position.x)
+            if (transform.position.x > character.transform.position.x && transform.localScale != new Vector3(1f, 1f, 1f))
             {
                 //turn object ro other side
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 isFacing_Left = false;
+                FacingDirection = Vector2.left;
+
+                Debug.Log("Flipped to right");
+
+
             }
         }
         #endregion
@@ -137,27 +150,53 @@ public class HumanBossController_Damat : MonoBehaviour
         {
             grounded = false;
         }
-
-        var castDist = distance;
+        //parth blocked but can jump part
+        var castDist = 1;
         if (isFacing_Left)
         {
-            castDist = -distance;
+            castDist = -1;
         }
-
         Vector2 endPos = midRay.position + Vector3.left * castDist;
-        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Ground"));
+        RaycastHit2D Midray = Physics2D.Linecast(midRay.position, endPos, 1 << LayerMask.NameToLayer("Default"));
 
         if (Midray.collider != null)
         {
             if (Midray.collider.gameObject.CompareTag("Ground"))
             {
                 pathBlocked_ButCANJump = true;
+            }
+        }
+        else
+            pathBlocked_ButCANJump = false;
 
+        // Player in range detection rays
+
+
+        Vector2 endPos_Player = midRay.position + Vector3.left * distance;
+
+        RaycastHit2D hit_Player = Physics2D.Raycast(midRay.position, FacingDirection, distance, 1 << LayerMask.NameToLayer("Player"));
+
+        if (hit_Player.collider != null)
+        {
+            if (hit_Player.collider.CompareTag("Player"))
+            {
+                playerIsInRange = true;
+                Debug.DrawRay(midRay.position, FacingDirection * distance, Color.red);
             }
         }
         else
         {
-            pathBlocked_ButCANJump = false;
+            playerIsInRange = false;
+            Debug.DrawRay(midRay.position, FacingDirection * distance, Color.green);
+        }
+
+        if (character.transform.position.y < 1)
+        {
+            playerIsInMidRangeHorizontal = true;
+        }
+        else if (character.transform.position.y > 1)
+        {
+            playerIsInMidRangeHorizontal = false;
         }
         #endregion
 
@@ -209,7 +248,9 @@ public class HumanBossController_Damat : MonoBehaviour
     {
         // Draw attack range sphere
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, meleeRange);
+        //Gizmos.DrawWireSphere(transform.position, meleeRange);
+
+
 
         // Draw view range wire cube
         Gizmos.color = Color.green;
@@ -222,6 +263,8 @@ public class HumanBossController_Damat : MonoBehaviour
         // Draw close attack range sphere
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, longRange);
+
+
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -290,50 +333,48 @@ public class HumanBossController_Damat : MonoBehaviour
     public void AttackCompleteShort()
     {
         isAttackingShort = false;
-        canInstantiate = true;
-        movementSpeed = 2f;
+        playerIsInRange = false;
+        movementSpeed = 1f;
+
     }
     public void AttackCompleteMedium()
     {
         isAttackingMedium = false;
-        canInstantiate = true;
         Deb.ug("AttackCompleteMedium");
     }
 
     public void AttackCompleteLong()
     {
         isAttackingLong = false;
-        canInstantiate = true;
     }
 
     public void HumanBossAttackInitiater()
     {
-        if (isAttackingShort == false && isAttackingMedium == false)
+        Deb.ug("İnitiating Attack");
+        Debug.Log("is player is in range " + playerIsInRange);
+
+        if (playerIsInRange == true && isAttackingShort == false)
         {
+            Debug.Log("is player is in range " + playerIsInRange);
 
-            //boss.timeBtwAttack ı mı silsek ?
-            Deb.ug("İnitiating Attack");
-            if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && timeBtw_midAttack <= 0 && isAttackingShort == false)
-            {
-                SwitchState(mediumState);
-                Debug.Log("medium attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && timeBtw_longAttack <= 0 && canInstantiate == true)
-            {
-                SwitchState(longState);
-                Debug.Log("long attack");
-            }
-            else if (Vector3.Distance(transform.position, character.transform.position) <= meleeRange && timeBtw_shortAttack <= 0 && isAttackingMedium == false)
-            {
-                SwitchState(meleeState);
-                Debug.Log("melee attack");
-            }
-            else if (isAttackingMedium == false && isAttackingShort == false)
-            {
-                SwitchState(runningState);
-            }
+            SwitchState(meleeState);
+            Debug.Log("melee attack");
         }
-
+        else if (Vector3.Distance(transform.position, character.transform.position) <= mediumRange && playerIsInMidRangeHorizontal == true && isAttackingMedium == false)
+        {
+            SwitchState(mediumState);
+            Debug.Log("medium attack");
+        }
+        else if (Vector3.Distance(transform.position, character.transform.position) <= longRange && isAttackingLong == false)
+        {
+            SwitchState(longState);
+            Deb.ug("long attack");
+        }
+        else
+        {
+            Debug.Log(isAttackingLong + "is Running");
+            SwitchState(runningState);
+        }
     }
 
 }
@@ -381,7 +422,7 @@ public class HumanBossRunState : HumanBossBaseState
                 if (!boss.stopMoving)
                 {
                     // Move towards character
-                    if (Mathf.Abs(karPos.x - pos.x) > boss.meleeRange && !(boss.pathBlocked && boss.grounded))
+                    if (Mathf.Abs(karPos.x - pos.x) > (-2f + boss.meleeRange) && !(boss.pathBlocked && boss.grounded))
                     {
                         float direction = Mathf.Sign(karPos.x - pos.x);
                         Rigidbody2D rb2d = boss.GetComponent<Rigidbody2D>();
@@ -415,7 +456,7 @@ public class HumanBossMeleeState : HumanBossBaseState
     {
         Debug.Log("Boss2 melee state started");
         boss.isAttackingShort = true;
-        maxChargeDistance = 5.5f;
+        maxChargeDistance = 3.5f;
         // Calculate the direction towards the player
         playerPosition = boss.character.transform.position;
         bossPosition = boss.transform.position;
@@ -494,28 +535,60 @@ public class HumanBossMeleeState : HumanBossBaseState
         }
     }
 }
-
 public class HumanBossMediumState : HumanBossBaseState
 {
-    private int currentPart = 1;  // Keep track of the current part of the attack
-    private float delayBetweenFires = 1f;  // The delay between each fire instantiation
-    private float fireDuration = 2f;  // The duration of each fire effect
-    private float fireLength = 2.5f; // ateşin oyuncudan uzaklığı.
+    private float delayBetweenFires = 1f;
+    private float fireDuration = 2f;
+    private float fireLength = (float)Math.PI;
 
-    private float timer = 0f;  // Timer to track the delay between fires
+    private float timer = 0f;
     private readonly object stateLock = new object();
+
+    // Add a state enum to keep track of the current state within the medium attack
+    private enum MediumAttackState
+    {
+        InitiatingPart1,
+        InitiatingPart2,
+        InitiatingPart3,
+        Completed
+    }
+
+    private MediumAttackState mediumAttackState = MediumAttackState.InitiatingPart1;
+
     public override void EnterState(HumanBossController_Damat boss)
     {
-        // Reset the current part to 1 when entering the state
+        var enterDelay = (boss.elapsedTime - Time.time) * -1;
+        Debug.Log(enterDelay + "enter delay num");
+        Debug.Log(boss.elapsedTime + "elapsedTime num");
+        Debug.Log(Time.time + "Time num");
+        Debug.Log("player is in mid range horizontal ? " + boss.playerIsInMidRangeHorizontal);
+        boss.elapsedTime = Time.time;
 
-        currentPart = 1;
-        boss.isAttackingMedium = true;
+        if (enterDelay >= 2f)
+        {
+
+            Debug.Log("İt has been a long time For middle attack part2");
+            mediumAttackState = MediumAttackState.InitiatingPart1;
+            boss.isAttackingMedium = true;
+
+        }
+        Debug.Log("Enetrstate midium state is " + mediumAttackState);
+        boss.Invoke(nameof(boss.AttackCompleteMedium), 0.11f);
+        if (mediumAttackState == MediumAttackState.Completed)
+        {
+            boss.isAttackingMedium = true;
+            //mediumAttackState = MediumAttackState.InitiatingPart1;
+
+        }
+        else if (mediumAttackState != MediumAttackState.InitiatingPart1)
+        {
+            boss.isAttackingMedium = true;
+        }
+
     }
 
     public override void UpdateState(HumanBossController_Damat boss)
     {
-
-        // Increment the timer
         timer += Time.deltaTime;
 
         // Check if the delay between fires has passed
@@ -523,44 +596,56 @@ public class HumanBossMediumState : HumanBossBaseState
         {
             lock (stateLock)
             {
-
                 Debug.Log("firing inside ");
-                timer = 0f;  // Reset the timer
-                             // Perform the appropriate action for the current part of the attack
-                switch (currentPart)
+
+                timer = 0f;
+                Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                Debug.Log("player direction1 " + playerDirection1);
+
+                playerDirection1 = new Vector3(playerDirection1.x, 0f, 0f);
+                Debug.Log("player direction1 only X " + playerDirection1);
+
+                // Perform the appropriate action based on the current state
+                switch (mediumAttackState)
                 {
-                    case 1:
-                        // Perform the second part of the attack
-                        // e.g., play animation, apply damage, etc
-                        Vector3 playerDirection1 = boss.character.transform.position - boss.transform.position;
+                    case MediumAttackState.InitiatingPart1:
+
+
+
                         Debug.Log("player direction1 " + playerDirection1);
                         CreateFire(boss.transform.position + playerDirection1.normalized * fireLength, boss);
+                        mediumAttackState = MediumAttackState.InitiatingPart2;
                         break;
 
-                    case 2:
-                        // Perform the third part of the attack
-                        // e.g., play animation, apply damage, etc.
-                        Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
-                        CreateFire(boss.transform.position + playerDirection2.normalized * fireLength * 2, boss);
+                    case MediumAttackState.InitiatingPart2:
+                        //Vector3 playerDirection2 = boss.character.transform.position - boss.transform.position;
+                        CreateFire(boss.transform.position + playerDirection1.normalized * fireLength * 2, boss);
+                        mediumAttackState = MediumAttackState.InitiatingPart3;
                         break;
 
-                    case 3:
-                        // Perform the third part of the attack
-                        // e.g., play animation, apply damage, etc.
-                        Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
-                        CreateFire(boss.transform.position + playerDirection3.normalized * fireLength * 3, boss);
+                    case MediumAttackState.InitiatingPart3:
+                        //Vector3 playerDirection3 = boss.character.transform.position - boss.transform.position;
+                        // Find all GameObjects with a specific tag
+                        GameObject[] objectsWithSpecificTag = GameObject.FindGameObjectsWithTag("Explosion");
+
+                        // Check if there are at least 2 objects with the specified tag
+                        if (objectsWithSpecificTag.Length >= 2)
+                        {
+                            CreateFire(boss.transform.position + playerDirection1.normalized * fireLength * 1, boss);
+                        }
+                        else
+                        {
+                            // Less than 2 objects with the specified tag were found
+                            CreateFire(boss.transform.position + playerDirection1.normalized * fireLength * 3, boss);
+                        }
+                        mediumAttackState = MediumAttackState.Completed;
                         break;
                 }
-
-                // Increase the current part for the next update
-                currentPart++;
+                Debug.Log("Current midium state is " + mediumAttackState);
                 // Check if the boss has completed all three parts of the attack
-                if (currentPart > 3)
+                if (mediumAttackState == MediumAttackState.InitiatingPart2 || mediumAttackState == MediumAttackState.InitiatingPart3 || mediumAttackState == MediumAttackState.Completed)
                 {
-                    // Transition to a different state or perform any other actions
-                    // after completing the attack
                     boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
-
                     boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
                     return;
                 }
@@ -570,21 +655,16 @@ public class HumanBossMediumState : HumanBossBaseState
 
     private void CreateFire(Vector3 position, HumanBossController_Damat boss)
     {
-        // Instantiate the fire effect at the specified position
         GameObject fire = GameObject.Instantiate(boss.fireObject, position, Quaternion.identity);
-
-        // Destroy the fire effect after the specified duration
         GameObject.Destroy(fire, fireDuration);
         boss.timeBtw_midAttack = boss.startTimeBtw_midAttack;
     }
 
     public override void OnCollisionEnter(HumanBossController_Damat boss, Collision2D collision)
     {
-        // Handle collision events during the attack if necessary
-        // This method will be called when the boss collides with something
+        boss.damageDelay = boss.animator.GetCurrentAnimatorStateInfo(0).length;
+        boss.Invoke(nameof(boss.AttackCompleteMedium), boss.damageDelay);
     }
-
-
 }
 
 public class HumanBossLongState : HumanBossBaseState
@@ -594,7 +674,7 @@ public class HumanBossLongState : HumanBossBaseState
     {
         Deb.ug("Laser Enter state");
         boss.timeBtw_longAttack = boss.startTimeBtw_longAttack;
-        boss.canInstantiate = true;
+        boss.isAttackingLong = true;
         boss.ChangeAnimationState(HumanBossController_Damat.ENEMY_ATTACK3);
         distance_lasertoplayer = (boss.character.transform.position - boss.transform.position).normalized;
 
@@ -609,7 +689,7 @@ public class HumanBossLongState : HumanBossBaseState
             // Handle the case where LASER_Gun component is not found on go.
             Debug.LogError("LASER_Gun component not found on the GameObject.");
         }
-        boss.canInstantiate = false;
+        boss.isAttackingLong = false;
         boss.SwitchState(boss.runningState);
     }
     public override void UpdateState(HumanBossController_Damat boss)

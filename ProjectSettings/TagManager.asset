@@ -10,7 +10,8 @@ TagManager:
   - Laser
   - Boss2
   - Bullet
-  - Keko_Shortattack
+  - Explosion
+
   layers:
   - Default
   - TransparentFX
