@@ -18,6 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Bosskeko.unity
     guid: 10a572e34925e31409e8056f3bd2e8bd
   - enabled: 0
+
     path: 
     guid: 00000000000000000000000000000000
   m_configObjects: {}

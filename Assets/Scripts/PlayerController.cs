@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using Cinemachine;
+using UnityEditor;
 
 namespace TarodevController
 {
@@ -29,6 +30,9 @@ namespace TarodevController
         [SerializeField] private BoxCollider2D playerCollider;
         [SerializeField] private BoxCollider2D bCol2d;
         [SerializeField] public Collider2D col2DHit = null;
+        HumanBossController_Keko boss = new HumanBossController_Keko();
+
+
         public float attackRange;
         public Transform attackPos;
 
@@ -362,11 +366,24 @@ namespace TarodevController
 
         private void OnTriggerEnter2D(Collider2D trigger)
         {
-            if (trigger.gameObject.tag == "Laser")
+
+            Debug.Log("Trigger entered: " + laser.gameObject.tag);
+
+            if (laser.gameObject.tag == "Laser")
+
             {
+                Debug.Log("Laser condition met");
                 PlayerTakeDamage(damageToPlayer);
-                Debug.Log("amount of damage " + damageToPlayer);
+                Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
+            }
+            else if (laser.gameObject.tag == "Keko_Shortattack")
+            {
+                Debug.Log("Keko_Shortattack condition met");
+                PlayerTakeDamage(damageToPlayer);
+                Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
+                Debug.Log("DamageTaken by Player");
+                boss.IncreaseShortAttackLines();
             }
             else if (trigger.gameObject.CompareTag("Explosion"))
             {
@@ -380,6 +397,7 @@ namespace TarodevController
                 rb2d.AddForce(pushDirection * pushForce, ForceMode2D.Impulse);
             }
         }
+
 
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private int _detectorCount = 3;
@@ -826,6 +844,13 @@ namespace TarodevController
         }
         #endregion
 
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Boss2"))
+            {
+                // Calculate the push direction away from the boss
+                Vector3 bossPosition = collision.gameObject.transform.position;
+                Vector3 playerPosition = transform.position;
 
         private void OneWayPlatform()
         {

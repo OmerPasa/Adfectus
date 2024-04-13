@@ -11,6 +11,7 @@ TagManager:
   - Boss2
   - Bullet
   - Explosion
+
   layers:
   - Default
   - TransparentFX

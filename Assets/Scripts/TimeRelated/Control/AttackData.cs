@@ -81,8 +81,10 @@ public class AttackData
             HumanBossController_Keko hbc_D = LoopData.boss.GetComponent<HumanBossController_Keko>();
             hbc_D.HumanBossAttackInitiater();
         }
+
         PlayerController pc = LoopData.player.GetComponent<PlayerController>();
         pc.BeatPress();
+
         if (clone.s1 != null)
         {
             stateSenderForHumanBossController(clone);

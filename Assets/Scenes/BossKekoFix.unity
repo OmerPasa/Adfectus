@@ -1980,6 +1980,7 @@ MonoBehaviour:
   player: {fileID: 1762447352}
   boss: {fileID: 2003122445}
   testObject: {fileID: 1663860200}
+
   p: 1
   audioSources:
   - {fileID: 1517817676}
@@ -4018,6 +4019,7 @@ MonoBehaviour:
   attackPos: {fileID: 1997780731}
   whatIsEnemies:
     serializedVersion: 2
+
     m_Bits: 0
   fireObject: {fileID: 1386294131819396813, guid: cb001ae290e7179429f2b0575a176ee5, type: 3}
   teleportLineRenderer: {fileID: 0}
@@ -4058,7 +4060,7 @@ MonoBehaviour:
   isAttackingMedium: 0
   isAttackingLong: 0
   is_jumping: 0
-  animator: {fileID: 0}
+  animator: {fileID: 2003122448}
 --- !u!1 &2025265507
 GameObject:
   m_ObjectHideFlags: 0
