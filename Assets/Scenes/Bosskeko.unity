@@ -4006,7 +4006,7 @@ MonoBehaviour:
   Shortattackhitcount: 1
   damageDelay: 2
   damage: 3
-  lineDuration: 0
+  lineDuration: 5
   TeleportDistance: 0
   timeBtw_shortAttack: 2.51
   startTimeBtw_shortAttack: 2.52
