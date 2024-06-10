@@ -279,6 +279,7 @@ public class HumanBossController_Keko : MonoBehaviour
     public void BossTakeDamage(int damageTOBoss)
     {
         health = health - damageTOBoss;
+        Debug.Log(health + " health reimains to kill the boss");
         if (health <= 0)
         {
             isDying = true;

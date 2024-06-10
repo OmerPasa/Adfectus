@@ -480,8 +480,6 @@ namespace TarodevController
             {
                 if (enemiesInRange.Length >= 1)
                 {
-                    //GetComponent<GameManager>().BossGETDamage(damageTOBoss);
-
                     RangeImage.color = new Color(0, 0, 0, 1);
                     //  CinemachineShake.Instance.ShakeCamera(6f, .1f);
                     //for giving every one of enemies damage.
@@ -490,10 +488,11 @@ namespace TarodevController
                         LoopController.isObjectiveCompleted = true;
                         ChangeAnimationState(PLAYER_ATTACK);
                         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                        if (GameManager.Instance != null && damageTOBoss != null)
-                        {
-                            enemiesInRange[i].GetComponent<GameManager>().BossGETDamage(damageTOBoss);
-                        }
+                        //enemiesInRange[i].GameManager.BossGETDamage(damageTOBoss);
+                        if (GameManager != null)
+                            enemiesInRange[i].GetComponent<GameManager>().GameWon();
+                        //  enemiesInRange[i].GetComponent<GameManager>().BossGETDamage(1);
+
                         isAttacking = true;
                     }
                 }

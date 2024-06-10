@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     static bool gameHasEndedGoodWay = false;
     public GameObject goodEnding;
     public float restartDelay = 13f;
+    public GameObject[] objects;
 
 
     public static GameManager Instance { get; private set; }
@@ -63,14 +64,16 @@ public class GameManager : MonoBehaviour
             Invoke("Restart", restartDelay);
         }
     }
-    void Restart()
+    public void Restart()
     {
         SceneManager.LoadScene("MEnu");
     }
-    public GameObject[] objects;
+
+
 
     public void BossGETDamage(int damageTOBoss)
     {
+        Debug.Log(" Boss taken damage");
         if (SceneManager.GetActiveScene().name == "BossDamat")
         {
             GetComponent<HumanBossController_Damat>().BossTakeDamage(damageTOBoss);
