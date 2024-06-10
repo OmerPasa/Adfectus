@@ -3717,7 +3717,7 @@ MonoBehaviour:
   dodAnimationDur: 0.1
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   GetAxisRaw: {x: 0, y: 0}
   _hasDashed: 1
   isFacingLeft: 1
@@ -3956,7 +3956,7 @@ GameObject:
   - component: {fileID: 1904355460}
   - component: {fileID: 1904355459}
   - component: {fileID: 1904355458}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Boss_Keko
   m_TagString: Boss2
   m_Icon: {fileID: 0}
@@ -3984,7 +3984,7 @@ MonoBehaviour:
   attackPos: {fileID: 1739365854}
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 384
+    m_Bits: 128
   fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
   teleportLineRenderer: {fileID: 1453835946}
   teleportLineRenderer2: {fileID: 829440096}
