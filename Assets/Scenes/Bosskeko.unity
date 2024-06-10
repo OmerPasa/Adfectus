@@ -2680,7 +2680,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0.05270496, b: 0, a: 1}
+      key0: {r: 0.13253415, g: 1, b: 0, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -3683,7 +3683,7 @@ GameObject:
   - component: {fileID: 1762447355}
   - component: {fileID: 1762447354}
   - component: {fileID: 1762447353}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -3717,11 +3717,10 @@ MonoBehaviour:
   dodAnimationDur: 0.1
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 64
   GetAxisRaw: {x: 0, y: 0}
   _hasDashed: 1
   isFacingLeft: 1
-  damageBoss: 1
   missedBeatPenalty: 0
   maxScore: 0
   playerScore: 0
@@ -3731,7 +3730,7 @@ MonoBehaviour:
   currentAnimaton: Player_Idle
   animator: {fileID: 906394}
   BackGroundM: {fileID: 0}
-  GameManager_: {fileID: 617461538}
+  GameManager: {fileID: 0}
   Healthsprite: {fileID: 906393}
   RangeImage: {fileID: 1178912997}
   dashEffect: {fileID: 1549569659}
@@ -3751,6 +3750,7 @@ MonoBehaviour:
   _detectorCount: 3
   _detectionRayLength: 0.44
   _rayBuffer: 0.3
+  damageTOBoss: 1
   _acceleration: 23
   _moveClamp: 6
   _deAcceleration: 60
@@ -3956,7 +3956,7 @@ GameObject:
   - component: {fileID: 1904355460}
   - component: {fileID: 1904355459}
   - component: {fileID: 1904355458}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Boss_Keko
   m_TagString: Boss2
   m_Icon: {fileID: 0}
@@ -3984,13 +3984,13 @@ MonoBehaviour:
   attackPos: {fileID: 1739365854}
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 384
   fireObject: {fileID: 6281560015330060019, guid: e7c74110fe3971544adbfa5f9c7eac52, type: 3}
   teleportLineRenderer: {fileID: 1453835946}
   teleportLineRenderer2: {fileID: 829440096}
   teleportLineRenderer3: {fileID: 1475417002}
   viewRange: 28
-  meleeRange: 5.6
+  meleeRange: 16.4
   mediumRange: 12
   longRange: 27
   bulletRange: 2.15

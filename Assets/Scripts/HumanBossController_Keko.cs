@@ -238,6 +238,7 @@ public class HumanBossController_Keko : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, longRange);
 
     }
+    #region BossDamageandRelated
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Bullet"))
@@ -274,6 +275,19 @@ public class HumanBossController_Keko : MonoBehaviour
         animator.Play(newAnimation);
         currentAnimaton = newAnimation;
     }
+
+    public void BossTakeDamage(int damageTOBoss)
+    {
+        health = health - damageTOBoss;
+        if (health <= 0)
+        {
+            isDying = true;
+            ChangeAnimationState(ENEMY_DEATH);
+            Debug.Log("HumanBoss1 DÝED");
+            Invoke(nameof(Die), 0.9f);
+        }
+    }
+    #endregion
     public void Jump()
     {
         Debug.Log("AI_JUMPÝNG");
@@ -400,7 +414,7 @@ public class HumanBossController_Keko : MonoBehaviour
             Debug.Log("secondteleport");
             // var lineMaterialOne = lineMaterial;//storing first lines values
             //var initialColorOne = initialColor;//storing first lines values
-            StartCoroutine(TeleportBehindPlayer(teleportLineRenderer2));
+            //StartCoroutine(TeleportBehindPlayer(teleportLineRenderer2));
             //canAttackTeleport2 = false;
         }
         canAttackTeleport2Mutex.ReleaseMutex();
@@ -476,8 +490,6 @@ public class HumanBossController_Keko : MonoBehaviour
         {
             SwitchState(runningState);
         }
-
-
     }
 }
 

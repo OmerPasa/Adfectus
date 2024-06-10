@@ -303,6 +303,18 @@ public class HumanBossController_Damat : MonoBehaviour
         animator.Play(newAnimation);
         currentAnimaton = newAnimation;
     }
+
+    public void BossTakeDamage(int damageTOBoss)
+    {
+        health = health - damageTOBoss;
+        if (health <= 0)
+        {
+            isDying = true;
+            ChangeAnimationState(ENEMY_DEATH);
+            Debug.Log("HumanBoss1 DÝED");
+            Invoke(nameof(Die), 0.9f);
+        }
+    }
     public void Jump()
     {
         Debug.Log("AI_JUMPİNG");

@@ -45,14 +45,16 @@ namespace TarodevController
         [SerializeField] private float landAnimationDur;
         [SerializeField] private float dodgeScaleAmount;
         [SerializeField] private float dodAnimationDur;
-        [Space]
+
+        public CinemachineShake CinemachineShake { get; private set; }
+        public BossMainScript BossMainScript { get; private set; }
+        public FrameInput Input { get; private set; }
         public LayerMask whatIsEnemies;
         public Vector3 Velocity { get; private set; }
-        public FrameInput Input { get; private set; }
-        public bool JumpingThisFrame { get; private set; }
-        public bool LandingThisFrame { get; private set; }
         public Vector3 RawMovement { get; private set; }
         public Vector2 GetAxisRaw;
+        public bool JumpingThisFrame { get; private set; }
+        public bool LandingThisFrame { get; private set; }
         public bool Grounded => _colDown;
         private bool wasGrounded;
         public bool _hasDashed;
@@ -60,7 +62,6 @@ namespace TarodevController
         public bool isFacingLeft;
         private bool CanAttack;
         private int direction;
-        public int damageBoss = 1;
 
         public int missedBeatPenalty;
         public int maxScore;
@@ -91,7 +92,7 @@ namespace TarodevController
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
-        public GameObject GameManager_;
+        public GameManager GameManager;
         public SpriteRenderer Healthsprite;
         public SpriteRenderer RangeImage;
         public ParticleSystem dashEffect;
@@ -136,6 +137,7 @@ namespace TarodevController
             dashTime = startDashTime;
             hitBufferList.Clear();
             bCol2d = GetComponent<BoxCollider2D>();
+            GameManager = GetComponent<GameManager>();
             //virtualCamera = GetComponent<CinemachineVirtualCamera>();
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -161,7 +163,7 @@ namespace TarodevController
             if (Playerhealth <= 0)
             {
                 playerDying = true;
-                GameManager_.GetComponent<GameManager>().EndGame();
+                GameManager.GetComponent<GameManager>().EndGame();
                 Deb.ug("game resetting");
 
                 //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -409,6 +411,7 @@ namespace TarodevController
         private float _timeLeftGrounded;
         RaycastHit2D hitL;
         RaycastHit2D hitR;
+        public int damageTOBoss = 1;
 
         // We use these raycast checks for pre-collision information
         private void RunCollisionChecks()
@@ -477,16 +480,21 @@ namespace TarodevController
             {
                 if (enemiesInRange.Length >= 1)
                 {
+                    //GetComponent<GameManager>().BossGETDamage(damageTOBoss);
+
                     RangeImage.color = new Color(0, 0, 0, 1);
-                    CinemachineShake.Instance.ShakeCamera(6f, .1f);
+                    //  CinemachineShake.Instance.ShakeCamera(6f, .1f);
                     //for giving every one of enemies damage.
                     for (int i = 0; i < enemiesInRange.Length; i++)
                     {
                         LoopController.isObjectiveCompleted = true;
-                        isAttacking = true;
                         ChangeAnimationState(PLAYER_ATTACK);
                         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                        enemiesInRange[i].GetComponent<BossMainScript>().BossTakeDamage(damageBoss);
+                        if (GameManager.Instance != null && damageTOBoss != null)
+                        {
+                            enemiesInRange[i].GetComponent<GameManager>().BossGETDamage(damageTOBoss);
+                        }
+                        isAttacking = true;
                     }
                 }
                 Invoke("AttackComplete", damageDelay);
