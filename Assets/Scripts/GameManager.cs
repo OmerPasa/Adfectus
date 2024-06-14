@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject goodEnding;
     public float restartDelay = 13f;
     public GameObject[] objects;
-
+    GameObject CurrentBoss;
 
     public static GameManager Instance { get; private set; }
 
@@ -24,11 +24,12 @@ public class GameManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(this.gameObject); // Optional: Keep the GameManager persistent across scenes
+        // DontDestroyOnLoad(this.gameObject); // Optional: Keep the GameManager persistent across scenes
     }
 
     private void Start()
     {
+        this.CurrentBoss = GameObject.FindWithTag("Boss2");
         gameHasEndedBadWay = false;
         gameHasEndedGoodWay = false;
         StartCoroutine(CheckAndActivate());
@@ -76,11 +77,12 @@ public class GameManager : MonoBehaviour
         Debug.Log(" Boss taken damage");
         if (SceneManager.GetActiveScene().name == "BossDamat")
         {
-            GetComponent<HumanBossController_Damat>().BossTakeDamage(damageTOBoss);
+            CurrentBoss.GetComponent<HumanBossController_Damat>().BossTakeDamage(damageTOBoss);
         }
         else if (SceneManager.GetActiveScene().name == "BossKeko")
         {
-            GetComponent<HumanBossController_Keko>().BossTakeDamage(damageTOBoss);
+            CurrentBoss.GetComponent<HumanBossController_Keko>().BossTakeDamage(damageTOBoss);
+
         }
     }
 

@@ -265,7 +265,7 @@ public class HumanBossController_Keko : MonoBehaviour
     }
     void Die()
     {
-        gM.GetComponent<GameManager>().EndGame();
+        gM.GetComponent<GameManager>().GameWon();
         Destroy(this);
     }
     public void ChangeAnimationState(string newAnimation)

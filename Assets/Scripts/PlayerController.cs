@@ -92,7 +92,8 @@ namespace TarodevController
         private Rigidbody2D rb2d;
         AudioSource AfterFiringMusic;
         public AudioSource BackGroundM;
-        public GameManager GameManager;
+        public GameObject GameManagerObject;
+        private GameManager GameManager;
         public SpriteRenderer Healthsprite;
         public SpriteRenderer RangeImage;
         public ParticleSystem dashEffect;
@@ -137,7 +138,7 @@ namespace TarodevController
             dashTime = startDashTime;
             hitBufferList.Clear();
             bCol2d = GetComponent<BoxCollider2D>();
-            GameManager = GetComponent<GameManager>();
+
             //virtualCamera = GetComponent<CinemachineVirtualCamera>();
         }
         // This is horrible, but for some reason colliders are not fully established when update starts...
@@ -147,7 +148,7 @@ namespace TarodevController
             damageToPlayer = PlayerPrefs.GetFloat("damageToPlayer");
             Debug.Log("damagetoplayerin game is " + damageToPlayer);
             Invoke(nameof(Activate), 0.5f);
-
+            GameManager = GameManagerObject.GetComponent<GameManager>();
             inputManager = new InputManager();
             inputManager.Player.Enable();
             inputManager.Player.Attack.performed += Attack_performed;
@@ -488,11 +489,10 @@ namespace TarodevController
                         LoopController.isObjectiveCompleted = true;
                         ChangeAnimationState(PLAYER_ATTACK);
                         damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;
-                        //enemiesInRange[i].GameManager.BossGETDamage(damageTOBoss);
                         if (GameManager != null)
-                            enemiesInRange[i].GetComponent<GameManager>().GameWon();
-                        //  enemiesInRange[i].GetComponent<GameManager>().BossGETDamage(1);
-
+                        {
+                            GameManager.BossGETDamage(damageTOBoss);
+                        }
                         isAttacking = true;
                     }
                 }
