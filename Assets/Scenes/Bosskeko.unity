@@ -3730,7 +3730,7 @@ MonoBehaviour:
   currentAnimaton: Player_Idle
   animator: {fileID: 906394}
   BackGroundM: {fileID: 0}
-  _GameManager: {fileID: 617461538}
+  GameManagerObject: {fileID: 617461538}
   Healthsprite: {fileID: 906393}
   RangeImage: {fileID: 1178912997}
   dashEffect: {fileID: 1549569659}
