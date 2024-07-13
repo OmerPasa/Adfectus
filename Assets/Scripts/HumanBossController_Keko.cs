@@ -336,132 +336,123 @@ public class HumanBossController_Keko : MonoBehaviour
         canInstantiate = true;
     }
     #region TeleportBehindPlayer-ShortAttack
-    public IEnumerator TeleportBehindPlayer(LineRenderer teleportLineRenderer)
+public IEnumerator TeleportBehindPlayer(LineRenderer teleportLineRenderer)
+{
+    CalculateTeleportPosition();
+    SetLineRendererProperties(teleportLineRenderer);
+    DrawTeleportLine(teleportLineRenderer);
+    UpdateCollider(teleportLineRenderer);
+    yield break;
+}
+
+private void CalculateTeleportPosition()
+{
+    float direction = Mathf.Sign(character.transform.position.x - transform.position.x);
+    Vector3 playerPosition = character.transform.position;
+    teleportPosition = new Vector3(playerPosition.x + direction * TeleportDistance, transform.position.y);
+}
+
+private void SetLineRendererProperties(LineRenderer teleportLineRenderer)
+{
+    lineMaterial = teleportLineRenderer.material;
+    initialColor = lineMaterial.color;
+    startTime = Time.time;
+}
+
+private void DrawTeleportLine(LineRenderer teleportLineRenderer)
+{
+    teleportLineRenderer.positionCount = 2;
+    teleportLineRenderer.SetPosition(0, transform.position);
+    teleportLineRenderer.SetPosition(1, teleportPosition);
+    transform.position = teleportPosition;
+}
+
+private void UpdateCollider(LineRenderer teleportLineRenderer)
+{
+    BoxCollider2D collider = teleportLineRenderer.GetComponent<BoxCollider2D>();
+    collider.enabled = false;
+
+    if (teleportLineRenderer.enabled)
     {
-        CalculateTeleportPosition();
-        StoreLineRendererProperties(teleportLineRenderer);
-        DrawTeleportLine(teleportLineRenderer);
-        UpdateCollider(teleportLineRenderer);
-        yield break;
+        SetColliderPositionAndSize(collider, teleportLineRenderer);
+    }
+}
+
+private void SetColliderPositionAndSize(BoxCollider2D collider, LineRenderer teleportLineRenderer)
+{
+    Vector3 startPosition = teleportLineRenderer.GetPosition(0);
+    Vector3 endPosition = teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1);
+    Vector3 center = (startPosition + endPosition) / 2f;
+    float sizeX = Vector3.Distance(startPosition, endPosition);
+    float sizeY = teleportLineRenderer.endWidth;
+
+    collider.transform.position = center;
+    collider.size = new Vector2(sizeX, sizeY);
+
+    if (canAttackTeleport2)
+    {
+        Debug.Log("secondteleportPRE");
     }
 
+    StartCoroutine(HideTeleportLine(collider, teleportLineRenderer));
+}
 
-    private void CalculateTeleportPosition()
+private IEnumerator HideTeleportLine(BoxCollider2D collider, LineRenderer teleportLineRenderer)
+{
+    float firstLineDuration = lineDuration - 1f;
+    yield return ColorLerpOverTime(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), firstLineDuration, lineMaterial);
+
+    Debug.Log("startafterhide");
+    collider.enabled = true;
+    lineMaterial.color = Color.red;
+
+    canAttackTeleport2Mutex.WaitOne();
+    Debug.Log($"canAttackTeleport2: {canAttackTeleport2}, Shortattackhitcount: {Shortattackhitcount}");
+
+    if (canAttackTeleport2 || Shortattackhitcount == 2)
     {
-        float direction = Mathf.Sign(character.transform.position.x - transform.position.x);
-        Vector3 playerPosition = character.transform.position;
-        teleportPosition.x = playerPosition.x + direction * TeleportDistance; // Use a constant or parameter
-        teleportPosition.y = transform.position.y;
+        Debug.Log("secondteleport");
+        StartCoroutine(TeleportBehindPlayer(teleportLineRenderer2));
+        canAttackTeleport2 = false;
     }
+    canAttackTeleport2Mutex.ReleaseMutex();
 
-    private void StoreLineRendererProperties(LineRenderer teleportLineRenderer)
+    yield return ColorLerpOverTime(Color.red, new Color(lineMaterial.color.r, lineMaterial.color.g, lineMaterial.color.b, 0f), 1f, lineMaterial);
+    yield return new WaitForSeconds(1f);
+
+    collider.offset = Vector2.zero;
+    collider.transform.position = Vector3.zero;
+    teleportLineRenderer.positionCount = 0;
+    lineMaterial.color = initialColor;
+
+    Debug.Log("AFter hide finish");
+    AttackCompleteShort();
+}
+
+public void IncreaseShortAttackLines()
+{
+    Shortattackhitcount++;
+    Debug.Log($"Shortattackhitcount {Shortattackhitcount}");
+
+    if (Shortattackhitcount == 2)
     {
-        lineMaterial = teleportLineRenderer.material;
-        initialColor = lineMaterial.color;
-        startTime = Time.time;
+        canAttackTeleport2 = true;
+        Debug.Log($"canAttackTeleport2: {canAttackTeleport2}");
     }
+}
 
-    private void DrawTeleportLine(LineRenderer teleportLineRenderer)
+private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
+{
+    float elapsedTime = 0f;
+
+    while (elapsedTime < duration)
     {
-        teleportLineRenderer.positionCount = 2;
-        teleportLineRenderer.SetPosition(0, transform.position);
-        teleportLineRenderer.SetPosition(1, teleportPosition);
-        transform.position = teleportPosition;
+        float lerpValue = elapsedTime / duration;
+        targetMaterial.color = Color.Lerp(startColor, endColor, lerpValue);
+        elapsedTime += Time.deltaTime;
+        yield return null;
     }
-
-    private void UpdateCollider(LineRenderer teleportLineRenderer)
-    {
-        BoxCollider2D collider = teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>();
-        collider.enabled = false;
-
-        if (teleportLineRenderer.enabled)
-        {
-            SetColliderPositionAndSize(collider);
-        }
-    }
-    private void SetColliderPositionAndSize(BoxCollider2D collider)
-    {
-        teleportLineRenderer.gameObject.GetComponent<BoxCollider2D>().transform.position = teleportLineRenderer.transform.position;
-        Vector3 startPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(0));
-        Vector3 endPosition = teleportLineRenderer.transform.TransformPoint(teleportLineRenderer.GetPosition(teleportLineRenderer.positionCount - 1));
-        Vector3 center = (startPosition + endPosition) / 2f;
-        float sizeX = Vector3.Distance(startPosition, endPosition);
-        float sizeY = teleportLineRenderer.endWidth; // Set to your LineRenderer's width
-
-        collider.transform.position = center;
-        collider.size = new Vector2(sizeX, sizeY);
-        if (canAttackTeleport2 == true)
-        {
-            Debug.Log("secondteleportPRE");
-        }
-        StartCoroutine(HideTeleportLine(collider));
-    }
-
-    private IEnumerator HideTeleportLine(Collider2D collider)
-    {
-        float firstLineDuration = lineDuration - 1f;
-
-        // Extract color manipulation to a separate method
-        yield return ColorLerpOverTime(initialColor, new Color(initialColor.r, initialColor.g, initialColor.b, 0f), firstLineDuration, lineMaterial);
-        Debug.Log("startafterhide");
-        collider.enabled = true;
-        lineMaterial.color = Color.red;
-        canAttackTeleport2Mutex.WaitOne();
-        Debug.Log("canAttackTeleport2: " + canAttackTeleport2);
-        Debug.Log("Shortattackhitcount: " + Shortattackhitcount);
-
-        if (canAttackTeleport2 == true || Shortattackhitcount == 2)// still not seing true...
-        {
-            Debug.Log("secondteleport");
-            // var lineMaterialOne = lineMaterial;//storing first lines values
-            //var initialColorOne = initialColor;//storing first lines values
-            //StartCoroutine(TeleportBehindPlayer(teleportLineRenderer2));
-            //canAttackTeleport2 = false;
-        }
-        canAttackTeleport2Mutex.ReleaseMutex();
-        yield return ColorLerpOverTime(Color.red, new Color(lineMaterial.color.r, lineMaterial.color.g, lineMaterial.color.b, 0f), 1f, lineMaterial);
-        yield return new WaitForSeconds(1f);
-        // setting everything back.
-        collider.offset = Vector2.zero;
-        collider.transform.position = Vector3.zero;
-        teleportLineRenderer.positionCount = 0; // Hide the line completely
-        Debug.Log("AFter hide finish");
-        // Set the Line Renderer's color back to normal
-        lineMaterial.color = initialColor;
-        AttackCompleteShort();
-    }
-    public void IncreaseShortAttackLines()
-    {
-        Shortattackhitcount++;// if is 2  that meansboss can draw 2 lines
-        Debug.Log("Shortattackhitcount " + Shortattackhitcount);
-        if (Shortattackhitcount == 2)
-        {
-            canAttackTeleport2 = true;
-            if (canAttackTeleport2 == false)
-            {
-                canAttackTeleport2 = true;
-            }
-            Debug.Log("canAttackTeleport2: in attacklines" + canAttackTeleport2);
-
-
-        }
-    }
-
-    private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
-    {
-        float elapsedTime = 0f;
-        startTime = Time.time;
-
-        while (elapsedTime < duration)
-        {
-            float lerpValue = elapsedTime / duration;
-            Color newColor = Color.Lerp(startColor, endColor, lerpValue);
-            targetMaterial.color = newColor;
-
-            elapsedTime = Time.time - startTime;
-            yield return null;
-        }
-    }
+}
 
     #endregion
 
@@ -576,7 +567,6 @@ public class HumanBoss2MeleeState : HumanBoss2BaseState
         boss.movementSpeed = 0f;
         boss.StartCoroutine(boss.TeleportBehindPlayer(boss.teleportLineRenderer));
         //boss.Invoke(nameof(boss.TeleportBehindPlayer), 1f);
-
     }
 
 
