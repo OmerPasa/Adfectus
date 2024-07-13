@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 29b5d743f852f3b4eb01004119e41515
+guid: 2051d4b951befd642bc2835daadd48a5
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 1000
+  spritePixelsToUnits: 300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -66,8 +66,8 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
-    resizeAlgorithm: 0
+    maxTextureSize: 4096
+    resizeAlgorithm: 1
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -101,18 +101,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -128,148 +116,127 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jump_0
+      name: Kosu-sheet_0
       rect:
         serializedVersion: 2
-        x: 283
-        y: 1040
-        width: 557
-        height: 791
+        x: 218
+        y: 1287
+        width: 1150
+        height: 483
       alignment: 9
-      pivot: {x: 0.5991211, y: 0.5043624}
+      pivot: {x: 0.5820954, y: 0.4485609}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 751fc68cb80dd7746a1c706c2e44c711
-      internalID: -353408404
+      spriteID: 1bd902867d25f7d4ba6c6467caecc7bc
+      internalID: -1925447335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_1
+      name: Kosu-sheet_1
       rect:
         serializedVersion: 2
-        x: 1035
-        y: 1061
-        width: 576
-        height: 767
+        x: 2389
+        y: 1306
+        width: 751
+        height: 442
       alignment: 9
-      pivot: {x: 0.6797216, y: 0.5224947}
+      pivot: {x: 0.5198489, y: 0.46627378}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae3a00b083dec7d43a672748de6ae73f
-      internalID: 450485392
+      spriteID: 2010b75df982b6e46956469e64000431
+      internalID: 1992176685
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_2
+      name: Kosu-sheet_2
       rect:
         serializedVersion: 2
-        x: 1781
-        y: 1047
-        width: 614
-        height: 781
+        x: 4110
+        y: 1343
+        width: 1058
+        height: 458
       alignment: 9
-      pivot: {x: 0.6180185, y: 0.48232716}
+      pivot: {x: 0.5892341, y: 0.42405522}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 496105a07bacc9c4494aff466fa27933
-      internalID: 832291281
+      spriteID: 68e5ef83f4c51fe4587f8c0b86a15f1a
+      internalID: -343748992
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_3
+      name: Kosu-sheet_3
       rect:
         serializedVersion: 2
-        x: 2591
-        y: 1045
-        width: 629
-        height: 783
+        x: 277
+        y: 263
+        width: 1052
+        height: 453
       alignment: 9
-      pivot: {x: 0.5384015, y: 0.39423302}
+      pivot: {x: 0.58974314, y: 0.40127915}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9c7b72dd73e5f584bbe5f714254e9bd3
-      internalID: 1806304895
+      spriteID: 33f22d4458371544b88089ac6d433def
+      internalID: -284400837
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_4
+      name: Kosu-sheet_4
       rect:
         serializedVersion: 2
-        x: 203
-        y: 55
-        width: 641
-        height: 781
+        x: 2136
+        y: 218
+        width: 1148
+        height: 478
       alignment: 9
-      pivot: {x: 0.5592156, y: 0.3674525}
+      pivot: {x: 0.59089476, y: 0.48960468}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3bd805cf8feab2f4abd42eae02d01280
-      internalID: 2045437797
+      spriteID: 4e01add97a908bc49beb7e40a940ad79
+      internalID: 1176524364
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_5
+      name: Kosu-sheet_5
       rect:
         serializedVersion: 2
-        x: 1035
-        y: 51
-        width: 643
-        height: 777
+        x: 4310
+        y: 226
+        width: 743
+        height: 436
       alignment: 9
-      pivot: {x: 0.62342924, y: 0.29127333}
+      pivot: {x: 0.5601887, y: 0.47720674}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e18409f2d8be50849988a57555e0985f
-      internalID: -1296126773
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: jump_6
-      rect:
-        serializedVersion: 2
-        x: 1869
-        y: 41
-        width: 651
-        height: 787
-      alignment: 9
-      pivot: {x: 0.6537156, y: 0.22377224}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 946934a193b7bf04a92466ff466f26cf
-      internalID: 1965677354
+      spriteID: db1efe1d38832aa4faf3025507ae668a
+      internalID: 1555582633
       vertices: []
       indices: 
       edges: []
@@ -285,13 +252,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      jump_2: 832291281
-      jump_0: -353408404
-      jump_5: -1296126773
-      jump_1: 450485392
-      jump_6: 1965677354
-      jump_3: 1806304895
-      jump_4: 2045437797
+      Kosu-sheet_2: -343748992
+      Kosu-sheet_5: 1555582633
+      Kosu-sheet_1: 1992176685
+      Kosu-sheet_3: -284400837
+      Kosu-sheet_0: -1925447335
+      Kosu-sheet_4: 1176524364
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
