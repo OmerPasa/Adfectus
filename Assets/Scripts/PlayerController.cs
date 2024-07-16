@@ -151,7 +151,7 @@ namespace TarodevController
             GameManager = GameManagerObject.GetComponent<GameManager>();
             inputManager = new InputManager();
             inputManager.Player.Enable();
-            inputManager.Player.Attack.performed += Attack_performed;
+            //inputManager.Player.Attack.performed += Attack_performed;
             //inputManager.Player.Dash.performed += Dash_performed;
             //inputManager.Player.Jump.performed += Jump_performed;
             //inputManager.Player.Move.performed += Movement_performed;
@@ -326,7 +326,7 @@ namespace TarodevController
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            Debug.Log("collusion happned");
+            Debug.Log("Collision detected with: " + collision.gameObject.name);
             if (collision.gameObject.CompareTag("Boss2"))
             {
                 // Calculate the push direction away from the boss
@@ -372,7 +372,7 @@ namespace TarodevController
 
             Debug.Log("Trigger entered: " + trigger.gameObject.tag);
 
-            if (trigger.gameObject.tag == "Laser")
+            if (trigger.gameObject.CompareTag("Laser"))
 
             {
                 Debug.Log("Laser condition met");
@@ -380,7 +380,7 @@ namespace TarodevController
                 Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
             }
-            else if (trigger.gameObject.tag == "Keko_Shortattack")
+            else if (trigger.gameObject.CompareTag("Keko_Shortattack"))
             {
                 Debug.Log("Keko_Shortattack condition met");
                 PlayerTakeDamage(damageToPlayer);
