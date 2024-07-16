@@ -182,12 +182,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: -887001744, guid: d77fb4d54bd0f464f8b3bdab02c0c8dd, type: 3}
+  m_Sprite: {fileID: -1925447335, guid: 2051d4b951befd642bc2835daadd48a5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.15, y: 0.17}
+  m_Size: {x: 0.522, y: 0.74}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4002,8 +4002,9 @@ MonoBehaviour:
   jumpPower: 10
   jumpTime: 1
   teleportPosition: {x: 0, y: 0, z: 0}
-  health: 4
+  linesToDraw: 1
   Shortattackhitcount: 1
+  health: 4
   damageDelay: 2
   damage: 3
   lineDuration: 5
