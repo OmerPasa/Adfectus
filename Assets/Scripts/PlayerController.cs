@@ -26,11 +26,11 @@ namespace TarodevController
     public class PlayerController : MonoBehaviour, IPlayerController
     {
         // Public for external hooks
+        public HumanBossController_Keko boss = new HumanBossController_Keko();
         public GameObject currentOneWayPlatform;
         [SerializeField] private BoxCollider2D playerCollider;
         [SerializeField] private BoxCollider2D bCol2d;
         [SerializeField] public Collider2D col2DHit = null;
-        HumanBossController_Keko boss = new HumanBossController_Keko();
 
 
         public float attackRange;
@@ -115,7 +115,6 @@ namespace TarodevController
         public TimingWindow timingWindow; // Assign this in the Unity Inspector
 
         private float beatTimestamp; // Store the timestamp of the beat
-
 
         [SerializeField]
         public static float Playerhealth = 1;
@@ -386,7 +385,11 @@ namespace TarodevController
                 PlayerTakeDamage(damageToPlayer);
                 Debug.Log("Amount of damage taken by Player: " + damageToPlayer);
                 Debug.Log("DamageTaken by Player");
-                boss.IncreaseShortAttackLines();
+                Debug.Log($"Shortattackhitcountpre {boss.Shortattackhitcount}");
+
+                boss.Shortattackhitcount++;
+                Debug.Log($"Shortattackhitcountafter {boss.Shortattackhitcount}");
+
             }
             else if (trigger.gameObject.CompareTag("Explosion"))
             {
@@ -831,7 +834,7 @@ namespace TarodevController
         public void PlayerTakeDamage(float damage)
         {
             playerTakingDamage = true;
-            Playerhealth -= damage;
+            //Playerhealth -= damage;
             Set_Health(Playerhealth);
             ChangeAnimationState(PLAYER_TAKEDAMAGE);
             damageDelay = animator.GetCurrentAnimatorStateInfo(0).length;

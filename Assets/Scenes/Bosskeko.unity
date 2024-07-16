@@ -3702,6 +3702,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c7bfdb9358d7aa4a85e8746ea4d7da0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boss: {fileID: 1904355458}
   currentOneWayPlatform: {fileID: 0}
   playerCollider: {fileID: 1762447355}
   bCol2d: {fileID: 1762447355}

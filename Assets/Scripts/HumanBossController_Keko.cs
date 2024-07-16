@@ -343,6 +343,29 @@ public class HumanBossController_Keko : MonoBehaviour
             yield return new WaitForSeconds(1f); // Adding a delay between each teleport
         }
     }
+    public void IncreaseShortAttackLines(LineRenderer teleportLineRenderer)
+    {
+        Debug.Log($"Shortattackhitcount {Shortattackhitcount}");
+
+        // Determine the number of lines to draw based on the hit count
+        int linesToDraw = 1;
+        if (Shortattackhitcount == 1)
+        {
+            linesToDraw = 2;
+        }
+        else if (Shortattackhitcount >= 2)
+        {
+            linesToDraw = 3;
+        }
+
+        // Debugging: Check if teleportLineRenderer is null
+        if (teleportLineRenderer == null)
+        {
+            Debug.LogError("teleportLineRenderer is null!");
+            return;
+        }
+
+    }
 
     private void CalculateTeleportPosition()
     {
@@ -410,30 +433,6 @@ public class HumanBossController_Keko : MonoBehaviour
         AttackCompleteShort();
     }
 
-    public void IncreaseShortAttackLines(LineRenderer teleportLineRenderer)
-    {
-        Debug.Log($"Shortattackhitcount {Shortattackhitcount}");
-
-        // Determine the number of lines to draw based on the hit count
-        int linesToDraw = 1;
-        if (Shortattackhitcount == 1)
-        {
-            linesToDraw = 2;
-        }
-        else if (Shortattackhitcount >= 2)
-        {
-            linesToDraw = 3;
-        }
-
-        // Debugging: Check if teleportLineRenderer is null
-        if (teleportLineRenderer == null)
-        {
-            Debug.LogError("teleportLineRenderer is null!");
-            return;
-        }
-
-        StartCoroutine(TeleportBehindPlayer(teleportLineRenderer, linesToDraw));
-    }
 
     private IEnumerator ColorLerpOverTime(Color startColor, Color endColor, float duration, Material targetMaterial)
     {
